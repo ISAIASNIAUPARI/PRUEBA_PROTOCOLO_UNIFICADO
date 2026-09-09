@@ -4,14 +4,15 @@ import { useEffect, useRef } from 'react'
 
 import { SealStar } from './Seal'
 
-const TOTAL = 126
+const TOTAL = 239
+const BASE = 'https://res.cloudinary.com/foewxv45/image/upload'
 
-/**
- * La animación que avanza con el scroll: 126 fotogramas dibujados en un
- * <canvas>. Es la misma lógica del HTML original — precarga diferida con
- * IntersectionObserver, dibujo en requestAnimationFrame y DPR limitado a 2
- * para no crear un canvas gigantesco en móviles de alta densidad.
- */
+function frameUrl(index: number, mobile: boolean) {
+  const id = `lgrframe${String(index + 1).padStart(4, '0')}`
+  const w = mobile ? 660 : 1288
+  return `${BASE}/f_auto,q_auto,w_${w}/${id}.jpg`
+}
+
 export function FrameScroll({
   heading,
   subheading,
@@ -28,26 +29,30 @@ export function FrameScroll({
     const section = sectionRef.current
     const progress = progressRef.current
     if (!canvas || !section || !progress) return
-
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    const frames: HTMLImageElement[] = new Array(TOTAL)
-    let current = -1
+    const mobile = window.innerWidth < 768
+    const step = mobile ? 2 : 1
+    const workers = mobile ? 6 : 12
+
+    const frames: (HTMLImageElement | null)[] = new Array(TOTAL).fill(null)
     let ready = false
+    let cur = 0
+    let target = 0
+    let rafId = 0
+    let visible = false
 
-    const pad = (n: number) => String(n).padStart(3, '0')
-
-    function draw(i: number) {
+    function draw(idx: number) {
+      const snapped = mobile ? Math.round(idx / step) * step : idx
+      const i = Math.min(TOTAL - 1, Math.max(0, snapped))
       const img = frames[i]
       if (!img || !img.complete || !img.naturalWidth) return
       const cw = canvas!.width
       const ch = canvas!.height
-      const iw = img.naturalWidth
-      const ih = img.naturalHeight
-      const scale = Math.max(cw / iw, ch / ih)
-      const dw = iw * scale
-      const dh = ih * scale
+      const scale = Math.max(cw / img.naturalWidth, ch / img.naturalHeight)
+      const dw = img.naturalWidth * scale
+      const dh = img.naturalHeight * scale
       ctx!.clearRect(0, 0, cw, ch)
       ctx!.drawImage(img, (cw - dw) / 2, (ch - dh) / 2, dw, dh)
     }
@@ -56,19 +61,33 @@ export function FrameScroll({
       const dpr = Math.min(window.devicePixelRatio || 1, 2)
       canvas!.width = canvas!.clientWidth * dpr
       canvas!.height = canvas!.clientHeight * dpr
-      draw(Math.max(current, 0))
+      draw(Math.round(cur))
     }
 
     function preload() {
-      for (let i = 0; i < TOTAL; i++) {
-        const im = new Image()
-        im.onload = () => {
-          if (i === 0) draw(0)
-        }
-        im.src = `/frames/ezgif-frame-${pad(i + 1)}.jpg`
-        frames[i] = im
-      }
+      if (ready) return
       ready = true
+      const indices: number[] = []
+      for (let i = 0; i < TOTAL; i += step) indices.push(i)
+
+      let qi = 0
+      let active = 0
+
+      function pump() {
+        while (active < workers && qi < indices.length) {
+          const i = indices[qi++]
+          active++
+          const im = new Image()
+          im.onload = im.onerror = () => {
+            active--
+            if (i === 0 && im.complete) draw(0)
+            pump()
+          }
+          im.src = frameUrl(i, mobile)
+          frames[i] = im
+        }
+      }
+      pump()
     }
 
     function onScroll() {
@@ -76,47 +95,46 @@ export function FrameScroll({
       const total = rect.height - window.innerHeight
       let p = total > 0 ? -rect.top / total : 0
       p = Math.min(1, Math.max(0, p))
+      target = p * (TOTAL - 1)
       progress!.style.width = `${p * 100}%`
-      const idx = Math.min(TOTAL - 1, Math.floor(p * TOTAL))
-      if (idx !== current) {
-        current = idx
-        draw(idx)
-      }
     }
 
-    let ticking = false
-    function onScrollThrottled() {
-      if (!ticking) {
-        ticking = true
-        requestAnimationFrame(() => {
-          onScroll()
-          ticking = false
-        })
+    function loop() {
+      cur += (target - cur) * 0.22
+      draw(Math.round(cur))
+      if (visible) {
+        rafId = requestAnimationFrame(loop)
+      } else {
+        rafId = 0
       }
     }
 
     const io = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => {
-          if (e.isIntersecting && !ready) {
-            preload()
-            io.disconnect()
+          if (e.isIntersecting) {
+            visible = true
+            if (!ready) preload()
+            if (!rafId) rafId = requestAnimationFrame(loop)
+          } else {
+            visible = false
           }
         })
       },
-      { rootMargin: '600px 0px' }
+      { rootMargin: '600px 0px', threshold: 0 }
     )
     io.observe(section)
 
     window.addEventListener('resize', resize)
-    window.addEventListener('scroll', onScrollThrottled, { passive: true })
+    document.addEventListener('scroll', onScroll, { passive: true, capture: true })
     resize()
     onScroll()
 
     return () => {
       io.disconnect()
       window.removeEventListener('resize', resize)
-      window.removeEventListener('scroll', onScrollThrottled)
+      document.removeEventListener('scroll', onScroll, { capture: true })
+      if (rafId) cancelAnimationFrame(rafId)
     }
   }, [])
 

@@ -5,6 +5,7 @@ import { FrameScroll } from '@/components/FrameScroll'
 import { Hero } from '@/components/Hero'
 import { MenuSection } from '@/components/MenuSection'
 import { Nav } from '@/components/Nav'
+import { Objects3D } from '@/components/Objects3D'
 import { Reservations } from '@/components/Reservations'
 import { ScrollEffects } from '@/components/ScrollEffects'
 import { Specials } from '@/components/Specials'
@@ -14,6 +15,7 @@ import {
   footer,
   hero,
   menu,
+  objects3d,
   reservations,
   siteSettings,
   specials,
@@ -46,6 +48,8 @@ export default function HomePage() {
           subheading={experience.subheading}
         />
       )}
+
+      {objects3d.enabled !== false && <Objects3D />}
 
       <Specials
         heading={specials.heading}

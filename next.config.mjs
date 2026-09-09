@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Todas las imágenes y vídeos son archivos locales de `public/`.
+  reactStrictMode: false,
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'res.cloudinary.com' },
+    ],
+  },
 }
 
 export default nextConfig

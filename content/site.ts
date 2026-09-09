@@ -41,12 +41,16 @@ export const siteSettings = {
   chatNotifications: ['¿Deseas reservar? 🍽️', 'Contáctanos 💬'],
 }
 
+const CDN = 'https://res.cloudinary.com/foewxv45/image/upload'
+const img = (id: string, w = 1920) => `${CDN}/f_auto,q_auto,w_${w},c_limit/${id}.jpg`
+const imgw = (id: string, w = 1920) => `${CDN}/f_auto,q_auto,w_${w},c_limit/${id}`
+
 export const hero = {
   title: 'Bienvenidos a la Gloria\nRestaurante',
   slides: [
-    { url: '/images/hero-salon.jpg', alt: 'Salón La Gloria' },
-    { url: '/images/hero-clientes.jpg', alt: 'Clientes disfrutando' },
-    { url: '/images/hero-plato.jpg', alt: 'Plato especial' },
+    { url: img('lgherosalonbg'), alt: 'Salón La Gloria' },
+    { url: img('lgheroclientes'), alt: 'Clientes disfrutando' },
+    { url: img('lgheroplato'), alt: 'Plato especial' },
   ] as ImageRef[],
   ctas: [
     { label: 'Reservaciones', href: '#reservas' },
@@ -58,11 +62,8 @@ export const about = {
   heading:
     'Nos especializamos en comida peruana y mediterránea con tintes ecuatorianos',
   body: 'Cada día preparamos cuidadosamente nuestro ritual para poner en escena un inmenso mundo lleno de olores, sabores y sensaciones, para festejar juntos la Fiesta de la Vida.',
-  imageLeft: { url: '/images/about-hostess.jpg', alt: 'Hostess La Gloria' } as ImageRef,
-  imageRight: {
-    url: '/images/about-platos.jpg',
-    alt: 'Platos especiales La Gloria',
-  } as ImageRef,
+  imageLeft: { url: img('lgabouthostess', 600), alt: 'Hostess La Gloria' } as ImageRef,
+  imageRight: { url: img('lgaboutplatos', 600), alt: 'Platos especiales La Gloria' } as ImageRef,
 }
 
 export const experience = {
@@ -76,12 +77,12 @@ export const specials = {
   subheading: 'Innovando siempre para deleitar tus sentidos',
   videoUrl: '/videos/video-especiales.mp4',
   dishes: [
-    { name: 'Ceviche mixto de mariscos', url: '/dishes/dish1.jpg' },
-    { name: 'Mixto frito con ceviche', url: '/dishes/dish2.jpg' },
-    { name: 'Seco de res con mote y patacón', url: '/dishes/dish3.jpg' },
-    { name: 'Pizza Margherita napolitana', url: '/dishes/dish4.jpg' },
-    { name: 'Cheesecake de lúcuma', url: '/dishes/dish5.jpg' },
-    { name: 'Entrada fría en copa de mariscos', url: '/dishes/dish6.jpg' },
+    { name: 'Ceviche mixto de mariscos', url: img('lgdish1', 800) },
+    { name: 'Mixto frito con ceviche', url: img('lgdish2', 800) },
+    { name: 'Seco de res con mote y patacón', url: img('lgdish3', 800) },
+    { name: 'Pizza Margherita napolitana', url: img('lgdish4', 800) },
+    { name: 'Cheesecake de lúcuma', url: img('lgdish5', 800) },
+    { name: 'Entrada fría en copa de mariscos', url: img('lgdish6', 800) },
   ],
 }
 
@@ -127,7 +128,7 @@ export const menu = {
 export const reservations = {
   heading: 'Nos encantaría recibirte pronto',
   lead: 'Realiza tu reserva en el siguiente link',
-  backgroundUrl: '/images/hero-salon.jpg',
+  backgroundUrl: img('lgherosalonbg'),
   backgroundAlt: 'Salón de La Gloria Restaurante',
   partySizeOptions: [
     '2 personas', '1 persona', '3 personas', '4 personas',
@@ -177,37 +178,60 @@ export const drinksPage = {
       name: 'Limonada de Arándano', tag: 'Blueberry', price: 'desde $8',
       description: 'Arándanos frescos, limón exprimido, hielo & menta. Refrescante y antioxidante.',
       sizes: ['Small', 'Large'],
-      image: { url: '/images/bebida-blueberry.jpeg', alt: 'Limonada de Arándano' },
+      image: { url: img('lgbebidablueberry', 600), alt: 'Limonada de Arándano' },
     },
     {
       name: 'Limonada de Fresa', tag: 'Strawberry', price: 'desde $8',
       description: 'Fresas naturales, limón fresco, hielo & sirope artesanal.',
       sizes: ['Small', 'Large'],
-      image: { url: '/images/bebida-strawberry.webp', alt: 'Limonada de Fresa' },
+      image: { url: imgw('lgbebidastrawberry', 600), alt: 'Limonada de Fresa' },
     },
     {
       name: 'Mango Tropical', tag: 'Tropical', price: 'desde $9',
       description: 'Mango maduro, maracuyá, menta fresca & hielo granizado.',
       sizes: ['Small', 'Large'],
-      image: { url: '/images/bebida-mango.webp', alt: 'Mango Tropical' },
+      image: { url: imgw('lgbebidamango', 600), alt: 'Mango Tropical' },
     },
     {
       name: 'Uva & Lichi', tag: 'Exotic', price: 'desde $9',
       description: 'Uvas moradas, lichi, limón & agua con gas. Elegante y refrescante.',
       sizes: ['Small', 'Large'],
-      image: { url: '/images/bebida-lychee.webp', alt: 'Uva y Lichi' },
+      image: { url: imgw('lgbebidalychee', 600), alt: 'Uva y Lichi' },
     },
     {
       name: 'Frappuccino de Caramelo', tag: 'Signature', price: 'desde $10',
       description: 'Café helado, caramelo, crema batida & topping de sirope. Cremoso e irresistible.',
       sizes: ['Small', 'Large'],
-      image: { url: '/images/bebida-frapp.jpeg', alt: 'Frappuccino de Caramelo' },
+      image: { url: img('lgbebidafrapp', 600), alt: 'Frappuccino de Caramelo' },
     },
     {
       name: 'Macchiato de Caramelo', tag: 'Coffee', price: 'desde $9',
       description: 'Espresso sobre leche fría con caramelo, hielo & notas dulces. Intenso y refrescante.',
       sizes: ['Small', 'Large'],
-      image: { url: '/images/bebida-macchiato.webp', alt: 'Macchiato de Caramelo' },
+      image: { url: imgw('lgbebidamacchiato', 600), alt: 'Macchiato de Caramelo' },
+    },
+  ],
+}
+
+export const objects3d = {
+  enabled: true,
+  heading: 'Explora en 3D',
+  subheading: 'Arrastra · Gira · Descubre',
+  items: [
+    {
+      id: 'komi',
+      label: 'Personaje',
+      name: 'Komi',
+      description:
+        'Personaje anime de alta fidelidad generado con tecnología Multiview — cada detalle, cada textura, navegable en tiempo real desde cualquier dispositivo.',
+    },
+    {
+      id: 'camiseta',
+      label: 'Producto',
+      name: 'Camiseta Técnica',
+      description:
+        'Camiseta de alto rendimiento con tejido respirable y diseño minimalista — optimizada con Draco + WebP para exploración 3D fluida en cualquier pantalla.',
+      price: 'desde $35',
     },
   ],
 }
