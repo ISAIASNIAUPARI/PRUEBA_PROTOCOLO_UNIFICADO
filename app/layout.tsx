@@ -60,6 +60,13 @@ export default function RootLayout({
       lang="es"
       className={`${poppins.variable} ${playfair.variable} ${pinyon.variable} ${montserrat.variable}`}
     >
+      <head>
+        {/* Pre-conecta a CDNs externos antes de que el parser llegue a las imágenes */}
+        <link rel="preconnect" href="https://res.cloudinary.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
+        <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+      </head>
       <body>{children}</body>
     </html>
   )
