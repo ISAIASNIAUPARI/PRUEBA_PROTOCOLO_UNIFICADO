@@ -37,6 +37,12 @@
       "type": "photo-gallery"
     },
     {
+      "id": "faq-preguntas-frecuentes",
+      "label": "PREGUNTAS FRECUENTES",
+      "visible": true,
+      "type": "faq"
+    },
+    {
       "id": "reservations",
       "label": "Reservas",
       "visible": true
