@@ -1,3 +1,19 @@
+/* Orden explícito de capas — TIENE que ir antes de los @import (el spec solo
+   permite @charset y @layer antes de un @import) y define la prioridad:
+   reset < theme < utilities.
+
+   Por qué hace falta: el reset universal de más abajo (`*{margin:0;padding:0}`,
+   heredado del CSS original) vivía SIN capa, y por las reglas de cascade
+   layers de CSS cualquier declaración sin capa le gana a TODAS las capas
+   nombradas, sin importar la especificidad. Resultado: cada utilidad de
+   margen/padding de Tailwind (`px-4`, `py-20`, `mb-10`, `mx-auto`…) quedaba
+   anulada en silencio — en TODO el panel /admin y en las 5 plantillas de
+   sección de Fase D. Al meter el reset en su propia capa (declarada primera =
+   la de menor prioridad), las utilidades de Tailwind vuelven a ganarle, que
+   es el comportamiento normal esperado de un reset.
+   Ver [[15 - Errores encontrados y como evitarlos]] #28 del cerebro. */
+@layer reset, theme, utilities;
+
 /* Solo tema + utilidades de Tailwind (sin preflight) — para las secciones
    NUEVAS creadas desde plantilla (Fase D, Parte 3), que sí usan clases de
    Tailwind. El CSS portado del diseño original de abajo no se toca. */
@@ -36,11 +52,21 @@
   --script:var(--font-pinyon),cursive;
   --montserrat:var(--font-montserrat),sans-serif;
 }
-*{margin:0;padding:0;box-sizing:border-box}
+/* Reset de elementos "pelados" — dentro de la capa `reset` (la de menor
+   prioridad, ver el @layer del tope del archivo) para que sea lo que un reset
+   debe ser: una base que cualquier regla posterior pueda pisar, incluidas las
+   utilidades de Tailwind. Fuera de la capa, estas reglas le ganaban a TODO.
+   `html` y `body` quedan a propósito FUERA de la capa: llevan el
+   `overflow-x:clip` del que depende el scroll de <FrameScroll> (ver error #11
+   del cerebro) y ningún componente les aplica clases de Tailwind, así que no
+   hay nada que ganar moviéndolos y sí algo que arriesgar. */
+@layer reset {
+  *{margin:0;padding:0;box-sizing:border-box}
+  img{display:block;max-width:100%}
+  a{color:inherit;text-decoration:none}
+}
 html{scroll-behavior:smooth;overflow-x:clip}
 body{font-family:var(--sans);color:var(--ink);background:var(--cream);-webkit-font-smoothing:antialiased;line-height:1.6;overflow-x:clip}
-img{display:block;max-width:100%}
-a{color:inherit;text-decoration:none}
 .wrap{max-width:1280px;margin:0 auto;padding:0 40px}
 
 /* ---------- NAV ---------- */
