@@ -45,6 +45,12 @@
       "id": "location",
       "label": "Ubicación y contacto",
       "visible": true
+    },
+    {
+      "id": "faq-preguntas-frecuentes",
+      "label": "PREGUNTAS FRECUENTES",
+      "visible": true,
+      "type": "faq"
     }
   ]
 }
