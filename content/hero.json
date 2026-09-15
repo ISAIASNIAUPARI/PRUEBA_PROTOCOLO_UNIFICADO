@@ -34,26 +34,6 @@
       "desktopY": 73.45462914535645,
       "mobileX": 23.64972262459005,
       "mobileY": 83.34360990556367
-    },
-    {
-      "id": "bd3c17f4-cf37-4e7e-be10-4ea669a4f9b9",
-      "text": "Nuevo botón",
-      "href": "",
-      "hrefType": "anchor"
-    },
-    {
-      "id": "359fc1c8-c30f-499e-9874-20582c485524",
-      "text": "Nuevo botón",
-      "href": "",
-      "hrefType": "anchor",
-      "desktopX": 68.95580923191224,
-      "desktopY": 56.75439114715888
-    },
-    {
-      "id": "57c46cc9-a8fe-4efc-ac5d-ba869d7f966b",
-      "text": "Nuevo botón",
-      "href": "",
-      "hrefType": "anchor"
     }
   ]
 }
