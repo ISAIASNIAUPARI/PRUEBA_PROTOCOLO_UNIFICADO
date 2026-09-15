@@ -9,7 +9,7 @@
     {
       "name": "Limonada de Arándano",
       "tag": "Blueberry",
-      "price": "desde $8",
+      "price": "desde $5",
       "description": "Arándanos frescos, limón exprimido, hielo & menta. Refrescante y antioxidante.",
       "sizes": [
         "Small",
@@ -23,7 +23,7 @@
     {
       "name": "Limonada de Fresa",
       "tag": "Strawberry",
-      "price": "desde $8",
+      "price": "desde $5",
       "description": "Fresas naturales, limón fresco, hielo & sirope artesanal.",
       "sizes": [
         "Small",
