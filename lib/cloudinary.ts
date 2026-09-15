@@ -94,9 +94,13 @@ export async function uploadToCloudinary(file: File, kind: ResourceKind): Promis
     throw new Error(json?.error?.message || 'Cloudinary rechazó la subida.')
   }
 
+  // Para resource_type "raw", Cloudinary devuelve public_id CON la extensión
+  // original ya incluida (aunque el public_id que enviamos no la tuviera) —
+  // agregar ".glb" de nuevo acá produce una URL con doble extensión
+  // (".glb.glb") que 404ea. json.public_id ya es la ruta completa correcta.
   const url =
     kind === 'model'
-      ? `https://res.cloudinary.com/${cloudName}/raw/upload/v${json.version}/${json.public_id}.glb`
+      ? `https://res.cloudinary.com/${cloudName}/raw/upload/v${json.version}/${json.public_id}`
       : `https://res.cloudinary.com/${cloudName}/${resourceType}/upload/f_auto,q_auto/v${json.version}/${json.public_id}`
   return { url }
 }

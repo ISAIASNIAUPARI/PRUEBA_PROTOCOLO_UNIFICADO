@@ -26,14 +26,14 @@ export default function FocalPointPicker({ src, aspectRatio, focalX = 50, focalY
 
   return (
     <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/60 p-4" onClick={onCancel}>
-      <div className="w-full max-w-lg rounded-lg bg-white p-4" onClick={(e) => e.stopPropagation()}>
+      <div className="flex max-h-[92vh] w-full max-w-lg flex-col overflow-y-auto rounded-lg bg-white p-4" onClick={(e) => e.stopPropagation()}>
         <h3 className="mb-1 text-sm font-semibold text-admin-ink">Punto focal de la imagen</h3>
         <p className="mb-3 text-xs text-admin-ink/60">Arrastra el círculo sobre el sujeto principal de la foto.</p>
 
         <div
           ref={frameRef}
-          className="relative w-full cursor-crosshair touch-none overflow-hidden rounded border border-admin-line select-none"
-          style={{ aspectRatio: String(aspectRatio) }}
+          className="relative mx-auto w-auto max-w-full cursor-crosshair touch-none overflow-hidden rounded border border-admin-line select-none"
+          style={{ aspectRatio: String(aspectRatio), maxHeight: '48vh' }}
           onPointerDown={(e) => {
             dragging.current = true
             ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
@@ -57,21 +57,27 @@ export default function FocalPointPicker({ src, aspectRatio, focalX = 50, focalY
         <div className="mt-3 grid grid-cols-2 gap-3">
           <div>
             <div className="mb-1 text-xs text-admin-ink/60">Antes (centro)</div>
-            <div className="overflow-hidden rounded border border-admin-line" style={{ aspectRatio: String(aspectRatio) }}>
+            <div
+              className="mx-auto w-auto max-w-full overflow-hidden rounded border border-admin-line"
+              style={{ aspectRatio: String(aspectRatio), maxHeight: '16vh' }}
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={src} alt="" className="h-full w-full object-cover" style={{ objectPosition: '50% 50%' }} />
             </div>
           </div>
           <div>
             <div className="mb-1 text-xs text-admin-ink/60">Después (tu punto)</div>
-            <div className="overflow-hidden rounded border border-admin-line" style={{ aspectRatio: String(aspectRatio) }}>
+            <div
+              className="mx-auto w-auto max-w-full overflow-hidden rounded border border-admin-line"
+              style={{ aspectRatio: String(aspectRatio), maxHeight: '16vh' }}
+            >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={src} alt="" className="h-full w-full object-cover" style={{ objectPosition: `${x}% ${y}%` }} />
             </div>
           </div>
         </div>
 
-        <div className="mt-4 flex justify-end gap-2">
+        <div className="mt-4 flex flex-shrink-0 justify-end gap-2">
           <button type="button" onClick={onCancel} className="rounded-md border border-admin-line px-4 py-2 text-sm text-admin-ink hover:bg-admin-bg">
             Cancelar
           </button>

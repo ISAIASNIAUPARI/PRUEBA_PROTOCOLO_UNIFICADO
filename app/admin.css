@@ -66,10 +66,33 @@
    Como .wrap no tiene pointer-events:none, captura el hover/click en TODA esa
    zona y tapa el botón "Cambiar video" del <CloudinaryVideo> que vive debajo,
    en .vid-bg — el hover del grupo nunca llega a activarse. Se desactivan los
-   eventos en el contenedor y se reactivan solo en el bloque de texto real. */
+   eventos en el contenedor y se reactivan solo en el texto editable en sí
+   (no en .sec-head completo: ese bloque trae padding-bottom:60px y la línea
+   .rule, así que reactivarlo ahí de nuevo tapaba la mayor parte del video —
+   el botón "Cambiar video" solo aparecía en franjas sueltas del área). */
 .admin-shell .esp-header .wrap {
   pointer-events: none;
 }
-.admin-shell .esp-header .wrap .sec-head {
+.admin-shell .esp-header .wrap .sec-head h2,
+.admin-shell .esp-header .wrap .sec-head .sub {
+  pointer-events: auto;
+}
+
+/* Mismo problema en "Menú", un nivel más arriba: acá .wrap envuelve TODO
+   el contenido de la sección (título, grilla de platos, botón "Menú
+   completo"), así que aunque .sec-head no esté estirado a toda la altura
+   como en Especiales, .wrap sigue siendo una caja gigante (tan alta como
+   toda la lista de platos) que tapa el botón "Cambiar video" en cualquier
+   zona que no esté cubierta por un elemento real más específico. Se
+   desactiva en .wrap y se reactiva explícitamente solo en los bloques de
+   contenido real (no con un selector `*` — pisaría el pointer-events:none
+   de esta misma regla por empate de especificidad + orden de origen). */
+.admin-shell .menu .wrap {
+  pointer-events: none;
+}
+.admin-shell .menu .wrap .sec-head h2,
+.admin-shell .menu .wrap .sec-head .sub,
+.admin-shell .menu .wrap .menu-cols,
+.admin-shell .menu .wrap .btn-outline-wrap {
   pointer-events: auto;
 }
