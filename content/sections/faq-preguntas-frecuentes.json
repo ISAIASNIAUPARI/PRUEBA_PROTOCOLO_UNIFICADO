@@ -1,5 +1,16 @@
 {
   "subtitle": "",
   "heading": "",
-  "items": []
+  "items": [
+    {
+      "id": "4d0aee13-da99-48fc-a2d1-cc45f4144888",
+      "question": "Desde cuanto están costando los platos ?",
+      "answer": "Tenemos platos desde los 1,50$"
+    },
+    {
+      "id": "abdb35e3-aedb-413a-acc8-70159ee0da66",
+      "question": "Atienden los domingos ?",
+      "answer": "No solo de lunes ha viernes "
+    }
+  ]
 }
