@@ -2,6 +2,9 @@
 
 import { useEffect, useRef } from 'react'
 
+import { useIsMobileView } from '@/components/admin/useIsMobileView'
+import { EditableText } from '@/components/editable/EditableText'
+
 import { SealStar } from './Seal'
 
 const TOTAL = 239
@@ -13,13 +16,18 @@ function frameUrl(index: number, mobile: boolean) {
   return `${BASE}/f_auto,q_auto,w_${w}/${id}.jpg`
 }
 
+type FrameScrollData = { heading?: string; subheading?: string }
+
 export function FrameScroll({
   heading,
   subheading,
-}: {
-  heading?: string
-  subheading?: string
+  edit,
+  onChange,
+}: FrameScrollData & {
+  edit?: boolean
+  onChange?: (next: FrameScrollData) => void
 }) {
+  const isMobile = useIsMobileView()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
@@ -142,10 +150,21 @@ export function FrameScroll({
     <section className="frame-scroll" id="experiencia" ref={sectionRef}>
       <div className="sec-head reveal">
         <SealStar />
-        <h2>{heading}</h2>
-        {subheading && <div className="sub">{subheading}</div>}
+        <h2 style={isMobile ? { fontSize: '26px' } : undefined}>
+          <EditableText as="span" edit={edit} value={heading} onChange={(v) => onChange?.({ heading: v, subheading })} />
+        </h2>
+        {(subheading || edit) && (
+          <div className="sub" style={isMobile ? { fontSize: '12px' } : undefined}>
+            <EditableText as="span" edit={edit} value={subheading} onChange={(v) => onChange?.({ heading, subheading: v })} />
+          </div>
+        )}
         <div className="rule" />
       </div>
+      {edit && (
+        <p className="relative z-10 mx-auto max-w-lg px-4 text-center text-xs" style={{ color: 'var(--ink-soft)' }}>
+          Los fotogramas de esta animación no se cambian desde aquí — se generan aparte a partir de un video.
+        </p>
+      )}
 
       <div className="fs-pin" id="fsPin">
         <div className="fs-frame">

@@ -24,6 +24,8 @@ type Props = {
   lead?: string
   backgroundUrl?: string | null
   backgroundAlt?: string
+  backgroundFocalX?: number
+  backgroundFocalY?: number
   partySizeOptions: string[]
   submitLabel: string
   reservationEmail: string
@@ -40,6 +42,8 @@ export function Reservations({
   lead,
   backgroundUrl,
   backgroundAlt,
+  backgroundFocalX,
+  backgroundFocalY,
   partySizeOptions,
   submitLabel,
   reservationEmail,
@@ -60,6 +64,8 @@ export function Reservations({
       lead,
       backgroundUrl,
       backgroundAlt,
+      backgroundFocalX,
+      backgroundFocalY,
       partySizeOptions,
       submitLabel,
       reservationEmail,
@@ -310,7 +316,11 @@ Quedo atento(a) a la confirmación. ¡Gracias!`
           alt={backgroundAlt}
           className="bg"
           imgClassName="h-full w-full object-cover"
+          aspectRatio={16 / 9}
+          focalX={backgroundFocalX}
+          focalY={backgroundFocalY}
           onChange={(url) => patch({ backgroundUrl: url })}
+          onFocalChange={(x, y) => patch({ backgroundFocalX: x, backgroundFocalY: y })}
         />
       ) : backgroundUrl ? (
         /* eslint-disable-next-line @next/next/no-img-element */
@@ -320,6 +330,11 @@ Quedo atento(a) a la confirmación. ¡Gracias!`
           alt={backgroundAlt || ''}
           loading="lazy"
           decoding="async"
+          style={
+            backgroundFocalX != null && backgroundFocalY != null
+              ? { objectPosition: `${backgroundFocalX}% ${backgroundFocalY}%` }
+              : undefined
+          }
         />
       ) : (
         <div className="bg-empty" />

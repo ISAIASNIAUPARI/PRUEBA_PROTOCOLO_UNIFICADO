@@ -48,7 +48,10 @@ export function MenuGrid({
                 alt={item.image?.alt}
                 aspectRatio={1}
                 imgClassName="h-full w-full object-cover"
+                focalX={item.image?.focalX}
+                focalY={item.image?.focalY}
                 onChange={(url) => updateItem(item.id, { image: { ...(item.image ?? {}), url } })}
+                onFocalChange={(x, y) => updateItem(item.id, { image: { ...(item.image ?? { url: '' }), focalX: x, focalY: y } })}
               />
             </div>
             <div className="p-4">

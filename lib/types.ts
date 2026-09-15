@@ -98,7 +98,7 @@ export type Objects3D = {
   items: Object3DItem[]
 }
 
-export type Dish = { name: string; url: string }
+export type Dish = { name: string; url: string; focalX?: number; focalY?: number }
 
 export type Specials = {
   heading: string
@@ -124,6 +124,8 @@ export type Reservations = {
   lead: string
   backgroundUrl: string | null
   backgroundAlt?: string
+  backgroundFocalX?: number
+  backgroundFocalY?: number
   partySizeOptions: string[]
   submitLabel: string
   reservationEmail: string

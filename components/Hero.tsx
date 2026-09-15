@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { useIsMobileView } from '@/components/admin/useIsMobileView'
 import { ButtonsArea } from '@/components/editable/ButtonsArea'
@@ -29,6 +29,7 @@ export function Hero({
   edit?: boolean
   onChange?: (next: HeroData) => void
 }) {
+  const sectionRef = useRef<HTMLElement>(null)
   const [current, setCurrent] = useState(0)
   // clamp(30px,4.6vw,62px) del CSS original se calcula contra el viewport
   // real — dentro del frame simulado de 390px del admin eso da un tamaño
@@ -55,7 +56,7 @@ export function Hero({
   }
 
   return (
-    <section className="hero" id="inicio">
+    <section className="hero" id="inicio" ref={sectionRef}>
       <div className="hero-slides" id="heroSlides">
         {slides.map((s, i) =>
           edit ? (
@@ -113,6 +114,7 @@ export function Hero({
           <div className="cta">
             <ButtonsArea
               sectionLabel="Portada"
+              sectionRef={sectionRef}
               buttons={list}
               edit={edit}
               buttonClassName={heroButtonClass}

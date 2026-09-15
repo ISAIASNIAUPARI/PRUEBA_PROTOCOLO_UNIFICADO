@@ -265,7 +265,7 @@ export default function FreeButtonsCanvas({
       }}
       onDragCancel={() => commitGuides({ v: null, h: null })}
     >
-      <div ref={containerRef} className="pointer-events-none absolute inset-0">
+      <div ref={containerRef} className="pointer-events-none absolute inset-0" style={{ zIndex: 5 }}>
         {buttons.map((b, i) => (
           <DraggableButton key={b.id} button={b} index={i} edit={edit} xKey={xKey} yKey={yKey} buttonClassName={buttonClassName} />
         ))}

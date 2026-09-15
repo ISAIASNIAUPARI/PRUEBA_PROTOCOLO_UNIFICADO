@@ -37,18 +37,21 @@ export function PhotoGallery({
       onHeadingChange={(v) => patch({ heading: v })}
       onBackgroundColorChange={(v) => patch({ backgroundColor: v })}
     >
-      <div className="grid grid-cols-2 gap-4 text-left sm:grid-cols-3 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-5 text-left sm:grid-cols-3">
         {data.photos.map((photo) => (
           <div key={photo.id} className="relative">
-            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg">
+            <div className="relative aspect-square w-full overflow-hidden rounded-lg">
               <EditableImage
                 edit={!!edit}
                 fill
                 src={photo.image.url}
                 alt={photo.image.alt}
-                aspectRatio={4 / 3}
+                aspectRatio={1}
                 imgClassName="h-full w-full object-cover"
+                focalX={photo.image.focalX}
+                focalY={photo.image.focalY}
                 onChange={(url) => updatePhoto(photo.id, { image: { ...photo.image, url } })}
+                onFocalChange={(x, y) => updatePhoto(photo.id, { image: { ...photo.image, focalX: x, focalY: y } })}
               />
             </div>
             <p className="mt-1.5 text-xs opacity-70" style={{ color: 'var(--color-accent)' }}>

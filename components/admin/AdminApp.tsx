@@ -2,6 +2,7 @@
 
 import { About } from '@/components/About'
 import { Footer } from '@/components/Footer'
+import { FrameScroll } from '@/components/FrameScroll'
 import { Hero } from '@/components/Hero'
 import { Location } from '@/components/Location'
 import { MenuSection } from '@/components/MenuSection'
@@ -65,9 +66,7 @@ export function AdminApp() {
         )
       case 'experience':
         return (
-          <div className="border-t border-dashed border-admin-line bg-admin-bg px-4 py-3 text-xs text-admin-ink/60">
-            Sección &ldquo;{experience.heading}&rdquo; (animación por scroll) — no editable desde aquí.
-          </div>
+          <FrameScroll edit heading={experience.heading} subheading={experience.subheading} onChange={(next) => update('experience', next)} />
         )
       case 'objects3d':
         return (
@@ -111,6 +110,8 @@ export function AdminApp() {
             lead={reservations.lead}
             backgroundUrl={reservations.backgroundUrl}
             backgroundAlt={reservations.backgroundAlt}
+            backgroundFocalX={reservations.backgroundFocalX}
+            backgroundFocalY={reservations.backgroundFocalY}
             partySizeOptions={reservations.partySizeOptions}
             submitLabel={reservations.submitLabel}
             reservationEmail={reservations.reservationEmail}

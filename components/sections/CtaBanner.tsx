@@ -1,5 +1,7 @@
 'use client'
 
+import { useRef } from 'react'
+
 import { ColorSwatchPicker } from '@/components/admin/ColorSwatchPicker'
 import { ButtonsArea } from '@/components/editable/ButtonsArea'
 import { EditableImage } from '@/components/editable/EditableImage'
@@ -26,6 +28,8 @@ export function CtaBanner({
   edit?: boolean
   onChange?: (next: CtaBannerData) => void
 }) {
+  const sectionRef = useRef<HTMLElement>(null)
+
   function patch(next: Partial<CtaBannerData>) {
     onChange?.({ ...data, ...next })
   }
@@ -36,6 +40,7 @@ export function CtaBanner({
   return (
     <section
       id={id}
+      ref={sectionRef}
       className="relative flex min-h-[420px] items-center justify-center overflow-hidden px-6 py-20"
       style={{ backgroundColor: bg ?? 'var(--color-accent)' }}
     >
@@ -47,7 +52,10 @@ export function CtaBanner({
           alt={data.backgroundImage?.alt}
           aspectRatio={16 / 9}
           imgClassName="h-full w-full object-cover"
+          focalX={data.backgroundImage?.focalX}
+          focalY={data.backgroundImage?.focalY}
           onChange={(url) => patch({ backgroundImage: { ...(data.backgroundImage ?? {}), url } })}
+          onFocalChange={(x, y) => patch({ backgroundImage: { ...(data.backgroundImage ?? { url: '' }), focalX: x, focalY: y } })}
         />
       )}
       {hasImage && <div className="absolute inset-0 bg-black/45" />}
@@ -75,6 +83,7 @@ export function CtaBanner({
           <div className="flex flex-wrap justify-center gap-3">
             <ButtonsArea
               sectionLabel="Llamada a la acción"
+              sectionRef={sectionRef}
               buttons={data.buttons}
               edit={edit}
               buttonClassName={ctaButtonClass}

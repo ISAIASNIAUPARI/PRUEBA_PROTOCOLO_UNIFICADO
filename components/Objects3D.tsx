@@ -3,6 +3,7 @@
 import React, { useEffect } from 'react'
 
 import { useIsMobileView } from '@/components/admin/useIsMobileView'
+import { EditableModel } from '@/components/editable/EditableModel'
 import { EditableText } from '@/components/editable/EditableText'
 import type { Object3DItem } from '@/lib/types'
 
@@ -73,12 +74,22 @@ export function Objects3D({
         <div className="obj3d-grid">
           {items.map((item, i) => (
             <div className="obj3d-item" key={item.id}>
-              <div className="obj3d-viewer">
+              <div className="obj3d-viewer group relative">
                 {React.createElement('model-viewer', {
                   ...MV_BASE,
                   src: item.modelUrl,
                   alt: item.name,
                 })}
+                {edit && (
+                  <EditableModel
+                    edit
+                    onChange={(url) => {
+                      const next = items.slice()
+                      next[i] = { ...item, modelUrl: url }
+                      patch({ items: next })
+                    }}
+                  />
+                )}
               </div>
               <div className="obj3d-info">
                 <span className="obj3d-tag">{item.label}</span>

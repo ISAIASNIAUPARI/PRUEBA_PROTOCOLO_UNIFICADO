@@ -46,3 +46,30 @@
     background-color: transparent;
   }
 }
+
+/* El sitio público revela las secciones con clase .reveal (opacity:0 hasta
+   que un IntersectionObserver en <ScrollEffects> añade .in al hacer scroll —
+   ver globals.css). Ese observer solo se monta en app/(site)/page.tsx, nunca
+   en /admin, así que sin esta regla el editor vería About, Objects3D,
+   FrameScroll, Reservations, MenuSection y Specials permanentemente en blanco
+   (opacity:0) sin importar el scroll. El admin necesita ver el contenido
+   siempre, así que aquí se anula el estado oculto inicial. */
+.admin-shell .reveal {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+}
+
+/* En "Especiales" el <div class="wrap"> del encabezado se estira a los 480px
+   completos de .esp-header (position:relative;height:100%) para centrar el
+   título con flexbox, aunque el título solo ocupe una fracción de esa altura.
+   Como .wrap no tiene pointer-events:none, captura el hover/click en TODA esa
+   zona y tapa el botón "Cambiar video" del <CloudinaryVideo> que vive debajo,
+   en .vid-bg — el hover del grupo nunca llega a activarse. Se desactivan los
+   eventos en el contenedor y se reactivan solo en el bloque de texto real. */
+.admin-shell .esp-header .wrap {
+  pointer-events: none;
+}
+.admin-shell .esp-header .wrap .sec-head {
+  pointer-events: auto;
+}

@@ -158,13 +158,18 @@ export default function ButtonsEditor({
   }
 
   return (
-    <div className="fixed bottom-4 right-4 z-[900] w-[260px] max-w-[90vw] rounded-lg bg-[#1c1c1a] p-3 text-white shadow-2xl">
-      <div className="mb-2 flex items-center justify-between">
-        <h4 className="text-sm font-semibold">Botones de «{sectionLabel}»</h4>
+    <div className="fixed right-4 top-20 z-[900] flex max-h-[calc(100vh-6rem)] w-[280px] max-w-[90vw] flex-col rounded-lg bg-[#1c1c1a] p-3 text-white shadow-2xl">
+      <div className="mb-1 flex items-center justify-between">
+        <h4 className="text-xs font-semibold uppercase tracking-wide text-white/90">
+          Botones de «{sectionLabel}» ({buttons.length}/{MAX_BUTTONS})
+        </h4>
         <button type="button" onClick={onClose} className="rounded px-1.5 text-white/60 hover:bg-white/10">
           ×
         </button>
       </div>
+      <p className="mb-3 text-[11px] leading-snug text-white/50">
+        Arrastra un botón en la vista previa de arriba para moverlo libremente.
+      </p>
 
       <DndContext
         sensors={sensors}
@@ -180,7 +185,7 @@ export default function ButtonsEditor({
         }}
       >
         <SortableContext items={buttons.map((b) => b.id)} strategy={verticalListSortingStrategy}>
-          <div className="flex max-h-[50vh] flex-col gap-2 overflow-y-auto">
+          <div className="flex flex-1 flex-col gap-2 overflow-y-auto">
             {buttons.map((b, i) => (
               <Row
                 key={b.id}

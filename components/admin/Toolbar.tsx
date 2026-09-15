@@ -1,6 +1,7 @@
 'use client'
 
 import dynamic from 'next/dynamic'
+import Link from 'next/link'
 import { useState } from 'react'
 
 import { useEdit } from './EditProvider'
@@ -51,6 +52,12 @@ export function Toolbar() {
         >
           🎨 Personalizar tema
         </button>
+        <Link
+          href="/admin/bebidas"
+          className="rounded-md border border-admin-line px-3 py-1.5 text-sm font-medium text-admin-ink hover:bg-admin-bg"
+        >
+          🍹 Bebidas
+        </Link>
 
         {saving && <span className="text-sm text-admin-ink/60">Guardando…</span>}
         {!saving && saved && <span className="text-sm text-admin-accent">✓ Guardado</span>}

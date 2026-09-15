@@ -3,27 +3,23 @@
 import { useRef, useState } from 'react'
 
 type Props = {
-  src: string
   edit?: boolean
   onChange?: (url: string) => void
-  className?: string
-  autoPlay?: boolean
-  loop?: boolean
-  muted?: boolean
-  playsInline?: boolean
 }
 
 /**
- * Video editable (mismo patrón que EditableImage). En edit=false es un
- * <video> normal. En edit=true muestra "Cambiar video", sube el archivo tal
- * cual (sin comprimir en cliente) a /api/admin/upload-video y entrega la URL
- * de Cloudinary resultante.
+ * Overlay para reemplazar un objeto 3D (.glb) desde /admin. Se monta ENCIMA
+ * del <model-viewer> real (que sigue mostrando el modelo actual mientras se
+ * sube uno nuevo) — mismo patrón hover que EditableImage/CloudinaryVideo.
+ * Sube a Cloudinary como resource_type "raw" vía /api/admin/upload-model.
  */
-export function CloudinaryVideo({ src, edit, onChange, className, autoPlay, loop = true, muted = true, playsInline = true }: Props) {
+export function EditableModel({ edit, onChange }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
+
+  if (!edit) return null
 
   function upload(file: File) {
     setError(null)
@@ -32,7 +28,7 @@ export function CloudinaryVideo({ src, edit, onChange, className, autoPlay, loop
     const form = new FormData()
     form.append('file', file)
     const xhr = new XMLHttpRequest()
-    xhr.open('POST', '/api/admin/upload-video')
+    xhr.open('POST', '/api/admin/upload-model')
     xhr.upload.onprogress = (e) => {
       if (e.lengthComputable) setProgress(Math.round((e.loaded / e.total) * 100))
     }
@@ -47,37 +43,37 @@ export function CloudinaryVideo({ src, edit, onChange, className, autoPlay, loop
           setError('Respuesta inválida del servidor.')
         }
       } else {
-        setError('No se pudo subir el video.')
+        try {
+          const data = JSON.parse(xhr.responseText)
+          setError(data.error || 'No se pudo subir el modelo.')
+        } catch {
+          setError('No se pudo subir el modelo.')
+        }
       }
     }
     xhr.onerror = () => {
       setUploading(false)
-      setError('No se pudo subir el video.')
+      setError('No se pudo subir el modelo.')
     }
     xhr.send(form)
   }
 
-  if (!edit) {
-    return <video src={src} className={className} autoPlay={autoPlay} loop={loop} muted={muted} playsInline={playsInline} />
-  }
-
   return (
-    <div className="group relative h-full w-full">
-      <video src={src} className={className} autoPlay={autoPlay} loop={loop} muted={muted} playsInline={playsInline} />
-      <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+    <div className="pointer-events-none absolute inset-0 flex items-end justify-center pb-3">
+      <div className="pointer-events-auto flex flex-col items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="rounded bg-white px-3 py-1.5 text-sm font-medium text-admin-ink shadow hover:bg-admin-bg"
+          className="rounded bg-black/65 px-3 py-1.5 text-xs font-medium text-white shadow hover:bg-black/80"
         >
-          {uploading ? `Subiendo… ${progress}%` : 'Cambiar video'}
+          {uploading ? `Subiendo… ${progress}%` : '🧊 Cambiar modelo 3D (.glb)'}
         </button>
-        {error && <span className="rounded bg-admin-danger px-2 py-1 text-xs text-white">{error}</span>}
+        {error && <span className="max-w-[220px] rounded bg-admin-danger px-2 py-1 text-center text-[11px] text-white">{error}</span>}
       </div>
       <input
         ref={inputRef}
         type="file"
-        accept="video/mp4,video/quicktime,video/webm"
+        accept=".glb,model/gltf-binary"
         className="hidden"
         onChange={(e) => {
           const file = e.target.files?.[0]

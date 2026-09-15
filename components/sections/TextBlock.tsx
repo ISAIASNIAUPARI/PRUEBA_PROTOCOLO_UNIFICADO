@@ -42,7 +42,10 @@ export function TextBlock({
               alt={data.image?.alt}
               aspectRatio={3 / 2}
               imgClassName="h-full w-full object-cover"
+              focalX={data.image?.focalX}
+              focalY={data.image?.focalY}
               onChange={(url) => patch({ image: { ...(data.image ?? {}), url } })}
+              onFocalChange={(x, y) => patch({ image: { ...(data.image ?? { url: '' }), focalX: x, focalY: y } })}
             />
           </div>
         )}

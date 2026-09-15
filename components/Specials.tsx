@@ -59,7 +59,7 @@ export function Specials({
     <section className="especiales" id="especiales">
       <div className="esp-header">
         {edit ? (
-          <div className="vid-bg">
+          <div className="vid-bg" style={{ pointerEvents: 'auto' }}>
             <CloudinaryVideo
               edit
               src={videoUrl}
@@ -107,18 +107,33 @@ export function Specials({
                 {edit ? (
                   <EditableImage
                     edit
+                    className="h-full w-full"
                     src={d.url}
                     alt={d.name}
                     imgClassName="h-full w-full object-cover"
+                    aspectRatio={4 / 5}
+                    focalX={d.focalX}
+                    focalY={d.focalY}
                     onChange={(url) => {
                       const next = dishes.slice()
                       next[i] = { ...d, url }
                       patch({ dishes: next })
                     }}
+                    onFocalChange={(x, y) => {
+                      const next = dishes.slice()
+                      next[i] = { ...d, focalX: x, focalY: y }
+                      patch({ dishes: next })
+                    }}
                   />
                 ) : (
                   /* eslint-disable-next-line @next/next/no-img-element */
-                  <img src={d.url} alt={d.name || ''} loading="lazy" decoding="async" />
+                  <img
+                    src={d.url}
+                    alt={d.name || ''}
+                    loading="lazy"
+                    decoding="async"
+                    style={d.focalX != null && d.focalY != null ? { objectPosition: `${d.focalX}% ${d.focalY}%` } : undefined}
+                  />
                 )}
               </div>
               <div className="label">

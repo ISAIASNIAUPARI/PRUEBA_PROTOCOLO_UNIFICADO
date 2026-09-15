@@ -16,7 +16,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   // el layout raíz — solo hace falta aplicarlas acá para que /admin use la
   // misma tipografía que el sitio público (ver bug #2 del cerebro).
   return (
-    <div className="min-h-screen bg-admin-bg text-admin-ink" style={{ fontFamily: 'var(--font-poppins), sans-serif' }}>
+    <div className="admin-shell min-h-screen bg-admin-bg text-admin-ink" style={{ fontFamily: 'var(--font-poppins), sans-serif' }}>
       {children}
     </div>
   )

@@ -38,10 +38,15 @@ export function About({
             {edit ? (
               <EditableImage
                 edit
+                className="h-full w-full"
                 src={imageLeft?.url}
                 alt={imageLeft?.alt}
                 imgClassName="h-full w-full object-cover"
+                aspectRatio={230 / 500}
                 onChange={(url) => patch({ imageLeft: { ...(imageLeft ?? {}), url } })}
+                onFocalChange={(x, y) => patch({ imageLeft: { ...(imageLeft ?? { url: '' }), focalX: x, focalY: y } })}
+                focalX={imageLeft?.focalX}
+                focalY={imageLeft?.focalY}
               />
             ) : (
               imageLeft && (
@@ -51,7 +56,12 @@ export function About({
                   alt={imageLeft.alt || ''}
                   loading="lazy"
                   decoding="async"
-                  style={{ objectPosition: 'center top' }}
+                  style={{
+                    objectPosition:
+                      imageLeft.focalX != null && imageLeft.focalY != null
+                        ? `${imageLeft.focalX}% ${imageLeft.focalY}%`
+                        : 'center top',
+                  }}
                 />
               )
             )}
@@ -70,15 +80,30 @@ export function About({
             {edit ? (
               <EditableImage
                 edit
+                className="h-full w-full"
                 src={imageRight?.url}
                 alt={imageRight?.alt}
                 imgClassName="h-full w-full object-cover"
+                aspectRatio={230 / 500}
                 onChange={(url) => patch({ imageRight: { ...(imageRight ?? {}), url } })}
+                onFocalChange={(x, y) => patch({ imageRight: { ...(imageRight ?? { url: '' }), focalX: x, focalY: y } })}
+                focalX={imageRight?.focalX}
+                focalY={imageRight?.focalY}
               />
             ) : (
               imageRight && (
                 /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={imageRight.url} alt={imageRight.alt || ''} loading="lazy" decoding="async" />
+                <img
+                  src={imageRight.url}
+                  alt={imageRight.alt || ''}
+                  loading="lazy"
+                  decoding="async"
+                  style={
+                    imageRight.focalX != null && imageRight.focalY != null
+                      ? { objectPosition: `${imageRight.focalX}% ${imageRight.focalY}%` }
+                      : undefined
+                  }
+                />
               )
             )}
           </div>

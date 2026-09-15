@@ -58,6 +58,8 @@ function renderBaseSection(id: string) {
           lead={reservations.lead}
           backgroundUrl={reservations.backgroundUrl}
           backgroundAlt={reservations.backgroundAlt}
+          backgroundFocalX={reservations.backgroundFocalX}
+          backgroundFocalY={reservations.backgroundFocalY}
           partySizeOptions={reservations.partySizeOptions}
           submitLabel={reservations.submitLabel}
           reservationEmail={reservations.reservationEmail}

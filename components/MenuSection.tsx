@@ -77,7 +77,7 @@ export function MenuSection({
   return (
     <section className="menu" id="menu" ref={sectionRef}>
       {edit ? (
-        <div className="vid-bg">
+        <div className="vid-bg" style={{ pointerEvents: 'auto' }}>
           <CloudinaryVideo
             edit
             src={videoUrl}
@@ -179,6 +179,7 @@ export function MenuSection({
           <div className="btn-outline-wrap reveal">
             <ButtonsArea
               sectionLabel="Menú"
+              sectionRef={sectionRef}
               buttons={list}
               edit={edit}
               buttonClassName={menuButtonClass}
