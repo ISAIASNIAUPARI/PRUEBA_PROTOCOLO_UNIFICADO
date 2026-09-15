@@ -16,16 +16,6 @@
   ],
   "buttons": [
     {
-      "id": "hero-btn-2",
-      "text": "Conoce nuestro menú",
-      "href": "#menu",
-      "hrefType": "anchor",
-      "desktopX": 76.9779046159561,
-      "desktopY": 73.45591037717774,
-      "mobileX": 35.63490610377673,
-      "mobileY": 92.39035177153778
-    },
-    {
       "id": "hero-btn-1",
       "text": "EMPLEADOS",
       "href": "#photo-gallery-nuestros-empleados",
@@ -34,6 +24,14 @@
       "desktopY": 73.45598437814466,
       "mobileX": 29.866317910260722,
       "mobileY": 73.85965667349882
+    },
+    {
+      "id": "35cfb62b-9658-4cc3-b100-3a02295405f5",
+      "text": "MENU",
+      "href": "#menu",
+      "hrefType": "anchor",
+      "desktopX": 35.84166145331413,
+      "desktopY": 73.53069204042541
     }
   ]
 }
