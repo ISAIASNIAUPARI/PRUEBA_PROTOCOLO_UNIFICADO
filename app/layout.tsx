@@ -47,7 +47,7 @@ const montserrat = Montserrat({
 })
 
 export const metadata: Metadata = {
-  title: 'La Gloria Restaurante',
+  title: 'La Gloria Familia Unida',
 }
 
 export default function RootLayout({

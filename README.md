@@ -1,11 +1,38 @@
-# La Gloria Restaurante — Web
+# La Gloria Familia Unida — Web + Panel Admin
 
-Web del restaurante hecha con **Next.js**. Es **solo la web pública**: se ha
-quitado el panel de administración (Sanity Studio) del proyecto original.
+Sitio del restaurante hecho con **Next.js + TypeScript + Tailwind**, construido
+según el protocolo web unificado: **el Sitio** (web pública) y **el Panel
+Admin** (`/admin`, edición en línea, guardado = commit a GitHub) sobre el
+mismo repositorio.
 
-El contenido —textos, platos, precios, fotos— vive en un único archivo:
-[`content/site.ts`](content/site.ts). Para cambiar algo, edítalo y vuelve a
-desplegar.
+## Contenido
+
+Todo el texto de la web vive en `/content/*.json` — un archivo por sección.
+El admin edita estos mismos archivos y los comitea directo a GitHub; Vercel
+redespliega solo en cada push a `main`.
+
+```
+content/
+  siteSettings.json   Marca, navegación, chat
+  hero.json            Portada
+  about.json           Sección "Sobre nosotros"
+  experience.json       Animación por scroll (frames)
+  objects3d.json        Objetos 3D navegables
+  specials.json         Especiales de la carta
+  menu.json             Menú completo
+  reservations.json     Sección de reservas
+  footer.json            Pie de página
+  drinksPage.json        Página /bebidas
+```
+
+## Medios
+
+- **Imágenes del armado inicial** (`public/images/`, `public/dishes/`): viven
+  en el repo, sirven desde el propio dominio.
+- **Video, frames de scroll y objetos 3D (`.glb`)**: en Cloudinary, siempre.
+- **Imágenes que se cambien desde `/admin`**: suben a Cloudinary al vuelo
+  (comprimidas en el navegador antes de subir) — el binario nunca pasa por
+  git.
 
 ## Puesta en marcha
 
@@ -15,7 +42,21 @@ npm run dev
 ```
 
 - Web: <http://localhost:3000>
-- Página de bebidas: <http://localhost:3000/bebidas>
+- Bebidas: <http://localhost:3000/bebidas>
+- Admin: <http://localhost:3000/admin>
+
+### Variables de entorno (`.env.local` en local, Vercel en producción)
+
+| Variable | Para qué |
+|---|---|
+| `ADMIN_PASSWORD` | Contraseña de `/admin` |
+| `GITHUB_TOKEN` | Token con permiso *Contents: Read and write* sobre este repo |
+| `GITHUB_OWNER` | `ISAIASNIAUPARI` |
+| `GITHUB_REPO` | `PRUEBA_PROTOCOLO_UNIFICADO` |
+| `GITHUB_BRANCH` | `main` |
+| `CLOUDINARY_CLOUD_NAME` | Cloud de Cloudinary |
+| `CLOUDINARY_API_KEY` | Cloudinary |
+| `CLOUDINARY_API_SECRET` | Cloudinary (secreto) |
 
 ## Comandos
 
@@ -25,36 +66,19 @@ npm run dev
 | `npm run build` | Build de producción |
 | `npm start` | Sirve el build |
 
-## Estructura
-
-```
-app/
-  layout.tsx              Raíz: fuentes (next/font) y <html>
-  (site)/
-    layout.tsx            Carga globals.css y los metadatos
-    page.tsx              Portada: compone todas las secciones
-    bebidas/page.tsx      Página de bebidas
-  globals.css             CSS del diseño original, portado tal cual
-components/               Un componente por sección
-content/site.ts           Todo el contenido editable de la web
-public/
-  frames/                 126 fotogramas de la animación de scroll
-  videos/                 Vídeos de fondo
-  images/  dishes/         Fotos
-```
-
 ## Notas
 
-- **Animación por scroll**: 126 fotogramas dibujados en `<canvas>`
-  (`components/FrameScroll.tsx`), nunca *scrubbing* de `<video>`.
+- **Animación por scroll**: frames en `<canvas>` (`components/FrameScroll.tsx`),
+  servidos desde Cloudinary — nunca *scrubbing* de `<video>`.
+- **Objetos 3D**: `<model-viewer>`, marco fijo, giro lento automático, sin
+  zoom/pan — modelos `.glb` en Cloudinary.
 - **Asistente de chat**: el botón dorado abajo a la izquierda habla con un
-  agente externo (n8n). El endpoint está en `content/site.ts`
-  (`siteSettings.chatWebhookUrl`); vacíalo para ocultar el chat.
-- **Reservas**: el formulario sigue funcionando por `mailto:` como en la web
-  original — abre el gestor de correo del visitante con el mensaje escrito.
-- Todas las imágenes y vídeos son archivos locales; no hay CDN externo.
+  agente externo (n8n). El endpoint está en `content/siteSettings.json`
+  (`chatWebhookUrl`); vacíalo para ocultar el chat.
+- **Reservas**: el formulario sigue funcionando por `mailto:` — abre el
+  gestor de correo del visitante con el mensaje escrito.
 
 ## Despliegue
 
-Cualquier plataforma que soporte Next.js. En Vercel: importar el repo, sin
-variables de entorno. Cada push a `main` despliega solo.
+Proyecto de Vercel enlazado a este repo (`create_git_project`). Cada push a
+`main` (manual o desde `/admin`) despliega solo.

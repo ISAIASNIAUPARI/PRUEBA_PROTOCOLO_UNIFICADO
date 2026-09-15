@@ -1,7 +1,8 @@
-import Link from 'next/link'
+'use client'
 
-type ScheduleRow = { days?: string; hours?: string }
-type Social = { network?: string; url?: string }
+import { EditableButton } from '@/components/editable/EditableButton'
+import { EditableText } from '@/components/editable/EditableText'
+import type { ButtonRef, ScheduleRow, Social } from '@/lib/types'
 
 const SOCIAL_ICONS: Record<string, React.ReactNode> = {
   facebook: (
@@ -40,33 +41,42 @@ const SOCIAL_ICONS: Record<string, React.ReactNode> = {
   ),
 }
 
+type FooterData = {
+  scheduleTitle?: string
+  schedule?: ScheduleRow[]
+  reserveTitle?: string
+  reserveButton?: ButtonRef
+  socialTitle?: string
+  socials?: Social[]
+  copyright?: string
+}
+
 export function Footer({
   brandName,
   brandTagline,
   scheduleTitle,
   schedule,
   reserveTitle,
-  reserveLinkLabel,
-  reserveLinkHref,
+  reserveButton,
   socialTitle,
   socials,
   copyright,
-}: {
+  edit,
+  onChange,
+}: FooterData & {
   brandName?: string
   brandTagline?: string
-  scheduleTitle?: string
-  schedule?: ScheduleRow[]
-  reserveTitle?: string
-  reserveLinkLabel?: string
-  reserveLinkHref?: string
-  socialTitle?: string
-  socials?: Social[]
-  copyright?: string
+  edit?: boolean
+  onChange?: (next: FooterData) => void
 }) {
   // Se pintan todos los iconos, como en el diseño original, pero sólo son
   // enlaces los que tienen URL. Sin ella queda el icono sin ser clicable,
   // en vez de un enlace muerto a "#".
   const shown = (socials ?? []).filter((s) => s.network && SOCIAL_ICONS[s.network])
+
+  function patch(next: Partial<FooterData>) {
+    onChange?.({ scheduleTitle, schedule, reserveTitle, reserveButton, socialTitle, socials, copyright, ...next })
+  }
 
   return (
     <footer id="footer">
@@ -88,7 +98,29 @@ export function Footer({
             <div className="hours">
               {(schedule ?? []).map((row, i) => (
                 <span key={i}>
-                  <b>{row.days}:</b> {row.hours}
+                  <b>
+                    <EditableText
+                      as="span"
+                      edit={edit}
+                      value={row.days}
+                      onChange={(v) => {
+                        const next = (schedule ?? []).slice()
+                        next[i] = { ...row, days: v }
+                        patch({ schedule: next })
+                      }}
+                    />
+                    :
+                  </b>{' '}
+                  <EditableText
+                    as="span"
+                    edit={edit}
+                    value={row.hours}
+                    onChange={(v) => {
+                      const next = (schedule ?? []).slice()
+                      next[i] = { ...row, hours: v }
+                      patch({ schedule: next })
+                    }}
+                  />
                   {i < (schedule?.length ?? 0) - 1 && <br />}
                 </span>
               ))}
@@ -100,9 +132,14 @@ export function Footer({
               <path d="M6 3l3 5-2 2c1 3 4 6 7 7l2-2 5 3-2 4c-9 0-18-9-18-18z" strokeLinejoin="round" />
             </svg>
             <div className="foot-title">{reserveTitle}</div>
-            <Link href={reserveLinkHref || '#reservas'} className="foot-link">
-              {reserveLinkLabel}
-            </Link>
+            {reserveButton && (
+              <EditableButton
+                edit={edit}
+                button={reserveButton}
+                className="foot-link"
+                onChange={(next) => patch({ reserveButton: next })}
+              />
+            )}
           </div>
 
           <div className="foot-col">
@@ -113,13 +150,7 @@ export function Footer({
             <div className="socials">
               {shown.map((s, i) =>
                 s.url ? (
-                  <a
-                    key={i}
-                    href={s.url}
-                    aria-label={s.network}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
+                  <a key={i} href={s.url} aria-label={s.network} target="_blank" rel="noopener noreferrer">
                     {SOCIAL_ICONS[s.network as string]}
                   </a>
                 ) : (
@@ -131,7 +162,9 @@ export function Footer({
             </div>
           </div>
         </div>
-        <div className="copy">{copyright}</div>
+        <div className="copy">
+          <EditableText as="span" edit={edit} value={copyright} onChange={(v) => patch({ copyright: v })} />
+        </div>
       </div>
     </footer>
   )

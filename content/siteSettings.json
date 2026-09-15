@@ -1,0 +1,25 @@
+{
+  "brandName": "La Gloria Familia Unida",
+  "brandTagline": "LIMA · QUITO · CARTAGENA",
+  "siteTitle": "La Gloria Familia Unida",
+  "siteDescription": "Comida peruana y mediterránea con tintes ecuatorianos, en Quito. Reserva tu mesa en La Gloria Familia Unida.",
+  "navItems": [
+    { "label": "INICIO", "href": "#inicio", "boxed": false },
+    { "label": "SOBRE NOSOTROS", "href": "#sobre", "boxed": false },
+    { "label": "MENÚ", "href": "#menu", "boxed": false },
+    { "label": "SERVICIOS", "href": "#especiales", "boxed": false },
+    { "label": "RESERVAS", "href": "#reservas", "boxed": true },
+    { "label": "TIENDA", "href": "#footer", "boxed": false },
+    { "label": "CARRITO", "href": "#footer", "boxed": false }
+  ],
+  "showLanguageSwitch": true,
+  "drinksButtonEnabled": true,
+  "drinksButtonLabel": "BEBIDAS",
+  "chatButtonEnabled": true,
+  "chatWebhookUrl": "https://n8n-n8n.kwtwgj.easypanel.host/webhook/chat-soporte",
+  "chatTitle": "Atención al Cliente",
+  "chatSubtitle": "Normalmente respondemos al instante",
+  "chatWelcome": "¡Hola! Soy el asistente de La Gloria Familia Unida. ¿En qué puedo ayudarte? Puedo informarte sobre la carta, los horarios o tu reserva.",
+  "chatPlaceholder": "Escribe tu mensaje…",
+  "chatNotifications": ["¿Deseas reservar? 🍽️", "Contáctanos 💬"]
+}

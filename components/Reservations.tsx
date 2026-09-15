@@ -2,6 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { EditableImage } from '@/components/editable/EditableImage'
+import { EditableText } from '@/components/editable/EditableText'
+
 const MES_FULL = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
   'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre',
@@ -45,7 +48,27 @@ export function Reservations({
   contactName,
   address,
   contactEmail,
-}: Props) {
+  edit,
+  onChange,
+}: Props & { edit?: boolean; onChange?: (next: Props) => void }) {
+  function patch(next: Partial<Props>) {
+    onChange?.({
+      heading,
+      lead,
+      backgroundUrl,
+      backgroundAlt,
+      partySizeOptions,
+      submitLabel,
+      reservationEmail,
+      orText,
+      phoneDisplay,
+      phoneNumber,
+      contactName,
+      address,
+      contactEmail,
+      ...next,
+    })
+  }
   const [openField, setOpenField] = useState<'date' | 'time' | null>(null)
   const [people, setPeople] = useState(partySizeOptions[0] ?? '')
   const [phone, setPhone] = useState('')
@@ -145,8 +168,8 @@ export function Reservations({
     const fecha = fmtDate(selDate)
     const hora = timeStr()
     const numero = phone.trim()
-    const asunto = `Reserva — ${contactName || 'La Gloria Restaurante'} (${people})`
-    const cuerpo = `Hola, me gustaría reservar una mesa en ${contactName || 'La Gloria Restaurante'}.
+    const asunto = `Reserva — ${contactName || 'La Gloria Familia Unida'} (${people})`
+    const cuerpo = `Hola, me gustaría reservar una mesa en ${contactName || 'La Gloria Familia Unida'}.
 
 • Personas: ${people}
 • Fecha:    ${fecha}
@@ -277,7 +300,16 @@ Quedo atento(a) a la confirmación. ¡Gracias!`
 
   return (
     <section className="reservas" id="reservas">
-      {backgroundUrl ? (
+      {edit ? (
+        <EditableImage
+          edit
+          src={backgroundUrl}
+          alt={backgroundAlt}
+          className="bg"
+          imgClassName="h-full w-full object-cover"
+          onChange={(url) => patch({ backgroundUrl: url })}
+        />
+      ) : backgroundUrl ? (
         /* eslint-disable-next-line @next/next/no-img-element */
         <img
           className="bg"
@@ -291,8 +323,14 @@ Quedo atento(a) a la confirmación. ¡Gracias!`
       )}
       <div className="scrim" />
       <div className="inner">
-        <h2 className="reveal">{heading}</h2>
-        {lead && <p className="lead reveal">{lead}</p>}
+        <h2 className="reveal">
+          <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} />
+        </h2>
+        {(lead || edit) && (
+          <p className="lead reveal">
+            <EditableText as="span" edit={edit} value={lead} onChange={(v) => patch({ lead: v })} />
+          </p>
+        )}
 
         <div className="resbar reveal" ref={barRef}>
           <div className="field sel-field">
@@ -462,34 +500,42 @@ Quedo atento(a) a la confirmación. ¡Gracias!`
           </button>
         </div>
 
-        {orText && <div className="or">{orText}</div>}
-        {phoneDisplay && (
-          <a href={`tel:${phoneNumber || ''}`} className="phone-box">
+        {(orText || edit) && (
+          <div className="or">
+            <EditableText as="span" edit={edit} value={orText} onChange={(v) => patch({ orText: v })} />
+          </div>
+        )}
+        {(phoneDisplay || edit) && (
+          <a href={`tel:${phoneNumber || ''}`} className="phone-box" onClick={(e) => edit && e.preventDefault()}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M6 3l3 5-2 2c1 3 4 6 7 7l2-2 5 3-2 4c-9 0-18-9-18-18z" strokeLinejoin="round" />
             </svg>
-            {phoneDisplay}
+            <EditableText as="span" edit={edit} value={phoneDisplay} stopClickNavigation onChange={(v) => patch({ phoneDisplay: v })} />
           </a>
         )}
 
         <div className="res-contact reveal">
-          {contactName && <div className="nm">{contactName}</div>}
-          {address && (
+          {(contactName || edit) && (
+            <div className="nm">
+              <EditableText as="span" edit={edit} value={contactName} onChange={(v) => patch({ contactName: v })} />
+            </div>
+          )}
+          {(address || edit) && (
             <div>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M12 21s7-6 7-12a7 7 0 0 0-14 0c0 6 7 12 7 12z" strokeLinejoin="round" />
                 <circle cx="12" cy="9" r="2.5" />
               </svg>
-              {address}
+              <EditableText as="span" edit={edit} value={address} onChange={(v) => patch({ address: v })} />
             </div>
           )}
-          {contactEmail && (
+          {(contactEmail || edit) && (
             <div>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <rect x="3" y="5" width="18" height="14" rx="2" />
                 <path d="M4 7l8 6 8-6" strokeLinecap="round" />
               </svg>
-              {contactEmail}
+              <EditableText as="span" edit={edit} value={contactEmail} onChange={(v) => patch({ contactEmail: v })} />
             </div>
           )}
         </div>

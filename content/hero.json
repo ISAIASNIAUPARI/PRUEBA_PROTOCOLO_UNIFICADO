@@ -1,0 +1,12 @@
+{
+  "title": "Bienvenidos a La Gloria\nFamilia Unida",
+  "slides": [
+    { "url": "/images/hero-salon.jpg", "alt": "Salón La Gloria Familia Unida" },
+    { "url": "/images/hero-clientes.jpg", "alt": "Clientes disfrutando" },
+    { "url": "/images/hero-plato.jpg", "alt": "Plato especial" }
+  ],
+  "buttons": [
+    { "text": "Reservaciones", "href": "#reservas" },
+    { "text": "Conoce nuestro menú", "href": "#menu" }
+  ]
+}

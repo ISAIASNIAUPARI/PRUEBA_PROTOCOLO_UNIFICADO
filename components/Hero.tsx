@@ -1,19 +1,27 @@
 'use client'
 
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
 
-type Slide = { url: string; alt?: string }
-type Cta = { label?: string; href?: string }
+import { EditableButton } from '@/components/editable/EditableButton'
+import { EditableImage } from '@/components/editable/EditableImage'
+import { EditableText } from '@/components/editable/EditableText'
+import type { ButtonRef, ImageRef } from '@/lib/types'
+
+type HeroData = {
+  title?: string
+  slides: ImageRef[]
+  buttons?: ButtonRef[]
+}
 
 export function Hero({
   title,
   slides,
-  ctas,
-}: {
-  title?: string
-  slides: Slide[]
-  ctas?: Cta[]
+  buttons,
+  edit,
+  onChange,
+}: HeroData & {
+  edit?: boolean
+  onChange?: (next: HeroData) => void
 }) {
   const [current, setCurrent] = useState(0)
 
@@ -27,41 +35,73 @@ export function Hero({
     return () => clearInterval(id)
   }, [slides.length])
 
-  // El titular admite un salto de línea escrito desde Sanity.
+  // El titular admite un salto de línea escrito desde el admin.
   const lines = (title || '').split('\n')
+
+  function patch(next: Partial<HeroData>) {
+    onChange?.({ title, slides, buttons, ...next })
+  }
 
   return (
     <section className="hero" id="inicio">
       <div className="hero-slides" id="heroSlides">
-        {slides.map((s, i) => (
-          /* eslint-disable-next-line @next/next/no-img-element */
-          <img
-            key={s.url}
-            src={s.url}
-            alt={s.alt || ''}
-            className={i === current ? 'active' : undefined}
-            loading={i === 0 ? 'eager' : 'lazy'}
-            decoding="async"
-            fetchPriority={i === 0 ? 'high' : 'auto'}
-          />
-        ))}
+        {slides.map((s, i) =>
+          edit ? (
+            <EditableImage
+              key={i}
+              edit
+              fill
+              src={s.url}
+              alt={s.alt}
+              imgClassName={i === current ? 'active' : undefined}
+              onChange={(url) => {
+                const next = slides.slice()
+                next[i] = { ...s, url }
+                patch({ slides: next })
+              }}
+            />
+          ) : (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              key={s.url}
+              src={s.url}
+              alt={s.alt || ''}
+              className={i === current ? 'active' : undefined}
+              loading={i === 0 ? 'eager' : 'lazy'}
+              decoding="async"
+              fetchPriority={i === 0 ? 'high' : 'auto'}
+            />
+          )
+        )}
       </div>
       <div className="scrim" />
       <div className="inner">
         <h1>
-          {lines.map((line, i) => (
-            <span key={i}>
-              {line}
-              {i < lines.length - 1 && <br />}
-            </span>
-          ))}
+          {edit ? (
+            <EditableText as="span" edit value={title} onChange={(v) => patch({ title: v })} />
+          ) : (
+            lines.map((line, i) => (
+              <span key={i}>
+                {line}
+                {i < lines.length - 1 && <br />}
+              </span>
+            ))
+          )}
         </h1>
-        {!!ctas?.length && (
+        {!!buttons?.length && (
           <div className="cta">
-            {ctas.map((c, i) => (
-              <Link key={i} href={c.href || '#'} className="btn-ghost">
-                {c.label}
-              </Link>
+            {buttons.map((c, i) => (
+              <EditableButton
+                key={i}
+                edit={edit}
+                button={c}
+                className="btn-ghost"
+                onChange={(next) => {
+                  const nextButtons = buttons.slice()
+                  nextButtons[i] = next
+                  patch({ buttons: nextButtons })
+                }}
+              />
             ))}
           </div>
         )}

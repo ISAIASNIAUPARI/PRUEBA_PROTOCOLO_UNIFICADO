@@ -1,0 +1,37 @@
+{
+  "heading": "Nuestro Menú",
+  "subheading": "Selección completa de todas nuestras delicias",
+  "watermark": "Menú",
+  "videoUrl": "https://res.cloudinary.com/foewxv45/video/upload/f_auto,q_auto/lgfuvideomenu",
+  "button": { "text": "Ver menú completo", "href": "#footer" },
+  "categories": [
+    {
+      "title": "Entradas Frías",
+      "items": [
+        { "name": "Tiradito de pesca blanca", "description": "alcaparras / aguacate / ají amarillo / leche de tigre", "price": "$12" },
+        { "name": "Tartar de atún rojo", "description": "cebollín / jengibre / soya / aguacate", "price": "$13" },
+        { "name": "Tataki de atún rojo", "description": "ajo blanco / ponzu / cebollino / aceitunas kalamata", "price": "$12" },
+        { "name": "Frescas láminas de atún", "description": "aguacate / rabanito / vinagreta blanca", "price": "$12" }
+      ]
+    },
+    {
+      "title": "Pescados",
+      "items": [
+        { "name": "Pesca del día \"al mare\"", "description": "Sauvignon Blanc / almejas / camarones al limón / aceite de oliva", "price": "$26" },
+        { "name": "Corvina al \"tabaco de cocina\"", "description": "costra de polvo de hongos / puré de espinaca", "price": "$22" },
+        { "name": "Mero al pil pil", "description": "ajo, perejil… choclo frito y mote / maduro asado", "price": "$22" },
+        { "name": "Salmón ahumado al momento", "description": "con su arroz salvaje / salsa de setas", "price": "$22" },
+        { "name": "Fresco atún rojo \"pepper steak\"", "description": "papitas al perejil / espárragos / bacon", "price": "$22" }
+      ]
+    },
+    {
+      "title": "Reses, Aves, Corderos y Lechones",
+      "items": [
+        { "name": "Rack de Costillitas de Cordero serrano", "description": "papitas panaderas / reducción de tinto joven", "price": "$29" },
+        { "name": "Lomo fino de res grillado", "description": "a las 4 pimientas o en salsa al vino tinto / láminas de papa gratinadas", "price": "$20" },
+        { "name": "Seco de chivo", "description": "delicado arroz / maduro frito / aguacate", "price": "$15" },
+        { "name": "Bife de chorizo uruguayo (300gr.)", "description": "con sus papas chauchas fritas y ensalada fresca", "price": "$39" }
+      ]
+    }
+  ]
+}

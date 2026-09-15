@@ -1,10 +1,10 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 
-import { drinksPage, siteSettings } from '@/content/site'
+import { drinksPage, siteSettings } from '@/lib/content'
 
 export const metadata: Metadata = {
-  title: `${drinksPage.title} – La Gloria Restaurante`,
+  title: `${drinksPage.title} – ${siteSettings.siteTitle}`,
   description: drinksPage.intro,
 }
 
@@ -17,7 +17,7 @@ export default function BebidasPage() {
       <nav>
         <Link href="/" className="logo">
           {siteSettings.brandName}
-          <span>RESTAURANTE</span>
+          <span>{siteSettings.brandTagline}</span>
         </Link>
         <Link href="/" className="back">
           {page.backLabel}

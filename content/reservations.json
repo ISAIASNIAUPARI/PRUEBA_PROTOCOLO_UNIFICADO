@@ -1,0 +1,18 @@
+{
+  "heading": "Nos encantaría recibirte pronto",
+  "lead": "Realiza tu reserva en el siguiente link",
+  "backgroundUrl": "/images/hero-salon.jpg",
+  "backgroundAlt": "Salón de La Gloria Familia Unida",
+  "partySizeOptions": [
+    "2 personas", "1 persona", "3 personas", "4 personas",
+    "5 personas", "6 personas", "7 personas", "8 personas"
+  ],
+  "submitLabel": "Encuentra una mesa",
+  "reservationEmail": "niauparii@gmail.com",
+  "orText": "o llámanos al",
+  "phoneDisplay": "+593 99 916 9570",
+  "phoneNumber": "+593999169570",
+  "contactName": "La Gloria Familia Unida",
+  "address": "Valladolid N24-519 y Francisco Salazar",
+  "contactEmail": "reservas@lagloria.com.ec"
+}

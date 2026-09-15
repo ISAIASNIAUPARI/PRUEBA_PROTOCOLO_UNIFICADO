@@ -2,13 +2,10 @@
 
 import React, { useEffect } from 'react'
 
-const SCRIPT_URL =
-  'https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js'
+import { EditableText } from '@/components/editable/EditableText'
+import type { Object3DItem } from '@/lib/types'
 
-const KOMI_URL =
-  'https://res.cloudinary.com/foewxv45/raw/upload/v1788973141/web_con_animacion/komi_web.glb'
-const CAMISETA_URL =
-  'https://res.cloudinary.com/foewxv45/raw/upload/v1788974257/web_con_animacion/camiseta_web.glb'
+const SCRIPT_URL = 'https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js'
 
 const MV_BASE = {
   'camera-controls': '',
@@ -29,7 +26,22 @@ const MV_BASE = {
   style: { width: '100%', height: '100%' },
 }
 
-export function Objects3D() {
+type Objects3DData = {
+  heading?: string
+  subheading?: string
+  items: Object3DItem[]
+}
+
+export function Objects3D({
+  heading,
+  subheading,
+  items,
+  edit,
+  onChange,
+}: Objects3DData & {
+  edit?: boolean
+  onChange?: (next: Objects3DData) => void
+}) {
   useEffect(() => {
     if (document.querySelector('script[data-mv]')) return
     const s = document.createElement('script')
@@ -39,51 +51,75 @@ export function Objects3D() {
     document.head.appendChild(s)
   }, [])
 
+  function patch(next: Partial<Objects3DData>) {
+    onChange?.({ heading, subheading, items, ...next })
+  }
+
   return (
     <section className="objects3d" id="objetos3d">
       <div className="wrap">
         <div className="sec-head reveal">
-          <h2>Explora en 3D</h2>
-          <div className="sub">Arrastra · Gira · Descubre</div>
+          <h2>
+            <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} />
+          </h2>
+          <div className="sub">
+            <EditableText as="span" edit={edit} value={subheading} onChange={(v) => patch({ subheading: v })} />
+          </div>
           <div className="rule" />
         </div>
         <div className="obj3d-grid">
-          <div className="obj3d-item">
-            <div className="obj3d-viewer">
-              {React.createElement('model-viewer', {
-                ...MV_BASE,
-                src: KOMI_URL,
-                alt: 'Personaje Komi en 3D',
-              })}
+          {items.map((item, i) => (
+            <div className="obj3d-item" key={item.id}>
+              <div className="obj3d-viewer">
+                {React.createElement('model-viewer', {
+                  ...MV_BASE,
+                  src: item.modelUrl,
+                  alt: item.name,
+                })}
+              </div>
+              <div className="obj3d-info">
+                <span className="obj3d-tag">{item.label}</span>
+                <h3 className="obj3d-name">
+                  <EditableText
+                    as="span"
+                    edit={edit}
+                    value={item.name}
+                    onChange={(v) => {
+                      const next = items.slice()
+                      next[i] = { ...item, name: v }
+                      patch({ items: next })
+                    }}
+                  />
+                </h3>
+                <p className="obj3d-desc">
+                  <EditableText
+                    as="span"
+                    edit={edit}
+                    value={item.description}
+                    onChange={(v) => {
+                      const next = items.slice()
+                      next[i] = { ...item, description: v }
+                      patch({ items: next })
+                    }}
+                  />
+                </p>
+                {(item.price || edit) && (
+                  <div className="obj3d-price">
+                    <EditableText
+                      as="span"
+                      edit={edit}
+                      value={item.price}
+                      onChange={(v) => {
+                        const next = items.slice()
+                        next[i] = { ...item, price: v }
+                        patch({ items: next })
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
-            <div className="obj3d-info">
-              <span className="obj3d-tag">Personaje</span>
-              <h3 className="obj3d-name">Komi</h3>
-              <p className="obj3d-desc">
-                Personaje anime de alta fidelidad generado con tecnología Multiview — cada detalle,
-                cada textura, navegable en tiempo real desde cualquier dispositivo.
-              </p>
-            </div>
-          </div>
-
-          <div className="obj3d-item">
-            <div className="obj3d-viewer">
-              {React.createElement('model-viewer', {
-                ...MV_BASE,
-                src: CAMISETA_URL,
-                alt: 'Camiseta técnica en 3D',
-              })}
-            </div>
-            <div className="obj3d-info">
-              <span className="obj3d-tag">Producto</span>
-              <h3 className="obj3d-name">Camiseta Técnica</h3>
-              <p className="obj3d-desc">
-                Camiseta de alto rendimiento con tejido respirable y diseño minimalista — optimizada
-                con Draco + WebP para exploración 3D fluida en cualquier pantalla.
-              </p>
-              <div className="obj3d-price">desde $35</div>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>

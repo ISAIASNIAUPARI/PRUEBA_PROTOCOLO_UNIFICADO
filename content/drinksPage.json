@@ -1,0 +1,46 @@
+{
+  "heroLabel": "Carta de",
+  "title": "Bebidas",
+  "intro": "Limonadas artesanales & combinaciones de temporada",
+  "backLabel": "← Inicio",
+  "sectionTitle": "Limonadas Artesanales",
+  "footerText": "LIMA · QUITO · CARTAGENA  |  LA GLORIA FAMILIA UNIDA",
+  "drinks": [
+    {
+      "name": "Limonada de Arándano", "tag": "Blueberry", "price": "desde $8",
+      "description": "Arándanos frescos, limón exprimido, hielo & menta. Refrescante y antioxidante.",
+      "sizes": ["Small", "Large"],
+      "image": { "url": "/images/bebida-blueberry.jpeg", "alt": "Limonada de Arándano" }
+    },
+    {
+      "name": "Limonada de Fresa", "tag": "Strawberry", "price": "desde $8",
+      "description": "Fresas naturales, limón fresco, hielo & sirope artesanal.",
+      "sizes": ["Small", "Large"],
+      "image": { "url": "/images/bebida-strawberry.webp", "alt": "Limonada de Fresa" }
+    },
+    {
+      "name": "Mango Tropical", "tag": "Tropical", "price": "desde $9",
+      "description": "Mango maduro, maracuyá, menta fresca & hielo granizado.",
+      "sizes": ["Small", "Large"],
+      "image": { "url": "/images/bebida-mango.webp", "alt": "Mango Tropical" }
+    },
+    {
+      "name": "Uva & Lichi", "tag": "Exotic", "price": "desde $9",
+      "description": "Uvas moradas, lichi, limón & agua con gas. Elegante y refrescante.",
+      "sizes": ["Small", "Large"],
+      "image": { "url": "/images/bebida-lychee.webp", "alt": "Uva y Lichi" }
+    },
+    {
+      "name": "Frappuccino de Caramelo", "tag": "Signature", "price": "desde $10",
+      "description": "Café helado, caramelo, crema batida & topping de sirope. Cremoso e irresistible.",
+      "sizes": ["Small", "Large"],
+      "image": { "url": "/images/bebida-frapp.jpeg", "alt": "Frappuccino de Caramelo" }
+    },
+    {
+      "name": "Macchiato de Caramelo", "tag": "Coffee", "price": "desde $9",
+      "description": "Espresso sobre leche fría con caramelo, hielo & notas dulces. Intenso y refrescante.",
+      "sizes": ["Small", "Large"],
+      "image": { "url": "/images/bebida-macchiato.webp", "alt": "Macchiato de Caramelo" }
+    }
+  ]
+}

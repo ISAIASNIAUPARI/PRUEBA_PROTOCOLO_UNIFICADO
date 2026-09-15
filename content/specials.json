@@ -1,0 +1,13 @@
+{
+  "heading": "Especiales de nuestra carta",
+  "subheading": "Innovando siempre para deleitar tus sentidos",
+  "videoUrl": "https://res.cloudinary.com/foewxv45/video/upload/f_auto,q_auto/lgfuvideoespeciales",
+  "dishes": [
+    { "name": "Ceviche mixto de mariscos", "url": "/dishes/dish1.jpg" },
+    { "name": "Mixto frito con ceviche", "url": "/dishes/dish2.jpg" },
+    { "name": "Seco de res con mote y patacón", "url": "/dishes/dish3.jpg" },
+    { "name": "Pizza Margherita napolitana", "url": "/dishes/dish4.jpg" },
+    { "name": "Cheesecake de lúcuma", "url": "/dishes/dish5.jpg" },
+    { "name": "Entrada fría en copa de mariscos", "url": "/dishes/dish6.jpg" }
+  ]
+}

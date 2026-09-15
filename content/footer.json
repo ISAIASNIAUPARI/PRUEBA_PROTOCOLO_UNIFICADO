@@ -1,0 +1,19 @@
+{
+  "scheduleTitle": "HORARIO",
+  "schedule": [
+    { "days": "Lunes a viernes", "hours": "12h30 a 23h00" },
+    { "days": "Sábado", "hours": "12h30 a 17h00 – 20h30 a 23h00" },
+    { "days": "Domingo", "hours": "12h30 a 16h30" }
+  ],
+  "reserveTitle": "RESERVAR CON:",
+  "reserveButton": { "text": "Realiza tu reserva aquí", "href": "#reservas" },
+  "socialTitle": "RRSS",
+  "socials": [
+    { "network": "facebook" },
+    { "network": "instagram" },
+    { "network": "google" },
+    { "network": "tripadvisor" },
+    { "network": "tiktok" }
+  ],
+  "copyright": "© 2026 La Gloria Familia Unida"
+}
