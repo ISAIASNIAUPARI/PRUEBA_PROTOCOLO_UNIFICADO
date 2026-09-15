@@ -1,6 +1,12 @@
 {
-  "heading": "Nos especializamos en comida peruana y mediterránea con tintes ecuatorianos",
+  "heading": "Nos especializamos en comida peruana y mediterránea con tinte ecuatoriano",
   "body": "Cada día preparamos cuidadosamente nuestro ritual para poner en escena un inmenso mundo lleno de olores, sabores y sensaciones, para festejar juntos la Fiesta de la Vida.",
-  "imageLeft": { "url": "/images/about-hostess.jpg", "alt": "Hostess La Gloria Familia Unida" },
-  "imageRight": { "url": "/images/about-platos.jpg", "alt": "Platos especiales La Gloria Familia Unida" }
+  "imageLeft": {
+    "url": "/images/about-hostess.jpg",
+    "alt": "Hostess La Gloria Familia Unida"
+  },
+  "imageRight": {
+    "url": "/images/about-platos.jpg",
+    "alt": "Platos especiales La Gloria Familia Unida"
+  }
 }
