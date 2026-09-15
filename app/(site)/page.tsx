@@ -33,11 +33,9 @@ function renderBaseSection(id: string) {
     case 'about':
       return <About key={id} heading={about.heading} body={about.body} imageLeft={about.imageLeft} imageRight={about.imageRight} />
     case 'experience':
-      return experience.enabled !== false ? <FrameScroll key={id} heading={experience.heading} subheading={experience.subheading} /> : null
+      return <FrameScroll key={id} heading={experience.heading} subheading={experience.subheading} />
     case 'objects3d':
-      return objects3d.enabled !== false ? (
-        <Objects3D key={id} heading={objects3d.heading} subheading={objects3d.subheading} items={objects3d.items} />
-      ) : null
+      return <Objects3D key={id} heading={objects3d.heading} subheading={objects3d.subheading} items={objects3d.items} />
     case 'specials':
       return <Specials key={id} heading={specials.heading} subheading={specials.subheading} videoUrl={specials.videoUrl} dishes={specials.dishes} />
     case 'menu':

@@ -81,7 +81,6 @@ export type About = {
 export type Experience = {
   heading: string
   subheading: string
-  enabled: boolean
 }
 
 export type Object3DItem = {
@@ -94,7 +93,6 @@ export type Object3DItem = {
 }
 
 export type Objects3D = {
-  enabled: boolean
   heading: string
   subheading: string
   items: Object3DItem[]
