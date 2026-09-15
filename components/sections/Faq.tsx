@@ -2,6 +2,7 @@
 
 import { EditableText } from '@/components/editable/EditableText'
 import { newButtonId } from '@/lib/buttons'
+import { textColorProps } from '@/lib/text-colors'
 import type { FaqData, FaqItem } from '@/lib/types'
 
 import { SectionShell } from './SectionShell'
@@ -20,6 +21,8 @@ export function Faq({
   function patch(next: Partial<FaqData>) {
     onChange?.({ ...data, ...next })
   }
+
+  const color = textColorProps(data.textColors, (tc) => patch({ textColors: tc }))
 
   function updateItem(itemId: string, next: Partial<FaqItem>) {
     patch({ items: data.items.map((it) => (it.id === itemId ? { ...it, ...next } : it)) })
@@ -43,7 +46,7 @@ export function Faq({
           <div key={item.id} className="rounded-lg border p-4" style={{ borderColor: 'var(--color-primary)' }}>
             <div className="mb-1.5 flex items-start justify-between gap-2">
               <span className="font-medium" style={{ color: 'var(--color-accent)' }}>
-                <EditableText as="span" edit={edit} value={item.question} onChange={(v) => updateItem(item.id, { question: v })} />
+                <EditableText as="span" edit={edit} value={item.question} onChange={(v) => updateItem(item.id, { question: v })} {...color(`items.${item.id}.question`)} />
               </span>
               {edit && (
                 <button type="button" onClick={() => patch({ items: data.items.filter((it) => it.id !== item.id) })} className="text-xs text-red-600 hover:underline">
@@ -52,7 +55,7 @@ export function Faq({
               )}
             </div>
             <p className="text-sm opacity-80" style={{ color: 'var(--color-accent)' }}>
-              <EditableText as="span" edit={edit} value={item.answer} onChange={(v) => updateItem(item.id, { answer: v })} />
+              <EditableText as="span" edit={edit} value={item.answer} onChange={(v) => updateItem(item.id, { answer: v })} {...color(`items.${item.id}.answer`)} />
             </p>
           </div>
         ))}

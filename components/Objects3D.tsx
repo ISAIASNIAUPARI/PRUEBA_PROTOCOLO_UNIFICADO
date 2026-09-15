@@ -118,6 +118,7 @@ export function Objects3D({
                       next[i] = { ...item, name: v }
                       patch({ items: next })
                     }}
+                    {...color(`items.${item.id}.name`)}
                   />
                 </h3>
                 <p className="obj3d-desc">
@@ -130,6 +131,7 @@ export function Objects3D({
                       next[i] = { ...item, description: v }
                       patch({ items: next })
                     }}
+                    {...color(`items.${item.id}.description`)}
                   />
                 </p>
                 {(item.price || edit) && (
@@ -143,6 +145,7 @@ export function Objects3D({
                         next[i] = { ...item, price: v }
                         patch({ items: next })
                       }}
+                      {...color(`items.${item.id}.price`)}
                     />
                   </div>
                 )}

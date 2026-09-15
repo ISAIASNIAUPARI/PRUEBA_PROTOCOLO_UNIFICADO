@@ -2,6 +2,7 @@
 
 import { EditableImage } from '@/components/editable/EditableImage'
 import { EditableText } from '@/components/editable/EditableText'
+import { textColorProps } from '@/lib/text-colors'
 import type { TextBlockData } from '@/lib/types'
 
 import { SectionShell } from './SectionShell'
@@ -20,6 +21,8 @@ export function TextBlock({
   function patch(next: Partial<TextBlockData>) {
     onChange?.({ ...data, ...next })
   }
+
+  const color = textColorProps(data.textColors, (tc) => patch({ textColors: tc }))
 
   return (
     <SectionShell
@@ -63,6 +66,7 @@ export function TextBlock({
                   next[i] = v
                   patch({ paragraphs: next })
                 }}
+                {...color(`paragraphs.${i}.paragraph`)}
               />
               {edit && data.paragraphs.length > 1 && (
                 <button

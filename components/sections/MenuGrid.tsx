@@ -3,6 +3,7 @@
 import { EditableImage } from '@/components/editable/EditableImage'
 import { EditableText } from '@/components/editable/EditableText'
 import { newButtonId } from '@/lib/buttons'
+import { textColorProps } from '@/lib/text-colors'
 import type { MenuGridData, MenuGridItem } from '@/lib/types'
 
 import { SectionShell } from './SectionShell'
@@ -21,6 +22,8 @@ export function MenuGrid({
   function patch(next: Partial<MenuGridData>) {
     onChange?.({ ...data, ...next })
   }
+
+  const color = textColorProps(data.textColors, (tc) => patch({ textColors: tc }))
 
   function updateItem(itemId: string, next: Partial<MenuGridItem>) {
     patch({ items: data.items.map((it) => (it.id === itemId ? { ...it, ...next } : it)) })
@@ -59,14 +62,14 @@ export function MenuGrid({
             <div className="p-4">
               <div className="mb-1 flex items-start justify-between gap-2">
                 <span className="font-medium" style={{ color: 'var(--color-accent)' }}>
-                  <EditableText as="span" edit={edit} value={item.name} onChange={(v) => updateItem(item.id, { name: v })} />
+                  <EditableText as="span" edit={edit} value={item.name} onChange={(v) => updateItem(item.id, { name: v })} {...color(`items.${item.id}.name`)} />
                 </span>
                 <span className="whitespace-nowrap font-medium" style={{ color: 'var(--color-primary)' }}>
-                  <EditableText as="span" edit={edit} value={item.price} onChange={(v) => updateItem(item.id, { price: v })} />
+                  <EditableText as="span" edit={edit} value={item.price} onChange={(v) => updateItem(item.id, { price: v })} {...color(`items.${item.id}.price`)} />
                 </span>
               </div>
               <p className="text-sm opacity-70" style={{ color: 'var(--color-accent)' }}>
-                <EditableText as="span" edit={edit} value={item.description} onChange={(v) => updateItem(item.id, { description: v })} />
+                <EditableText as="span" edit={edit} value={item.description} onChange={(v) => updateItem(item.id, { description: v })} {...color(`items.${item.id}.description`)} />
               </p>
               {edit && (
                 <button

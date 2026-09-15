@@ -152,6 +152,7 @@ export function Specials({
                     next[i] = { ...d, name: v }
                     patch({ dishes: next })
                   }}
+                  {...color(`dishes.${i}.name`)}
                 />
               </div>
             </div>

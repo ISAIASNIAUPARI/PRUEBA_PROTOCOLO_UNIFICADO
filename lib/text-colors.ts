@@ -39,10 +39,25 @@ const LABELS: Record<string, string> = {
   formSubmitLabel: 'Botón del formulario',
   orText: 'Texto separador',
   people: 'Etiqueta de personas',
+  // Campos de elementos de array: la clave es "items.<id>.name", así que se
+  // resuelve por el ÚLTIMO segmento.
+  name: 'Nombre',
+  price: 'Precio',
+  description: 'Descripción',
+  question: 'Pregunta',
+  answer: 'Respuesta',
+  caption: 'Pie de foto',
+  paragraph: 'Párrafo',
+  days: 'Días',
+  hours: 'Horas',
+  tag: 'Etiqueta',
 }
 
 export function textColorLabel(key: string): string {
-  return LABELS[key] ?? 'Texto'
+  // Las claves de elementos de array vienen como "items.<id>.name": lo que
+  // nombra el campo es el último segmento.
+  const leaf = key.split('.').pop() ?? key
+  return LABELS[key] ?? LABELS[leaf] ?? 'Texto'
 }
 
 /**

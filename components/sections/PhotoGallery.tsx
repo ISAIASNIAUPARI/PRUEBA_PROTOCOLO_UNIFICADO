@@ -3,6 +3,7 @@
 import { EditableImage } from '@/components/editable/EditableImage'
 import { EditableText } from '@/components/editable/EditableText'
 import { newButtonId } from '@/lib/buttons'
+import { textColorProps } from '@/lib/text-colors'
 import type { PhotoGalleryData, PhotoGalleryItem } from '@/lib/types'
 
 import { SectionShell } from './SectionShell'
@@ -21,6 +22,8 @@ export function PhotoGallery({
   function patch(next: Partial<PhotoGalleryData>) {
     onChange?.({ ...data, ...next })
   }
+
+  const color = textColorProps(data.textColors, (tc) => patch({ textColors: tc }))
 
   function updatePhoto(photoId: string, next: Partial<PhotoGalleryItem>) {
     patch({ photos: data.photos.map((p) => (p.id === photoId ? { ...p, ...next } : p)) })
@@ -57,7 +60,7 @@ export function PhotoGallery({
               />
             </div>
             <p className="mt-1.5 text-xs opacity-70" style={{ color: 'var(--color-accent)' }}>
-              <EditableText as="span" edit={edit} value={photo.caption} onChange={(v) => updatePhoto(photo.id, { caption: v })} />
+              <EditableText as="span" edit={edit} value={photo.caption} onChange={(v) => updatePhoto(photo.id, { caption: v })} {...color(`photos.${photo.id}.caption`)} />
             </p>
             {edit && (
               <button

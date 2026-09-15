@@ -127,6 +127,7 @@ export function MenuSection({
                     next[ci] = { ...cat, title: v }
                     patch({ categories: next })
                   }}
+                  {...color(`categories.${ci}.title`)}
                 />
               </h3>
               {(cat.items ?? []).map((it, ii) => (
@@ -144,6 +145,7 @@ export function MenuSection({
                           nextCats[ci] = { ...nextCats[ci], items: nextItems }
                           patch({ categories: nextCats })
                         }}
+                        {...color(`categories.${ci}.items.${ii}.name`)}
                       />
                     </span>
                     <span className="m-price">
@@ -158,6 +160,7 @@ export function MenuSection({
                           nextCats[ci] = { ...nextCats[ci], items: nextItems }
                           patch({ categories: nextCats })
                         }}
+                        {...color(`categories.${ci}.items.${ii}.price`)}
                       />
                     </span>
                   </div>
@@ -173,6 +176,7 @@ export function MenuSection({
                         nextCats[ci] = { ...nextCats[ci], items: nextItems }
                         patch({ categories: nextCats })
                       }}
+                      {...color(`categories.${ci}.items.${ii}.description`)}
                     />
                   </div>
                 </div>

@@ -27,6 +27,7 @@ import type {
 import { useEdit } from './EditProvider'
 import { PreviewReadOnly, SelectionProvider, useSelection } from './Selection'
 import { Sidebar } from './Sidebar'
+import { Toolbar } from './Toolbar'
 
 function PositionBadge({ n }: { n: number }) {
   return (
@@ -203,11 +204,25 @@ export function AdminApp() {
 
   return (
     <SelectionProvider>
-      <div className="admin-shell-grid">
-        <Sidebar />
-        <PreviewPane>{page}</PreviewPane>
+      <div className="admin-editor-root">
+        <Toolbar />
+        <EditorArea>{page}</EditorArea>
       </div>
     </SelectionProvider>
+  )
+}
+
+/**
+ * Debajo de la barra superior: el sidebar de edición (solo si hay algo
+ * seleccionado) y el preview. Sin selección, el preview ocupa todo el ancho.
+ */
+function EditorArea({ children }: { children: React.ReactNode }) {
+  const { selected } = useSelection()
+  return (
+    <div className={`admin-shell-grid ${selected ? 'admin-shell-grid--with-sidebar' : ''}`}>
+      <Sidebar />
+      <PreviewPane>{children}</PreviewPane>
+    </div>
   )
 }
 
