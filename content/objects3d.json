@@ -1,19 +1,18 @@
 {
-  "enabled": true,
   "heading": "Explora en 3D",
   "subheading": "Arrastra · Gira · Descubre",
   "items": [
     {
       "id": "komi",
       "label": "Personaje",
-      "name": "Komi",
+      "name": "Komii",
       "description": "Personaje anime de alta fidelidad generado con tecnología Multiview — cada detalle, cada textura, navegable en tiempo real desde cualquier dispositivo.",
       "modelUrl": "https://res.cloudinary.com/foewxv45/raw/upload/v1788973141/web_con_animacion/komi_web.glb"
     },
     {
       "id": "camiseta",
       "label": "Producto",
-      "name": "Camiseta Técnica",
+      "name": "Camiseta Deportiva",
       "description": "Camiseta de alto rendimiento con tejido respirable y diseño minimalista — optimizada con Draco + WebP para exploración 3D fluida en cualquier pantalla.",
       "price": "desde $35",
       "modelUrl": "https://res.cloudinary.com/foewxv45/raw/upload/v1788974257/web_con_animacion/camiseta_web.glb"

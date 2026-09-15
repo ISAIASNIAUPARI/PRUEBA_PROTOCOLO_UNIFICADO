@@ -1,12 +1,35 @@
 {
   "title": "Bienvenidos a La Gloria\nFamilia Unida",
   "slides": [
-    { "url": "/images/hero-salon.jpg", "alt": "Salón La Gloria Familia Unida" },
-    { "url": "/images/hero-clientes.jpg", "alt": "Clientes disfrutando" },
-    { "url": "/images/hero-plato.jpg", "alt": "Plato especial" }
+    {
+      "url": "/images/hero-salon.jpg",
+      "alt": "Salón La Gloria Familia Unida"
+    },
+    {
+      "url": "/images/hero-clientes.jpg",
+      "alt": "Clientes disfrutando"
+    },
+    {
+      "url": "/images/hero-plato.jpg",
+      "alt": "Plato especial"
+    }
   ],
   "buttons": [
-    { "id": "hero-btn-1", "text": "Reservaciones", "href": "#reservas", "hrefType": "anchor" },
-    { "id": "hero-btn-2", "text": "Conoce nuestro menú", "href": "#menu", "hrefType": "anchor" }
+    {
+      "id": "hero-btn-2",
+      "text": "Conoce nuestro menú",
+      "href": "#menu",
+      "hrefType": "anchor",
+      "desktopX": 76.9779046159561,
+      "desktopY": 73.45591037717774
+    },
+    {
+      "id": "hero-btn-1",
+      "text": "EMPLEADOS",
+      "href": "#photo-gallery-nuestros-empleados",
+      "hrefType": "anchor",
+      "desktopX": 19.15984541586981,
+      "desktopY": 73.45598437814466
+    }
   ]
 }
