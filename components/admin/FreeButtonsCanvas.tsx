@@ -1,7 +1,7 @@
 'use client'
 
 import { DndContext, PointerSensor, useDraggable, useSensor, useSensors, type Modifier } from '@dnd-kit/core'
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 
 import { resolveButtonHref, themeColorVar } from '@/lib/buttons'
 import type { ButtonRef } from '@/lib/types'
@@ -244,6 +244,75 @@ function makeSnapModifier(
   }
 }
 
+/** Refs a los nodos del overlay (guías, chips y medida). */
+type OverlayEls = {
+  v: HTMLDivElement | null
+  h: HTMLDivElement | null
+  gapV: HTMLDivElement | null
+  gapH: HTMLDivElement | null
+  size: HTMLDivElement | null
+}
+
+/**
+ * Pinta el overlay mutando el DOM directamente, sin pasar por el estado de
+ * React.
+ *
+ * Antes esto era un `useState` que el modifier actualizaba en cada frame del
+ * arrastre: eso forzaba un re-render del canvas y de TODOS los botones ~60
+ * veces por segundo, que es lo que se veía como parpadeo y arrastre pesado.
+ * El overlay es puramente visual y efímero, así que no necesita estar en el
+ * árbol de React: se renderizan los nodos una sola vez, ocultos, y acá solo se
+ * les cambia el estilo.
+ */
+function paintOverlay(els: OverlayEls, o: Overlay) {
+  const line = (el: HTMLDivElement | null, g: Guide | null, vertical: boolean) => {
+    if (!el) return
+    if (!g) {
+      el.style.display = 'none'
+      return
+    }
+    el.style.display = 'block'
+    if (vertical) {
+      el.style.left = `${g.pos}px`
+      el.style.top = `${g.from}px`
+      el.style.width = '1px'
+      el.style.height = `${g.to - g.from}px`
+    } else {
+      el.style.left = `${g.from}px`
+      el.style.top = `${g.pos}px`
+      el.style.width = `${g.to - g.from}px`
+      el.style.height = '1px'
+    }
+  }
+  const chip = (el: HTMLDivElement | null, b: GapBadge | null) => {
+    if (!el) return
+    if (!b) {
+      el.style.display = 'none'
+      return
+    }
+    el.style.display = 'block'
+    el.style.left = `${b.x}px`
+    el.style.top = `${b.y}px`
+    el.textContent = String(b.value)
+  }
+
+  line(els.v, o.v, true)
+  line(els.h, o.h, false)
+  chip(els.gapV, o.gapV)
+  chip(els.gapH, o.gapH)
+
+  if (els.size) {
+    if (!o.size) {
+      els.size.style.display = 'none'
+    } else {
+      els.size.style.display = 'block'
+      els.size.style.left = `${o.size.x}px`
+      els.size.style.top = `${o.size.y + 6}px`
+      els.size.textContent = `${o.size.w} x ${o.size.h}`
+    }
+  }
+}
+
 function DraggableButton({
   button,
   index,
@@ -273,6 +342,15 @@ function DraggableButton({
       : 'translate(-50%, -50%)',
     pointerEvents: 'auto',
     zIndex: isDragging ? 50 : 1,
+    // El CSS del sitio trae `transition: all .3s ease` en los botones (para el
+    // hover). Como dnd-kit los mueve con `transform`, esa transición animaba
+    // CADA frame del arrastre durante 300ms: el botón perseguía al cursor con
+    // un retraso muy visible. En edición se anula del todo — el hover pulido
+    // no aporta nada dentro del editor y sí estorba al arrastrar.
+    ...(edit ? { transition: 'none' } : null),
+    // backdrop-filter se recompone en cada frame y es caro; solo mientras se
+    // arrastra, se apaga para que el movimiento vaya fluido.
+    ...(isDragging ? { backdropFilter: 'none', willChange: 'transform' } : null),
   }
 
   if (edit) {
@@ -335,17 +413,24 @@ export default function FreeButtonsCanvas({
   const containerRectRef = useRef<DOMRect | null>(null)
   const lastDeltaRef = useRef({ x: 0, y: 0 })
   const overlayRef = useRef<Overlay>(EMPTY_OVERLAY)
-  const [overlay, setOverlay] = useState<Overlay>(EMPTY_OVERLAY)
+  const vRef = useRef<HTMLDivElement>(null)
+  const hRef = useRef<HTMLDivElement>(null)
+  const gapVRef = useRef<HTMLDivElement>(null)
+  const gapHRef = useRef<HTMLDivElement>(null)
+  const sizeElRef = useRef<HTMLDivElement>(null)
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }))
 
-  // El modifier corre en cada frame del arrastre — sin este guard, llamar
-  // setState con un objeto nuevo (aunque tenga los mismos valores) dispara un
-  // re-render en bucle ("Maximum update depth exceeded"). Ver error #22.
+  // El overlay se pinta mutando el DOM, NO con estado de React: el modifier
+  // corre en cada frame y un setState ahí re-renderizaba el canvas y todos los
+  // botones ~60 veces por segundo (arrastre pesado y parpadeo). La comparación
+  // contra el valor anterior se mantiene igual para no tocar el DOM de más.
   const commitOverlay = useCallback((next: Overlay) => {
-    if (!overlayEqual(overlayRef.current, next)) {
-      overlayRef.current = next
-      setOverlay(next)
-    }
+    if (overlayEqual(overlayRef.current, next)) return
+    overlayRef.current = next
+    paintOverlay(
+      { v: vRef.current, h: hRef.current, gapV: gapVRef.current, gapH: gapHRef.current, size: sizeElRef.current },
+      next
+    )
   }, [])
 
   const snapModifier = useMemo(
@@ -428,78 +513,42 @@ export default function FreeButtonsCanvas({
           <DraggableButton key={b.id} button={b} index={i} edit={edit} xKey={xKey} yKey={yKey} buttonClassName={buttonClassName} />
         ))}
 
-        {overlay.v && (
-          <div
-            className="pointer-events-none absolute"
-            style={{
-              left: overlay.v.pos,
-              top: overlay.v.from,
-              width: 1,
-              height: overlay.v.to - overlay.v.from,
-              background: GUIDE_COLOR,
-              boxShadow: '0 0 0 1px rgba(0,0,0,0.35)',
-              zIndex: 60,
-            }}
-          />
-        )}
-        {overlay.h && (
-          <div
-            className="pointer-events-none absolute"
-            style={{
-              left: overlay.h.from,
-              top: overlay.h.pos,
-              width: overlay.h.to - overlay.h.from,
-              height: 1,
-              background: GUIDE_COLOR,
-              boxShadow: '0 0 0 1px rgba(0,0,0,0.35)',
-              zIndex: 60,
-            }}
-          />
-        )}
-
-        {overlay.gapV && <GapChip x={overlay.gapV.x} y={overlay.gapV.y} value={overlay.gapV.value} />}
-        {overlay.gapH && <GapChip x={overlay.gapH.x} y={overlay.gapH.y} value={overlay.gapH.value} />}
-
-        {overlay.size && (
-          <div
-            className="pointer-events-none absolute whitespace-nowrap"
-            style={{
-              left: overlay.size.x,
-              top: overlay.size.y + 6,
-              transform: 'translateX(-50%)',
-              fontSize: 11,
-              lineHeight: '14px',
-              color: 'rgba(255,255,255,0.75)',
-              textShadow: '0 1px 2px rgba(0,0,0,0.8)',
-              zIndex: 61,
-            }}
-          >
-            {overlay.size.w} x {overlay.size.h}
-          </div>
+        {/* Overlay: se renderiza una sola vez, oculto. Durante el arrastre solo
+            se le cambian los estilos desde paintOverlay(), sin re-render. */}
+        {edit && (
+          <>
+            <div ref={vRef} className="pointer-events-none absolute" style={{ display: 'none', background: GUIDE_COLOR, boxShadow: '0 0 0 1px rgba(0,0,0,0.35)', zIndex: 60 }} />
+            <div ref={hRef} className="pointer-events-none absolute" style={{ display: 'none', background: GUIDE_COLOR, boxShadow: '0 0 0 1px rgba(0,0,0,0.35)', zIndex: 60 }} />
+            <div ref={gapVRef} className="pointer-events-none absolute whitespace-nowrap rounded" style={CHIP_STYLE} />
+            <div ref={gapHRef} className="pointer-events-none absolute whitespace-nowrap rounded" style={CHIP_STYLE} />
+            <div
+              ref={sizeElRef}
+              className="pointer-events-none absolute whitespace-nowrap"
+              style={{
+                display: 'none',
+                transform: 'translateX(-50%)',
+                fontSize: 11,
+                lineHeight: '14px',
+                color: 'rgba(255,255,255,0.75)',
+                textShadow: '0 1px 2px rgba(0,0,0,0.8)',
+                zIndex: 61,
+              }}
+            />
+          </>
         )}
       </div>
     </DndContext>
   )
 }
 
-function GapChip({ x, y, value }: { x: number; y: number; value: number }) {
-  return (
-    <div
-      className="pointer-events-none absolute whitespace-nowrap rounded"
-      style={{
-        left: x,
-        top: y,
-        transform: 'translate(-50%, -50%)',
-        background: GUIDE_COLOR,
-        color: '#0b1f12',
-        fontSize: 11,
-        fontWeight: 600,
-        lineHeight: '14px',
-        padding: '1px 5px',
-        zIndex: 62,
-      }}
-    >
-      {value}
-    </div>
-  )
+const CHIP_STYLE: React.CSSProperties = {
+  display: 'none',
+  transform: 'translate(-50%, -50%)',
+  background: GUIDE_COLOR,
+  color: '#0b1f12',
+  fontSize: 11,
+  fontWeight: 600,
+  lineHeight: '14px',
+  padding: '1px 5px',
+  zIndex: 62,
 }

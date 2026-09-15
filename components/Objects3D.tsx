@@ -72,14 +72,23 @@ export function Objects3D({
           <div className="rule" />
         </div>
         <div className="obj3d-grid">
-          {items.map((item, i) => (
+          {/* Un objeto sin modelo cargado se oculta en el sitio público: un
+              <model-viewer src=""> deja un cuadro negro vacío. En el admin sí
+              se muestra, para poder subirle un .glb. */}
+          {items.map((item, i) => (!item.modelUrl && !edit ? null : (
             <div className="obj3d-item" key={item.id}>
               <div className="obj3d-viewer group relative">
-                {React.createElement('model-viewer', {
-                  ...MV_BASE,
-                  src: item.modelUrl,
-                  alt: item.name,
-                })}
+                {item.modelUrl ? (
+                  React.createElement('model-viewer', {
+                    ...MV_BASE,
+                    src: item.modelUrl,
+                    alt: item.name,
+                  })
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center px-4 text-center text-sm text-white/55">
+                    Sin modelo 3D — usa «Cambiar modelo 3D (.glb)» para subir uno.
+                  </div>
+                )}
                 {edit && (
                   <EditableModel
                     edit
@@ -133,7 +142,7 @@ export function Objects3D({
                 )}
               </div>
             </div>
-          ))}
+          )))}
         </div>
       </div>
     </section>

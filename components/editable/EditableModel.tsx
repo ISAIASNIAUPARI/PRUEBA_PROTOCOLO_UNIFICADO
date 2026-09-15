@@ -2,6 +2,8 @@
 
 import { useRef, useState } from 'react'
 
+import { uploadDirectToCloudinary } from '@/lib/upload-direct'
+
 type Props = {
   edit?: boolean
   onChange?: (url: string) => void
@@ -11,7 +13,8 @@ type Props = {
  * Overlay para reemplazar un objeto 3D (.glb) desde /admin. Se monta ENCIMA
  * del <model-viewer> real (que sigue mostrando el modelo actual mientras se
  * sube uno nuevo) — mismo patrón hover que EditableImage/CloudinaryVideo.
- * Sube a Cloudinary como resource_type "raw" vía /api/admin/upload-model.
+ * Sube DIRECTO a Cloudinary como resource_type "raw", con una firma de un
+ * solo uso pedida a /api/admin/upload-signature.
  */
 export function EditableModel({ edit, onChange }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -21,41 +24,21 @@ export function EditableModel({ edit, onChange }: Props) {
 
   if (!edit) return null
 
-  function upload(file: File) {
+  // Mismo camino directo que el video: un .glb puede superar el límite de
+  // ~4.5MB del cuerpo de una función de Vercel (el tope propio de Cloudinary
+  // para "raw" es 10MB). Ver error #7 del cerebro.
+  async function upload(file: File) {
     setError(null)
     setUploading(true)
     setProgress(0)
-    const form = new FormData()
-    form.append('file', file)
-    const xhr = new XMLHttpRequest()
-    xhr.open('POST', '/api/admin/upload-model')
-    xhr.upload.onprogress = (e) => {
-      if (e.lengthComputable) setProgress(Math.round((e.loaded / e.total) * 100))
-    }
-    xhr.onload = () => {
+    try {
+      const url = await uploadDirectToCloudinary(file, 'model', setProgress)
+      onChange?.(url)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'No se pudo subir el modelo.')
+    } finally {
       setUploading(false)
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try {
-          const data = JSON.parse(xhr.responseText)
-          if (data.url) onChange?.(data.url)
-          else setError('La subida no devolvió una URL.')
-        } catch {
-          setError('Respuesta inválida del servidor.')
-        }
-      } else {
-        try {
-          const data = JSON.parse(xhr.responseText)
-          setError(data.error || 'No se pudo subir el modelo.')
-        } catch {
-          setError('No se pudo subir el modelo.')
-        }
-      }
     }
-    xhr.onerror = () => {
-      setUploading(false)
-      setError('No se pudo subir el modelo.')
-    }
-    xhr.send(form)
   }
 
   return (

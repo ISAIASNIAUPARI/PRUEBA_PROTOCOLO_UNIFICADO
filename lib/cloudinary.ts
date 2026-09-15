@@ -1,18 +1,26 @@
-// Subida server-side a Cloudinary para /api/admin/upload-image, upload-video
-// y upload-model. Credenciales solo se leen acá (servidor) — nunca en
+// Cloudinary del lado SERVIDOR: las credenciales se leen solo acá, nunca en
 // variables NEXT_PUBLIC_.
+//
+// Hay dos caminos de subida, y la diferencia importa:
+//
+//  · Imágenes → pasan por /api/admin/upload-image. Se pueden porque
+//    EditableImage las comprime a WebP en el navegador ANTES de subir, así que
+//    el archivo que viaja pesa poco.
+//  · Video y modelos .glb → NO pueden pasar por el servidor. Las funciones de
+//    Vercel cortan el cuerpo de la petición en ~4.5MB (límite de la
+//    plataforma, ver error #7 del cerebro), y un video real lo supera casi
+//    siempre: por eso "Cambiar video" fallaba con "No se pudo subir el video".
+//    Para esos dos el servidor solo FIRMA la subida (`signUpload`) y el
+//    navegador sube el archivo directo a Cloudinary, sin pasar por Vercel.
 
-const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/avif']
-const ALLOWED_VIDEO_TYPES = ['video/mp4', 'video/quicktime', 'video/webm']
-const MAX_IMAGE_BYTES = 10 * 1024 * 1024
-const MAX_VIDEO_BYTES = 200 * 1024 * 1024
-// Límite real de esta cuenta de Cloudinary para resource_type "raw" (donde
-// viven los .glb) — ver error #7/#8 y el caso Nieve Artesanal en
-// [[15 - Errores encontrados y como evitarlos]] / [[14 - Casos de referencia]].
-const MAX_MODEL_BYTES = 10 * 1024 * 1024
-const CLOUDINARY_FOLDER = 'la-gloria-familia-unida'
-
-type ResourceKind = 'image' | 'video' | 'model'
+import {
+  ALLOWED_IMAGE_TYPES,
+  CLOUDINARY_FOLDER,
+  deliveryUrl,
+  maxBytesFor,
+  resourceTypeFor,
+  type ResourceKind,
+} from './cloudinary-shared'
 
 function getConfig() {
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME
@@ -34,48 +42,51 @@ async function sha1Hex(message: string) {
     .join('')
 }
 
-function resourceTypeFor(kind: ResourceKind): 'image' | 'video' | 'raw' {
-  if (kind === 'model') return 'raw'
-  return kind
+/** Public_id plano y sin guion bajo para .glb — un nombre con "_" puede
+ *  colisionar con el parser de transformaciones de Cloudinary (error #9). */
+function modelPublicId(timestamp: number) {
+  return `model${timestamp}${Math.random().toString(36).slice(2, 8)}`
 }
 
-export async function uploadToCloudinary(file: File, kind: ResourceKind): Promise<{ url: string }> {
-  if (kind === 'image' && !ALLOWED_IMAGE_TYPES.includes(file.type)) {
-    throw new Error('Tipo de imagen no soportado.')
-  }
-  if (kind === 'image' && file.size > MAX_IMAGE_BYTES) {
-    throw new Error('La imagen es demasiado grande.')
-  }
-  if (kind === 'video' && !ALLOWED_VIDEO_TYPES.includes(file.type)) {
-    throw new Error('Tipo de video no soportado.')
-  }
-  if (kind === 'video' && file.size > MAX_VIDEO_BYTES) {
-    throw new Error('El video es demasiado grande (máx. 200MB).')
-  }
-  if (kind === 'model') {
-    if (!file.name.toLowerCase().endsWith('.glb')) {
-      throw new Error('Solo se aceptan archivos .glb.')
-    }
-    if (file.size > MAX_MODEL_BYTES) {
-      throw new Error('El modelo 3D es demasiado grande (máx. 10MB) — expórtalo optimizado (Draco + texturas comprimidas) antes de subirlo.')
-    }
-  }
-
+async function signedParams(kind: ResourceKind) {
   const { cloudName, apiKey, apiSecret } = getConfig()
-  const resourceType = resourceTypeFor(kind)
   const timestamp = Math.floor(Date.now() / 1000)
+  const publicId = kind === 'model' ? modelPublicId(timestamp) : undefined
 
-  // Public_id plano y sin guion bajo para .glb — un nombre con "_" puede
-  // colisionar con el parser de transformaciones de Cloudinary (ver
-  // [[07 - Reglas de medios, qué va en el código y qué en Cloudinary]]).
-  const publicId =
-    kind === 'model' ? `model${timestamp}${Math.random().toString(36).slice(2, 8)}` : undefined
-
-  const paramsToSign =
-    kind === 'model'
-      ? `folder=${CLOUDINARY_FOLDER}&public_id=${publicId}&timestamp=${timestamp}`
-      : `folder=${CLOUDINARY_FOLDER}&timestamp=${timestamp}`
+  const paramsToSign = publicId
+    ? `folder=${CLOUDINARY_FOLDER}&public_id=${publicId}&timestamp=${timestamp}`
+    : `folder=${CLOUDINARY_FOLDER}&timestamp=${timestamp}`
   const signature = await sha1Hex(paramsToSign + apiSecret)
+
+  return { cloudName, apiKey, timestamp, publicId, signature }
+}
+
+/**
+ * Datos para que el NAVEGADOR suba directo a Cloudinary. Devuelve una firma de
+ * un solo uso — nunca el api_secret.
+ */
+export async function signUpload(kind: ResourceKind) {
+  const { cloudName, apiKey, timestamp, publicId, signature } = await signedParams(kind)
+  return {
+    cloudName,
+    apiKey,
+    timestamp,
+    publicId,
+    signature,
+    folder: CLOUDINARY_FOLDER,
+    resourceType: resourceTypeFor(kind),
+    maxBytes: maxBytesFor(kind),
+  }
+}
+
+/** Subida server-side. Solo para imágenes (ya comprimidas en el navegador). */
+export async function uploadToCloudinary(file: File, kind: ResourceKind): Promise<{ url: string }> {
+  if (kind === 'image') {
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) throw new Error('Tipo de imagen no soportado.')
+    if (file.size > maxBytesFor('image')) throw new Error('La imagen es demasiado grande.')
+  }
+
+  const { cloudName, apiKey, timestamp, publicId, signature } = await signedParams(kind)
 
   const uploadForm = new FormData()
   uploadForm.append('file', file)
@@ -85,22 +96,12 @@ export async function uploadToCloudinary(file: File, kind: ResourceKind): Promis
   if (publicId) uploadForm.append('public_id', publicId)
   uploadForm.append('signature', signature)
 
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceType}/upload`, {
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/${resourceTypeFor(kind)}/upload`, {
     method: 'POST',
     body: uploadForm,
   })
   const json = await res.json()
-  if (!res.ok) {
-    throw new Error(json?.error?.message || 'Cloudinary rechazó la subida.')
-  }
+  if (!res.ok) throw new Error(json?.error?.message || 'Cloudinary rechazó la subida.')
 
-  // Para resource_type "raw", Cloudinary devuelve public_id CON la extensión
-  // original ya incluida (aunque el public_id que enviamos no la tuviera) —
-  // agregar ".glb" de nuevo acá produce una URL con doble extensión
-  // (".glb.glb") que 404ea. json.public_id ya es la ruta completa correcta.
-  const url =
-    kind === 'model'
-      ? `https://res.cloudinary.com/${cloudName}/raw/upload/v${json.version}/${json.public_id}`
-      : `https://res.cloudinary.com/${cloudName}/${resourceType}/upload/f_auto,q_auto/v${json.version}/${json.public_id}`
-  return { url }
+  return { url: deliveryUrl(kind, cloudName, json) }
 }

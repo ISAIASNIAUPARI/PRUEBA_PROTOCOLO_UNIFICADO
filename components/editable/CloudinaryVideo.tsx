@@ -2,6 +2,8 @@
 
 import { useRef, useState } from 'react'
 
+import { uploadDirectToCloudinary } from '@/lib/upload-direct'
+
 type Props = {
   src: string
   edit?: boolean
@@ -15,9 +17,9 @@ type Props = {
 
 /**
  * Video editable (mismo patrón que EditableImage). En edit=false es un
- * <video> normal. En edit=true muestra "Cambiar video", sube el archivo tal
- * cual (sin comprimir en cliente) a /api/admin/upload-video y entrega la URL
- * de Cloudinary resultante.
+ * <video> normal. En edit=true muestra "Cambiar video" y sube el archivo tal
+ * cual (sin comprimir en cliente) DIRECTO a Cloudinary con una firma de un
+ * solo uso, entregando la URL resultante por onChange.
  */
 export function CloudinaryVideo({ src, edit, onChange, className, autoPlay, loop = true, muted = true, playsInline = true }: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -25,36 +27,21 @@ export function CloudinaryVideo({ src, edit, onChange, className, autoPlay, loop
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
 
-  function upload(file: File) {
+  // Sube DIRECTO a Cloudinary (no por /api): un video real supera casi siempre
+  // el límite de ~4.5MB que Vercel impone al cuerpo de una petición, y ese era
+  // el motivo del "No se pudo subir el video". Ver error #7 del cerebro.
+  async function upload(file: File) {
     setError(null)
     setUploading(true)
     setProgress(0)
-    const form = new FormData()
-    form.append('file', file)
-    const xhr = new XMLHttpRequest()
-    xhr.open('POST', '/api/admin/upload-video')
-    xhr.upload.onprogress = (e) => {
-      if (e.lengthComputable) setProgress(Math.round((e.loaded / e.total) * 100))
-    }
-    xhr.onload = () => {
+    try {
+      const url = await uploadDirectToCloudinary(file, 'video', setProgress)
+      onChange?.(url)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'No se pudo subir el video.')
+    } finally {
       setUploading(false)
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try {
-          const data = JSON.parse(xhr.responseText)
-          if (data.url) onChange?.(data.url)
-          else setError('La subida no devolvió una URL.')
-        } catch {
-          setError('Respuesta inválida del servidor.')
-        }
-      } else {
-        setError('No se pudo subir el video.')
-      }
     }
-    xhr.onerror = () => {
-      setUploading(false)
-      setError('No se pudo subir el video.')
-    }
-    xhr.send(form)
   }
 
   if (!edit) {
