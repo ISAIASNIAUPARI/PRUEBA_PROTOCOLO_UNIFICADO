@@ -2,9 +2,10 @@
 
 import { useEffect, useRef } from 'react'
 
+import { ButtonsArea } from '@/components/editable/ButtonsArea'
 import { CloudinaryVideo } from '@/components/editable/CloudinaryVideo'
-import { EditableButton } from '@/components/editable/EditableButton'
 import { EditableText } from '@/components/editable/EditableText'
+import { resolveButtonHref } from '@/lib/buttons'
 import type { ButtonRef, MenuCategory } from '@/lib/types'
 
 import { SealCloche } from './Seal'
@@ -15,7 +16,11 @@ type MenuData = {
   watermark?: string
   videoUrl: string
   categories: MenuCategory[]
-  button?: ButtonRef
+  buttons?: ButtonRef[]
+}
+
+function menuButtonClass() {
+  return 'btn-outline'
 }
 
 export function MenuSection({
@@ -24,7 +29,7 @@ export function MenuSection({
   watermark,
   videoUrl,
   categories,
-  button,
+  buttons,
   edit,
   onChange,
 }: MenuData & {
@@ -33,6 +38,7 @@ export function MenuSection({
 }) {
   const vidRef = useRef<HTMLVideoElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
+  const list = buttons ?? []
 
   // El vídeo sólo se descarga y reproduce cuando la sección entra en pantalla.
   useEffect(() => {
@@ -62,7 +68,7 @@ export function MenuSection({
   }, [edit])
 
   function patch(next: Partial<MenuData>) {
-    onChange?.({ heading, subheading, watermark, videoUrl, categories, button, ...next })
+    onChange?.({ heading, subheading, watermark, videoUrl, categories, buttons, ...next })
   }
 
   return (
@@ -166,9 +172,24 @@ export function MenuSection({
           ))}
         </div>
 
-        {button?.text && (
+        {(list.length > 0 || edit) && (
           <div className="btn-outline-wrap reveal">
-            <EditableButton edit={edit} button={button} className="btn-outline" onChange={(next) => patch({ button: next })} />
+            <ButtonsArea
+              sectionLabel="Menú"
+              buttons={list}
+              edit={edit}
+              buttonClassName={menuButtonClass}
+              onChange={(next) => patch({ buttons: next })}
+              staticRender={() => (
+                <>
+                  {list.map((b) => (
+                    <a key={b.id} href={resolveButtonHref(b)} className="btn-outline">
+                      {b.text}
+                    </a>
+                  ))}
+                </>
+              )}
+            />
           </div>
         )}
       </div>

@@ -7,6 +7,7 @@ import { MenuSection } from '@/components/MenuSection'
 import { Nav } from '@/components/Nav'
 import { Objects3D } from '@/components/Objects3D'
 import { Reservations } from '@/components/Reservations'
+import { DynamicSection } from '@/components/sections/DynamicSection'
 import { Specials } from '@/components/Specials'
 import type {
   About as AboutT,
@@ -23,13 +24,16 @@ import type {
 import { useEdit } from './EditProvider'
 import { Toolbar } from './Toolbar'
 
-/**
- * Cablea cada sección real del sitio en modo edit=true. Reutiliza los
- * mismos componentes que ve el visitante público — el cliente ve
- * exactamente lo que va a publicar.
- */
+function PositionBadge({ n }: { n: number }) {
+  return (
+    <span className="pointer-events-none absolute left-2 top-2 z-20 flex h-6 w-6 items-center justify-center rounded-full bg-black/70 text-xs font-medium text-white">
+      {n}
+    </span>
+  )
+}
+
 export function AdminApp() {
-  const { data, update } = useEdit()
+  const { data, update, layout, viewMode } = useEdit()
 
   const siteSettings = data.siteSettings as SiteSettings
   const hero = data.hero as HeroT
@@ -41,10 +45,88 @@ export function AdminApp() {
   const reservations = data.reservations as ReservationsT
   const footer = data.footer as FooterT
 
-  return (
-    <>
-      <Toolbar />
+  function renderBaseSection(id: string) {
+    switch (id) {
+      case 'hero':
+        return <Hero edit title={hero.title} slides={hero.slides} buttons={hero.buttons} onChange={(next) => update('hero', next)} />
+      case 'about':
+        return (
+          <About
+            edit
+            heading={about.heading}
+            body={about.body}
+            imageLeft={about.imageLeft}
+            imageRight={about.imageRight}
+            onChange={(next) => update('about', next)}
+          />
+        )
+      case 'experience':
+        return (
+          <div className="border-t border-dashed border-admin-line bg-admin-bg px-4 py-3 text-xs text-admin-ink/60">
+            Sección &ldquo;{experience.heading}&rdquo; (animación por scroll) — no editable desde aquí.
+          </div>
+        )
+      case 'objects3d':
+        return (
+          <Objects3D
+            edit
+            heading={objects3d.heading}
+            subheading={objects3d.subheading}
+            items={objects3d.items}
+            onChange={(next) => update('objects3d', next)}
+          />
+        )
+      case 'specials':
+        return (
+          <Specials
+            edit
+            heading={specials.heading}
+            subheading={specials.subheading}
+            videoUrl={specials.videoUrl}
+            dishes={specials.dishes}
+            onChange={(next) => update('specials', next)}
+          />
+        )
+      case 'menu':
+        return (
+          <MenuSection
+            edit
+            heading={menu.heading}
+            subheading={menu.subheading}
+            watermark={menu.watermark}
+            videoUrl={menu.videoUrl}
+            categories={menu.categories}
+            buttons={menu.buttons}
+            onChange={(next) => update('menu', next)}
+          />
+        )
+      case 'reservations':
+        return (
+          <Reservations
+            edit
+            heading={reservations.heading}
+            lead={reservations.lead}
+            backgroundUrl={reservations.backgroundUrl}
+            backgroundAlt={reservations.backgroundAlt}
+            partySizeOptions={reservations.partySizeOptions}
+            submitLabel={reservations.submitLabel}
+            reservationEmail={reservations.reservationEmail}
+            orText={reservations.orText}
+            phoneDisplay={reservations.phoneDisplay}
+            phoneNumber={reservations.phoneNumber}
+            contactName={reservations.contactName}
+            address={reservations.address}
+            contactEmail={reservations.contactEmail}
+            onChange={(next) => update('reservations', next)}
+          />
+        )
+      default:
+        return null
+    }
+  }
 
+  const page = (
+    <>
       <Nav
         brandName={siteSettings.brandName}
         brandTagline={siteSettings.brandTagline}
@@ -52,73 +134,19 @@ export function AdminApp() {
         showLanguageSwitch={siteSettings.showLanguageSwitch}
       />
 
-      <Hero edit title={hero.title} slides={hero.slides} buttons={hero.buttons} onChange={(next) => update('hero', next)} />
-
-      <About
-        edit
-        heading={about.heading}
-        body={about.body}
-        imageLeft={about.imageLeft}
-        imageRight={about.imageRight}
-        onChange={(next) => update('about', next)}
-      />
-
-      {/* La animación de frames y los objetos 3D no llevan overlay de edición: son
-          media técnico generado aparte (ver protocolo de frames/3D), no contenido
-          de texto o imagen simple del día a día del cliente. */}
-      {experience.enabled !== false && (
-        <div className="border-t border-dashed border-admin-line bg-admin-bg px-4 py-2 text-xs text-admin-ink/60">
-          Sección &ldquo;{experience.heading}&rdquo; (animación por scroll) — no editable desde aquí.
+      {layout.sections.map((s, i) => (
+        <div key={s.id} className={`relative ${s.visible ? '' : 'opacity-60'}`}>
+          <PositionBadge n={i + 1} />
+          {!s.visible && (
+            <div className="relative z-20 bg-yellow-100 px-4 py-1 text-center text-xs text-yellow-800">Sección oculta — no se muestra en el sitio público</div>
+          )}
+          {s.type ? (
+            <DynamicSection id={s.id} type={s.type} data={data[s.id]} edit onChange={(next) => update(s.id, next)} />
+          ) : (
+            renderBaseSection(s.id)
+          )}
         </div>
-      )}
-
-      {objects3d.enabled !== false && (
-        <Objects3D
-          edit
-          heading={objects3d.heading}
-          subheading={objects3d.subheading}
-          items={objects3d.items}
-          onChange={(next) => update('objects3d', next)}
-        />
-      )}
-
-      <Specials
-        edit
-        heading={specials.heading}
-        subheading={specials.subheading}
-        videoUrl={specials.videoUrl}
-        dishes={specials.dishes}
-        onChange={(next) => update('specials', next)}
-      />
-
-      <MenuSection
-        edit
-        heading={menu.heading}
-        subheading={menu.subheading}
-        watermark={menu.watermark}
-        videoUrl={menu.videoUrl}
-        categories={menu.categories}
-        button={menu.button}
-        onChange={(next) => update('menu', next)}
-      />
-
-      <Reservations
-        edit
-        heading={reservations.heading}
-        lead={reservations.lead}
-        backgroundUrl={reservations.backgroundUrl}
-        backgroundAlt={reservations.backgroundAlt}
-        partySizeOptions={reservations.partySizeOptions}
-        submitLabel={reservations.submitLabel}
-        reservationEmail={reservations.reservationEmail}
-        orText={reservations.orText}
-        phoneDisplay={reservations.phoneDisplay}
-        phoneNumber={reservations.phoneNumber}
-        contactName={reservations.contactName}
-        address={reservations.address}
-        contactEmail={reservations.contactEmail}
-        onChange={(next) => update('reservations', next)}
-      />
+      ))}
 
       <Footer
         edit
@@ -127,12 +155,25 @@ export function AdminApp() {
         scheduleTitle={footer.scheduleTitle}
         schedule={footer.schedule}
         reserveTitle={footer.reserveTitle}
-        reserveButton={footer.reserveButton}
+        reserveButtons={footer.reserveButtons}
         socialTitle={footer.socialTitle}
         socials={footer.socials}
         copyright={footer.copyright}
         onChange={(next) => update('footer', next)}
       />
+    </>
+  )
+
+  return (
+    <>
+      <Toolbar />
+      {viewMode === 'mobile' ? (
+        <div className="flex justify-center bg-admin-line py-6">
+          <div className="w-[390px] max-w-full overflow-hidden rounded-[2rem] border-8 border-admin-ink bg-white shadow-xl">{page}</div>
+        </div>
+      ) : (
+        page
+      )}
     </>
   )
 }

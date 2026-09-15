@@ -6,7 +6,9 @@
     { "days": "Domingo", "hours": "12h30 a 16h30" }
   ],
   "reserveTitle": "RESERVAR CON:",
-  "reserveButton": { "text": "Realiza tu reserva aquí", "href": "#reservas" },
+  "reserveButtons": [
+    { "id": "footer-btn-1", "text": "Realiza tu reserva aquí", "href": "#reservas", "hrefType": "anchor" }
+  ],
   "socialTitle": "RRSS",
   "socials": [
     { "network": "facebook" },

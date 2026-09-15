@@ -1,7 +1,7 @@
 'use client'
 
-import { EditableButton } from '@/components/editable/EditableButton'
 import { EditableText } from '@/components/editable/EditableText'
+import { isSafeHref, resolveButtonHref } from '@/lib/buttons'
 import type { ButtonRef, ScheduleRow, Social } from '@/lib/types'
 
 const SOCIAL_ICONS: Record<string, React.ReactNode> = {
@@ -45,7 +45,7 @@ type FooterData = {
   scheduleTitle?: string
   schedule?: ScheduleRow[]
   reserveTitle?: string
-  reserveButton?: ButtonRef
+  reserveButtons?: ButtonRef[]
   socialTitle?: string
   socials?: Social[]
   copyright?: string
@@ -57,7 +57,7 @@ export function Footer({
   scheduleTitle,
   schedule,
   reserveTitle,
-  reserveButton,
+  reserveButtons,
   socialTitle,
   socials,
   copyright,
@@ -73,9 +73,10 @@ export function Footer({
   // enlaces los que tienen URL. Sin ella queda el icono sin ser clicable,
   // en vez de un enlace muerto a "#".
   const shown = (socials ?? []).filter((s) => s.network && SOCIAL_ICONS[s.network])
+  const buttons = reserveButtons ?? []
 
   function patch(next: Partial<FooterData>) {
-    onChange?.({ scheduleTitle, schedule, reserveTitle, reserveButton, socialTitle, socials, copyright, ...next })
+    onChange?.({ scheduleTitle, schedule, reserveTitle, reserveButtons, socialTitle, socials, copyright, ...next })
   }
 
   return (
@@ -132,13 +133,37 @@ export function Footer({
               <path d="M6 3l3 5-2 2c1 3 4 6 7 7l2-2 5 3-2 4c-9 0-18-9-18-18z" strokeLinejoin="round" />
             </svg>
             <div className="foot-title">{reserveTitle}</div>
-            {reserveButton && (
-              <EditableButton
-                edit={edit}
-                button={reserveButton}
-                className="foot-link"
-                onChange={(next) => patch({ reserveButton: next })}
-              />
+            {buttons.map((b, i) =>
+              edit ? (
+                <span key={b.id} className="foot-link inline-flex flex-col items-start gap-1">
+                  <EditableText
+                    as="span"
+                    edit
+                    value={b.text}
+                    onChange={(text) => {
+                      const next = buttons.slice()
+                      next[i] = { ...b, text }
+                      patch({ reserveButtons: next })
+                    }}
+                  />
+                  <input
+                    type="text"
+                    value={b.href}
+                    onChange={(e) => {
+                      if (!isSafeHref(e.target.value)) return
+                      const next = buttons.slice()
+                      next[i] = { ...b, href: e.target.value }
+                      patch({ reserveButtons: next })
+                    }}
+                    placeholder="#reservas"
+                    className="w-full rounded border border-black/10 px-1.5 py-0.5 text-xs"
+                  />
+                </span>
+              ) : (
+                <a key={b.id} href={resolveButtonHref(b)} className="foot-link">
+                  {b.text}
+                </a>
+              )
             )}
           </div>
 

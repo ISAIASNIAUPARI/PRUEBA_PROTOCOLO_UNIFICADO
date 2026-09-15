@@ -1,5 +1,20 @@
-export type ImageRef = { url: string; alt?: string }
-export type ButtonRef = { text: string; href: string }
+export type ImageRef = { url: string; alt?: string; focalX?: number; focalY?: number }
+
+export type ThemeColorChoice = 'primary' | 'secondary' | 'accent'
+export type ButtonHrefType = 'anchor' | 'url' | 'whatsapp' | 'phone'
+
+export type ButtonRef = {
+  id: string
+  text: string
+  href: string
+  hrefType: ButtonHrefType
+  /** Posición libre (%, 0-100) dentro de la sección — independientes entre vistas. */
+  desktopX?: number
+  desktopY?: number
+  mobileX?: number
+  mobileY?: number
+  color?: ThemeColorChoice
+}
 
 export type SiteSettings = {
   brandName: string
@@ -18,6 +33,22 @@ export type SiteSettings = {
   chatPlaceholder: string
   chatNotifications: string[]
 }
+
+export type Theme = {
+  colorPrimary: string
+  colorSecondary: string
+  colorAccent: string
+}
+
+export type SectionLayoutEntry = {
+  id: string
+  label: string
+  visible: boolean
+  /** Solo presente en secciones dinámicas creadas desde plantilla. */
+  type?: DynamicSectionType
+}
+
+export type PageLayout = { sections: SectionLayoutEntry[] }
 
 export type Hero = {
   title: string
@@ -71,7 +102,7 @@ export type MenuSectionData = {
   subheading: string
   watermark: string
   videoUrl: string
-  button: ButtonRef
+  buttons: ButtonRef[]
   categories: MenuCategory[]
 }
 
@@ -98,7 +129,7 @@ export type Footer = {
   scheduleTitle: string
   schedule: ScheduleRow[]
   reserveTitle: string
-  reserveButton: ButtonRef
+  reserveButtons: ButtonRef[]
   socialTitle: string
   socials: Social[]
   copyright: string
@@ -121,4 +152,72 @@ export type DrinksPage = {
   sectionTitle: string
   footerText: string
   drinks: Drink[]
+}
+
+// ---- Secciones dinámicas desde plantilla (Fase D, Parte 3) ----
+
+export type DynamicSectionType = 'cta-banner' | 'menu-grid' | 'text-block' | 'photo-gallery' | 'faq'
+
+export const DYNAMIC_SECTION_LABELS: Record<DynamicSectionType, string> = {
+  'cta-banner': 'Llamada a la acción',
+  'menu-grid': 'Carta / Menú',
+  'text-block': 'Bloque de texto',
+  'photo-gallery': 'Galería de fotos',
+  faq: 'Preguntas frecuentes',
+}
+
+export type CtaBannerData = {
+  subtitle: string
+  heading: string
+  body: string
+  backgroundImage: ImageRef | null
+  backgroundColor?: ThemeColorChoice
+  buttons: ButtonRef[]
+}
+
+export type MenuGridItem = { id: string; image: ImageRef | null; name: string; price: string; description: string }
+export type MenuGridData = {
+  subtitle: string
+  heading: string
+  backgroundColor?: ThemeColorChoice
+  items: MenuGridItem[]
+}
+
+export type TextBlockData = {
+  subtitle: string
+  heading: string
+  paragraphs: string[]
+  image: ImageRef | null
+  backgroundColor?: ThemeColorChoice
+}
+
+export type PhotoGalleryItem = { id: string; image: ImageRef; caption: string }
+export type PhotoGalleryData = {
+  subtitle: string
+  heading: string
+  backgroundColor?: ThemeColorChoice
+  photos: PhotoGalleryItem[]
+}
+
+export type FaqItem = { id: string; question: string; answer: string }
+export type FaqData = {
+  subtitle: string
+  heading: string
+  backgroundColor?: ThemeColorChoice
+  items: FaqItem[]
+}
+
+export function emptySectionData(type: DynamicSectionType): unknown {
+  switch (type) {
+    case 'cta-banner':
+      return { subtitle: '', heading: '', body: '', backgroundImage: null, buttons: [] } satisfies CtaBannerData
+    case 'menu-grid':
+      return { subtitle: '', heading: '', items: [] } satisfies MenuGridData
+    case 'text-block':
+      return { subtitle: '', heading: '', paragraphs: [''], image: null } satisfies TextBlockData
+    case 'photo-gallery':
+      return { subtitle: '', heading: '', photos: [] } satisfies PhotoGalleryData
+    case 'faq':
+      return { subtitle: '', heading: '', items: [] } satisfies FaqData
+  }
 }

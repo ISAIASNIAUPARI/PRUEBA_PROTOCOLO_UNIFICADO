@@ -5,15 +5,24 @@ import {
   drinksPage,
   experience,
   footer,
+  getDynamicSections,
   hero,
   menu,
   objects3d,
+  pageLayout,
   reservations,
   siteSettings,
   specials,
+  theme,
 } from '@/lib/content'
 
 export default function AdminPage() {
+  const dynamicSections = getDynamicSections()
+  const dynamicData: Record<string, unknown> = {}
+  for (const [id, section] of Object.entries(dynamicSections)) {
+    dynamicData[id] = section.data
+  }
+
   const initialData = {
     siteSettings,
     hero,
@@ -25,10 +34,13 @@ export default function AdminPage() {
     reservations,
     footer,
     drinksPage,
+    pageLayout,
+    theme,
+    ...dynamicData,
   }
 
   return (
-    <EditProvider initialData={initialData}>
+    <EditProvider initialData={initialData} initialLayout={pageLayout} initialTheme={theme}>
       <AdminApp />
     </EditProvider>
   )

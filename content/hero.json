@@ -6,7 +6,7 @@
     { "url": "/images/hero-plato.jpg", "alt": "Plato especial" }
   ],
   "buttons": [
-    { "text": "Reservaciones", "href": "#reservas" },
-    { "text": "Conoce nuestro menú", "href": "#menu" }
+    { "id": "hero-btn-1", "text": "Reservaciones", "href": "#reservas", "hrefType": "anchor" },
+    { "id": "hero-btn-2", "text": "Conoce nuestro menú", "href": "#menu", "hrefType": "anchor" }
   ]
 }

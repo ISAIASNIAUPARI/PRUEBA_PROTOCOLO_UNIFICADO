@@ -1,21 +1,36 @@
+/* Solo tema + utilidades de Tailwind (sin preflight) — para las secciones
+   NUEVAS creadas desde plantilla (Fase D, Parte 3), que sí usan clases de
+   Tailwind. El CSS portado del diseño original de abajo no se toca. */
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
 /* =========================================================
-   La Gloria Restaurante
+   La Gloria Familia Unida
    CSS portado literalmente desde el HTML estático original.
    Las únicas diferencias respecto al original:
      · las familias tipográficas ahora vienen de next/font
        (mismas fuentes de Google, servidas desde nuestro dominio)
      · los <image-slot> del maquetador se han sustituido por <img>
+     · --gold/--ink/--cream ahora son alias de --color-primary/
+       --color-accent/--color-secondary (tema de 3 colores editable
+       desde /admin, inyectado como inline style en <html> — ver
+       app/layout.tsx y content/theme.json). Estos valores de acá son
+       solo el respaldo si esa inyección no llegara a pasar.
    ========================================================= */
 
 :root{
-  --cream:#FAFAF8;
+  --color-primary:#C9A962;
+  --color-secondary:#FAFAF8;
+  --color-accent:#1A1A1A;
+
+  --cream:var(--color-secondary);
   --gray-bg:#D9D9D6;
-  --ink:#1A1A1A;
-  --ink-soft:#3a3a3a;
+  --ink:var(--color-accent);
+  --ink-soft:color-mix(in oklch, var(--ink) 75%, white);
   --muted:#6b6b68;
-  --gold:#C9A962;
-  --gold-deep:#b08f4a;
-  --line:#e5e2db;
+  --gold:var(--color-primary);
+  --gold-deep:color-mix(in oklch, var(--gold) 80%, black);
+  --line:color-mix(in oklch, var(--cream) 90%, var(--ink) 10%);
   --sans:var(--font-poppins),system-ui,sans-serif;
   --serif:var(--font-playfair),Georgia,serif;
   --script:var(--font-pinyon),cursive;

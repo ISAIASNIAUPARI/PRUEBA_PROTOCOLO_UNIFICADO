@@ -2,15 +2,20 @@
 
 import { useEffect, useState } from 'react'
 
-import { EditableButton } from '@/components/editable/EditableButton'
+import { ButtonsArea } from '@/components/editable/ButtonsArea'
 import { EditableImage } from '@/components/editable/EditableImage'
 import { EditableText } from '@/components/editable/EditableText'
+import { resolveButtonHref } from '@/lib/buttons'
 import type { ButtonRef, ImageRef } from '@/lib/types'
 
 type HeroData = {
   title?: string
   slides: ImageRef[]
   buttons?: ButtonRef[]
+}
+
+function heroButtonClass() {
+  return 'btn-ghost'
 }
 
 export function Hero({
@@ -37,6 +42,7 @@ export function Hero({
 
   // El titular admite un salto de línea escrito desde el admin.
   const lines = (title || '').split('\n')
+  const list = buttons ?? []
 
   function patch(next: Partial<HeroData>) {
     onChange?.({ title, slides, buttons, ...next })
@@ -54,9 +60,17 @@ export function Hero({
               src={s.url}
               alt={s.alt}
               imgClassName={i === current ? 'active' : undefined}
+              focalX={s.focalX}
+              focalY={s.focalY}
+              aspectRatio={16 / 9}
               onChange={(url) => {
                 const next = slides.slice()
                 next[i] = { ...s, url }
+                patch({ slides: next })
+              }}
+              onFocalChange={(x, y) => {
+                const next = slides.slice()
+                next[i] = { ...s, focalX: x, focalY: y }
                 patch({ slides: next })
               }}
             />
@@ -70,6 +84,7 @@ export function Hero({
               loading={i === 0 ? 'eager' : 'lazy'}
               decoding="async"
               fetchPriority={i === 0 ? 'high' : 'auto'}
+              style={s.focalX != null && s.focalY != null ? { objectPosition: `${s.focalX}% ${s.focalY}%` } : undefined}
             />
           )
         )}
@@ -88,21 +103,24 @@ export function Hero({
             ))
           )}
         </h1>
-        {!!buttons?.length && (
+        {(list.length > 0 || edit) && (
           <div className="cta">
-            {buttons.map((c, i) => (
-              <EditableButton
-                key={i}
-                edit={edit}
-                button={c}
-                className="btn-ghost"
-                onChange={(next) => {
-                  const nextButtons = buttons.slice()
-                  nextButtons[i] = next
-                  patch({ buttons: nextButtons })
-                }}
-              />
-            ))}
+            <ButtonsArea
+              sectionLabel="Portada"
+              buttons={list}
+              edit={edit}
+              buttonClassName={heroButtonClass}
+              onChange={(next) => patch({ buttons: next })}
+              staticRender={() => (
+                <>
+                  {list.map((b) => (
+                    <a key={b.id} href={resolveButtonHref(b)} className="btn-ghost">
+                      {b.text}
+                    </a>
+                  ))}
+                </>
+              )}
+            />
           </div>
         )}
       </div>

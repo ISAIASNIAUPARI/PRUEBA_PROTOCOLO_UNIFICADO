@@ -22,10 +22,24 @@
   --color-admin-danger: #c0392b;
 
   --animate-admin-flash: admin-flash 1.1s ease;
+  --animate-section-flash: section-move-flash 2000ms ease;
 }
 
 @keyframes admin-flash {
   0% {
+    background-color: color-mix(in srgb, var(--color-admin-accent) 35%, transparent);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+/* Confirmación al reordenar en "Organizar página" — sube rápido, baja lento. */
+@keyframes section-move-flash {
+  0% {
+    background-color: transparent;
+  }
+  15% {
     background-color: color-mix(in srgb, var(--color-admin-accent) 35%, transparent);
   }
   100% {

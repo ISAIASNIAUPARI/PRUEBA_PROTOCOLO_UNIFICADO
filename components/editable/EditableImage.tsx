@@ -1,6 +1,9 @@
 'use client'
 
+import dynamic from 'next/dynamic'
 import { useRef, useState } from 'react'
+
+const FocalPointPicker = dynamic(() => import('@/components/admin/FocalPointPicker'), { ssr: false })
 
 type Props = {
   src?: string | null
@@ -17,6 +20,11 @@ type Props = {
    * en vez del tamaño-por-contenido normal.
    */
   fill?: boolean
+  focalX?: number
+  focalY?: number
+  onFocalChange?: (x: number, y: number) => void
+  /** Aspect ratio del recorte real (ancho/alto) para el selector de punto focal. */
+  aspectRatio?: number
 }
 
 /**
@@ -26,12 +34,31 @@ type Props = {
  * (evita tocar el límite de ~4.5MB de las funciones de Vercel), sube a
  * /api/admin/upload-image (Cloudinary), y entrega la URL resultante por
  * onChange — el binario nunca pasa por el commit de GitHub.
+ *
+ * Si se pasa onFocalChange, también muestra un ⊕ para elegir el punto focal
+ * (object-position) — útil cuando el sujeto de la foto no está centrado.
  */
-export function EditableImage({ src, alt, edit, onChange, className, imgClassName, maxWidth = 1800, fill }: Props) {
+export function EditableImage({
+  src,
+  alt,
+  edit,
+  onChange,
+  className,
+  imgClassName,
+  maxWidth = 1800,
+  fill,
+  focalX,
+  focalY,
+  onFocalChange,
+  aspectRatio = 4 / 3,
+}: Props) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
+  const [pickerOpen, setPickerOpen] = useState(false)
+
+  const objectPosition = focalX != null && focalY != null ? `${focalX}% ${focalY}%` : undefined
 
   async function compress(file: File): Promise<Blob> {
     const bitmap = await createImageBitmap(file)
@@ -91,14 +118,14 @@ export function EditableImage({ src, alt, edit, onChange, className, imgClassNam
   if (!edit) {
     if (!src) return null
     // eslint-disable-next-line @next/next/no-img-element
-    return <img src={src} alt={alt || ''} className={imgClassName} loading="lazy" decoding="async" />
+    return <img src={src} alt={alt || ''} className={imgClassName} loading="lazy" decoding="async" style={objectPosition ? { objectPosition } : undefined} />
   }
 
   return (
     <div className={`group ${fill ? 'absolute inset-0' : 'relative'} ${className ?? ''}`}>
       {src ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={src} alt={alt || ''} className={imgClassName} />
+        <img src={src} alt={alt || ''} className={imgClassName} style={objectPosition ? { objectPosition } : undefined} />
       ) : (
         <div className="flex aspect-square w-full items-center justify-center bg-admin-line text-sm text-admin-ink/60">
           Sin imagen
@@ -114,6 +141,16 @@ export function EditableImage({ src, alt, edit, onChange, className, imgClassNam
         </button>
         {error && <span className="rounded bg-admin-danger px-2 py-1 text-xs text-white">{error}</span>}
       </div>
+      {src && onFocalChange && (
+        <button
+          type="button"
+          title="Elegir punto focal"
+          onClick={() => setPickerOpen(true)}
+          className="absolute right-1.5 top-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-black/55 text-white opacity-0 transition-opacity group-hover:opacity-100"
+        >
+          ⊕
+        </button>
+      )}
       <input
         ref={inputRef}
         type="file"
@@ -125,6 +162,19 @@ export function EditableImage({ src, alt, edit, onChange, className, imgClassNam
           e.target.value = ''
         }}
       />
+      {pickerOpen && src && onFocalChange && (
+        <FocalPointPicker
+          src={src}
+          aspectRatio={aspectRatio}
+          focalX={focalX}
+          focalY={focalY}
+          onApply={(x, y) => {
+            onFocalChange(x, y)
+            setPickerOpen(false)
+          }}
+          onCancel={() => setPickerOpen(false)}
+        />
+      )}
     </div>
   )
 }

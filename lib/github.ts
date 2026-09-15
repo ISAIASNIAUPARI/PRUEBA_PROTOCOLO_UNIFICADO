@@ -6,9 +6,11 @@ import { Octokit } from '@octokit/rest'
 export interface FileChange {
   /** Ruta dentro del repo, ej: "content/hero.json" */
   path: string
-  /** Contenido en texto (utf-8) o en base64 (para binarios) */
-  content: string
-  encoding: 'utf-8' | 'base64'
+  /** Contenido en texto (utf-8) o en base64 (para binarios). Ignorado si deleted=true. */
+  content?: string
+  encoding?: 'utf-8' | 'base64'
+  /** true para eliminar el archivo del árbol en este mismo commit. */
+  deleted?: boolean
 }
 
 function getConfig() {
@@ -45,29 +47,32 @@ export async function commitFiles(files: FileChange[], message: string) {
   const { data: latestCommit } = await octokit.git.getCommit({ owner, repo, commit_sha: latestCommitSha })
   const baseTreeSha = latestCommit.tree.sha
 
-  // 3. Un blob por archivo cambiado
-  const blobs = await Promise.all(
+  // 3. Un blob por archivo cambiado (los eliminados no llevan blob: sha null los saca del árbol)
+  const entries = await Promise.all(
     files.map(async (file) => {
+      if (file.deleted) {
+        return { path: file.path, sha: null as string | null }
+      }
       const { data: blob } = await octokit.git.createBlob({
         owner,
         repo,
-        content: file.content,
+        content: file.content ?? '',
         encoding: file.encoding === 'base64' ? 'base64' : 'utf-8',
       })
-      return { path: file.path, sha: blob.sha }
+      return { path: file.path, sha: blob.sha as string | null }
     })
   )
 
-  // 4. Árbol nuevo, basado en el árbol actual + los blobs cambiados
+  // 4. Árbol nuevo, basado en el árbol actual + los blobs cambiados/eliminados
   const { data: newTree } = await octokit.git.createTree({
     owner,
     repo,
     base_tree: baseTreeSha,
-    tree: blobs.map((b) => ({
-      path: b.path,
+    tree: entries.map((e) => ({
+      path: e.path,
       mode: '100644' as const,
       type: 'blob' as const,
-      sha: b.sha,
+      sha: e.sha,
     })),
   })
 

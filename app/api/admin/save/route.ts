@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 
-import { CONTENT_FILES } from '@/lib/content'
+import { sectionFilePath } from '@/lib/content'
 import { commitFiles } from '@/lib/github'
 
 export async function POST(req: Request) {
@@ -13,9 +13,9 @@ export async function POST(req: Request) {
     }
 
     const files = sections
-      .filter((s) => typeof s.sectionId === 'string' && CONTENT_FILES[s.sectionId])
+      .filter((s) => typeof s.sectionId === 'string')
       .map((s) => ({
-        path: CONTENT_FILES[s.sectionId],
+        path: sectionFilePath(s.sectionId),
         content: `${JSON.stringify(s.data, null, 2)}\n`,
         encoding: 'utf-8' as const,
       }))

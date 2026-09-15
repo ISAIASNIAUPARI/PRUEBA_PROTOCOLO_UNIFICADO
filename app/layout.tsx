@@ -6,6 +6,8 @@ import {
   Poppins,
 } from 'next/font/google'
 
+import { theme } from '@/lib/content'
+
 /**
  * Layout raíz.
  *
@@ -59,6 +61,13 @@ export default function RootLayout({
     <html
       lang="es"
       className={`${poppins.variable} ${playfair.variable} ${pinyon.variable} ${montserrat.variable}`}
+      style={
+        {
+          '--color-primary': theme.colorPrimary,
+          '--color-secondary': theme.colorSecondary,
+          '--color-accent': theme.colorAccent,
+        } as React.CSSProperties
+      }
     >
       <head>
         {/* Pre-conecta a CDNs externos antes de que el parser llegue a las imágenes */}

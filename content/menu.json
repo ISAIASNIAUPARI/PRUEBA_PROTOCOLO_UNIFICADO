@@ -3,7 +3,9 @@
   "subheading": "Selección completa de todas nuestras delicias",
   "watermark": "Menú",
   "videoUrl": "https://res.cloudinary.com/foewxv45/video/upload/f_auto,q_auto/lgfuvideomenu",
-  "button": { "text": "Ver menú completo", "href": "#footer" },
+  "buttons": [
+    { "id": "menu-btn-1", "text": "Ver menú completo", "href": "#footer", "hrefType": "anchor" }
+  ],
   "categories": [
     {
       "title": "Entradas Frías",

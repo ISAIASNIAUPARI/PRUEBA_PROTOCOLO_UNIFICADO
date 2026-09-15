@@ -1,0 +1,11 @@
+{
+  "sections": [
+    { "id": "hero", "label": "Portada", "visible": true },
+    { "id": "about", "label": "Sobre nosotros", "visible": true },
+    { "id": "experience", "label": "Animación de scroll", "visible": true },
+    { "id": "objects3d", "label": "Objetos 3D", "visible": true },
+    { "id": "specials", "label": "Especiales", "visible": true },
+    { "id": "menu", "label": "Menú", "visible": true },
+    { "id": "reservations", "label": "Reservas", "visible": true }
+  ]
+}
