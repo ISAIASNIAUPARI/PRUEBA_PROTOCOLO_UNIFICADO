@@ -25,7 +25,8 @@ import type {
 } from '@/lib/types'
 
 import { useEdit } from './EditProvider'
-import { Toolbar } from './Toolbar'
+import { PreviewReadOnly, SelectionProvider, useSelection } from './Selection'
+import { Sidebar } from './Sidebar'
 
 function PositionBadge({ n }: { n: number }) {
   return (
@@ -201,15 +202,39 @@ export function AdminApp() {
   )
 
   return (
-    <>
-      <Toolbar />
-      {viewMode === 'mobile' ? (
-        <div className="flex justify-center bg-admin-line py-6">
-          <div className="w-[390px] max-w-full overflow-hidden rounded-[2rem] border-8 border-admin-ink bg-white shadow-xl">{page}</div>
-        </div>
-      ) : (
-        page
-      )}
-    </>
+    <SelectionProvider>
+      <div className="admin-shell-grid">
+        <Sidebar />
+        <PreviewPane>{page}</PreviewPane>
+      </div>
+    </SelectionProvider>
+  )
+}
+
+/**
+ * Columna derecha: la web tal cual, en SOLO LECTURA.
+ *
+ * Lo único que responde acá es seleccionar un texto; subir medios, arrastrar
+ * botones u organizar secciones vive en el sidebar. Un clic en el fondo
+ * deselecciona, igual que en un editor de escritorio.
+ */
+function PreviewPane({ children }: { children: React.ReactNode }) {
+  const { viewMode } = useEdit()
+  const { clear } = useSelection()
+
+  return (
+    <div className="admin-preview" onClick={() => clear()}>
+      <PreviewReadOnly>
+        {viewMode === 'mobile' ? (
+          <div className="flex justify-center bg-admin-line py-6">
+            <div className="w-[390px] max-w-full overflow-hidden rounded-[2rem] border-8 border-admin-ink bg-white shadow-xl">
+              {children}
+            </div>
+          </div>
+        ) : (
+          children
+        )}
+      </PreviewReadOnly>
+    </div>
   )
 }

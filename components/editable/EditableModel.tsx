@@ -1,6 +1,8 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useId, useRef, useState } from 'react'
+
+import { usePreviewReadOnly, useSelectionOptional } from '@/components/admin/Selection'
 
 import { uploadDirectToCloudinary } from '@/lib/upload-direct'
 
@@ -22,7 +24,29 @@ export function EditableModel({ edit, onChange }: Props) {
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
 
+  const readOnly = usePreviewReadOnly()
+  const selection = useSelectionOptional()
+  const id = useId()
+  const selected = selection?.selected?.id === id
+
   if (!edit) return null
+
+  // En el preview no hay botón de subida: un clic selecciona el objeto y el
+  // control de subir .glb aparece en el sidebar.
+  if (readOnly) {
+    return (
+      <div
+        className={`admin-selectable absolute inset-0 ${selected ? 'admin-selected' : ''}`}
+        onClick={(e) => {
+          e.stopPropagation()
+          selection?.select(
+            { id, kind: 'media', label: 'Objeto 3D' },
+            { renderControls: () => <EditableModel edit onChange={onChange} /> }
+          )
+        }}
+      />
+    )
+  }
 
   // Mismo camino directo que el video: un .glb puede superar el límite de
   // ~4.5MB del cuerpo de una función de Vercel (el tope propio de Cloudinary

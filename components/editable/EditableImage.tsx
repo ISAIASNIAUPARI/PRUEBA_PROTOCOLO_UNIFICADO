@@ -1,7 +1,9 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useRef, useState } from 'react'
+import { useId, useRef, useState } from 'react'
+
+import { usePreviewReadOnly, useSelectionOptional } from '@/components/admin/Selection'
 
 const FocalPointPicker = dynamic(() => import('@/components/admin/FocalPointPicker'), { ssr: false })
 
@@ -60,6 +62,12 @@ export function EditableImage({
 
   const objectPosition = focalX != null && focalY != null ? `${focalX}% ${focalY}%` : undefined
 
+  const readOnly = usePreviewReadOnly()
+  const selection = useSelectionOptional()
+  const id = useId()
+  const selected = selection?.selected?.id === id
+  const allProps = { src, alt, edit, onChange, className, imgClassName, maxWidth, fill, focalX, focalY, onFocalChange, aspectRatio }
+
   async function compress(file: File): Promise<Blob> {
     const bitmap = await createImageBitmap(file)
     const scale = Math.min(1, maxWidth / bitmap.width)
@@ -113,6 +121,32 @@ export function EditableImage({
         setUploading(false)
         setError('No se pudo procesar la imagen.')
       })
+  }
+
+  // En el PREVIEW del admin la imagen es solo lectura: un clic la selecciona
+  // y sus controles (cambiar imagen, punto focal) se pintan en el sidebar.
+  if (edit && readOnly) {
+    return (
+      <div
+        className={`admin-selectable ${selected ? 'admin-selected' : ''} ${fill ? 'absolute inset-0' : 'relative'} ${className ?? ''}`}
+        onClick={(e) => {
+          e.stopPropagation()
+          selection?.select(
+            { id, kind: 'media', label: 'Imagen' },
+            { renderControls: () => <EditableImage {...allProps} /> }
+          )
+        }}
+      >
+        {src ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={src} alt={alt || ''} className={imgClassName} style={objectPosition ? { objectPosition } : undefined} />
+        ) : (
+          <div className="flex aspect-square w-full items-center justify-center bg-admin-line text-sm text-admin-ink/60">
+            Sin imagen
+          </div>
+        )}
+      </div>
+    )
   }
 
   if (!edit) {

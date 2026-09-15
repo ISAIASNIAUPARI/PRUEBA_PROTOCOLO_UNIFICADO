@@ -4,6 +4,8 @@ import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 
+import { usePreviewReadOnly } from '@/components/admin/Selection'
+
 import { useIsMobileView } from '@/components/admin/useIsMobileView'
 import type { ButtonRef } from '@/lib/types'
 
@@ -45,6 +47,11 @@ export function ButtonsArea({
   const isMobile = useIsMobileView()
   const xKey = isMobile ? 'mobileX' : 'desktopX'
   const yKey = isMobile ? 'mobileY' : 'desktopY'
+  // En el preview del admin los botones NO se arrastran: se ven tal cual
+  // quedaron. Reordenarlos y moverlos se hace desde "Editar botones", que
+  // abre su panel desde el sidebar.
+  const readOnly = usePreviewReadOnly()
+  const canDrag = !!edit && !readOnly
   const canvasActive = !!edit || buttons.some((b) => b[xKey] != null && b[yKey] != null)
 
   useEffect(() => {
@@ -59,7 +66,7 @@ export function ButtonsArea({
         ? createPortal(
             <FreeButtonsCanvas
               buttons={buttons}
-              edit={!!edit}
+              edit={canDrag}
               xKey={xKey}
               yKey={yKey}
               onChange={(next) => onChange?.(next)}
@@ -69,7 +76,7 @@ export function ButtonsArea({
           )
         : !canvasActive && staticRender()}
 
-      {edit && (
+      {canDrag && (
         <button
           type="button"
           onClick={() => setEditorOpen(true)}

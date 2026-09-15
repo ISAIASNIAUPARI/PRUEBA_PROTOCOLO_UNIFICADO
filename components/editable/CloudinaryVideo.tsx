@@ -1,6 +1,8 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useId, useRef, useState } from 'react'
+
+import { usePreviewReadOnly, useSelectionOptional } from '@/components/admin/Selection'
 
 import { uploadDirectToCloudinary } from '@/lib/upload-direct'
 
@@ -27,6 +29,12 @@ export function CloudinaryVideo({ src, edit, onChange, className, autoPlay, loop
   const [progress, setProgress] = useState(0)
   const [error, setError] = useState<string | null>(null)
 
+  const readOnly = usePreviewReadOnly()
+  const selection = useSelectionOptional()
+  const id = useId()
+  const selected = selection?.selected?.id === id
+  const allProps = { src, edit, onChange, className, autoPlay, loop, muted, playsInline }
+
   // Sube DIRECTO a Cloudinary (no por /api): un video real supera casi siempre
   // el límite de ~4.5MB que Vercel impone al cuerpo de una petición, y ese era
   // el motivo del "No se pudo subir el video". Ver error #7 del cerebro.
@@ -42,6 +50,25 @@ export function CloudinaryVideo({ src, edit, onChange, className, autoPlay, loop
     } finally {
       setUploading(false)
     }
+  }
+
+  // En el preview del admin el video es solo lectura; "Cambiar video" vive
+  // en el sidebar, igual que el resto de acciones que modifican contenido.
+  if (edit && readOnly) {
+    return (
+      <div
+        className={`admin-selectable ${selected ? 'admin-selected' : ''} h-full w-full`}
+        onClick={(e) => {
+          e.stopPropagation()
+          selection?.select(
+            { id, kind: 'media', label: 'Video de fondo' },
+            { renderControls: () => <CloudinaryVideo {...allProps} /> }
+          )
+        }}
+      >
+        <video src={src} className={className} autoPlay={autoPlay} loop={loop} muted={muted} playsInline={playsInline} />
+      </div>
+    )
   }
 
   if (!edit) {

@@ -15,6 +15,37 @@ export type TextColors = Record<string, ThemeColorChoice>
 type Patch = (next: TextColors) => void
 
 /**
+ * Nombre legible por clave, para que el sidebar diga "Título principal" en
+ * vez de "heading". Una clave sin entrada cae en un nombre genérico — es
+ * cosmético, nunca rompe nada.
+ */
+const LABELS: Record<string, string> = {
+  title: 'Título principal',
+  heading: 'Título',
+  subheading: 'Subtítulo',
+  subtitle: 'Antetítulo',
+  body: 'Texto',
+  lead: 'Texto de entrada',
+  watermark: 'Marca de agua',
+  copyright: 'Aviso de copyright',
+  address: 'Dirección',
+  email: 'Correo',
+  contactEmail: 'Correo de contacto',
+  contactName: 'Nombre de contacto',
+  hoursText: 'Horario',
+  whatsappNumber: 'Número de WhatsApp',
+  phoneDisplay: 'Teléfono visible',
+  formTitle: 'Título del formulario',
+  formSubmitLabel: 'Botón del formulario',
+  orText: 'Texto separador',
+  people: 'Etiqueta de personas',
+}
+
+export function textColorLabel(key: string): string {
+  return LABELS[key] ?? 'Texto'
+}
+
+/**
  * Devuelve un helper para cablear `EditableText` en una sección:
  *
  *   const color = textColorProps(data.textColors, (tc) => patch({ textColors: tc }))
@@ -24,6 +55,7 @@ type Patch = (next: TextColors) => void
  */
 export function textColorProps(textColors: TextColors | undefined, patch: Patch) {
   return (key: string) => ({
+    label: textColorLabel(key),
     textColor: textColors?.[key],
     onTextColorChange: (next: ThemeColorChoice | undefined) => {
       const current = textColors ?? {}

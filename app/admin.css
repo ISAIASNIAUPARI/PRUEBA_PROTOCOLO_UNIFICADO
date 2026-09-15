@@ -96,3 +96,116 @@
 .admin-shell .menu .wrap .btn-outline-wrap {
   pointer-events: auto;
 }
+
+/* =========================================================
+   FASE E — layout de dos columnas: sidebar fijo + preview
+   ========================================================= */
+
+.admin-shell-grid {
+  display: grid;
+  grid-template-columns: 280px minmax(0, 1fr);
+  height: 100vh;
+}
+
+/* El preview scrollea solo; el sidebar queda quieto. */
+.admin-preview {
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #fff;
+}
+
+.admin-sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background: #1c1c1a;
+  color: #fff;
+  border-right: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.admin-sidebar-head {
+  padding: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.admin-sidebar-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.admin-sidebar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.admin-sidebar-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  cursor: pointer;
+}
+.admin-sidebar-btn:hover { background: rgba(255, 255, 255, 0.08); }
+.admin-sidebar-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.admin-sidebar-save { display: flex; gap: 6px; margin-top: 10px; }
+
+.admin-sidebar-primary {
+  flex: 1;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 0;
+  background: var(--color-admin-primary);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.admin-sidebar-primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.admin-sidebar-ok  { margin-top: 8px; font-size: 12px; color: #6ee7a8; }
+.admin-sidebar-err { margin-top: 8px; font-size: 12px; color: #ff9d9d; }
+
+.admin-sidebar-body { flex: 1; overflow-y: auto; padding: 14px; }
+
+.admin-sidebar-empty {
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.admin-sidebar-label { font-size: 13px; font-weight: 600; }
+.admin-sidebar-sublabel { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: rgba(255,255,255,0.5); }
+
+.admin-sidebar-input {
+  width: 100%;
+  resize: vertical;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.45;
+  font-family: inherit;
+}
+.admin-sidebar-input:focus { outline: 2px solid var(--color-admin-primary); outline-offset: 0; }
+
+.admin-sidebar-media { border-radius: 6px; overflow: hidden; }
+
+/* ---- elementos seleccionables dentro del preview ---- */
+
+/* Sin emojis ni iconos flotando: solo un realce al pasar el mouse, y un
+   outline firme del color primario del tema cuando está seleccionado. */
+.admin-selectable { cursor: pointer; outline: 2px solid transparent; outline-offset: 2px; transition: outline-color 0.12s ease; }
+.admin-selectable:hover { outline-color: color-mix(in srgb, var(--color-primary) 60%, transparent); }
+.admin-selected, .admin-selected:hover { outline-color: var(--color-primary); }
