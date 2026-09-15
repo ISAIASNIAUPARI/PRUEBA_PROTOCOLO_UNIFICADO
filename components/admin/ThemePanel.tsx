@@ -14,17 +14,24 @@ const FIELDS: { key: keyof Theme; label: string }[] = [
 
 export default function ThemePanel({ onClose }: { onClose: () => void }) {
   const { theme, setThemePreview, saveTheme, themeSaving, themeError } = useEdit()
-  const [openedWith] = useState<Theme>(theme)
+  // Punto al que se vuelve si se cierra SIN guardar. Arranca en el tema con el
+  // que se abrió el panel, pero cada guardado exitoso lo reemplaza: si no, al
+  // cerrar (con "Cerrar", con la × o haciendo clic fuera) se revertía también
+  // un cambio YA guardado, y el panel volvía a los colores viejos aunque el
+  // aviso dijera "✓ Tema guardado" — mientras el sitio público sí mostraba el
+  // color nuevo tras el redeploy.
+  const [baseline, setBaseline] = useState<Theme>(theme)
   const [saved, setSaved] = useState(false)
 
   function revertAndClose() {
-    setThemePreview(openedWith)
+    setThemePreview(baseline)
     onClose()
   }
 
   async function handleSave() {
     try {
       await saveTheme(theme)
+      setBaseline(theme)
       setSaved(true)
       setTimeout(() => setSaved(false), 2500)
     } catch {
