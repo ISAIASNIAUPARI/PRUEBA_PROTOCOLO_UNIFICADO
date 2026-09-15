@@ -1,5 +1,5 @@
 {
-  "title": "Bienvenidos a La Gloria\nFamilia Unida",
+  "title": "Bienvenidos a La Gloria\nFamilia Una",
   "slides": [
     {
       "url": "/images/hero-salon.jpg",
@@ -21,7 +21,9 @@
       "href": "#menu",
       "hrefType": "anchor",
       "desktopX": 76.9779046159561,
-      "desktopY": 73.45591037717774
+      "desktopY": 73.45591037717774,
+      "mobileX": 35.63490610377673,
+      "mobileY": 92.39035177153778
     },
     {
       "id": "hero-btn-1",
@@ -29,7 +31,9 @@
       "href": "#photo-gallery-nuestros-empleados",
       "hrefType": "anchor",
       "desktopX": 19.15984541586981,
-      "desktopY": 73.45598437814466
+      "desktopY": 73.45598437814466,
+      "mobileX": 29.866317910260722,
+      "mobileY": 73.85965667349882
     }
   ]
 }
