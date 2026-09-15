@@ -90,7 +90,9 @@
       "id": "menu-btn-1",
       "text": "Ver menú completo",
       "href": "#footer",
-      "hrefType": "anchor"
+      "hrefType": "anchor",
+      "mobileX": 34.96322835830444,
+      "mobileY": 90.80906868441151
     },
     {
       "id": "12a592dc-614e-4450-bcb3-2af91daa8e4d",
@@ -98,7 +100,9 @@
       "href": "https://wa.link/xftfc3",
       "hrefType": "url",
       "desktopX": 24.90005252683451,
-      "desktopY": 79.99953588325293
+      "desktopY": 79.99953588325293,
+      "mobileX": 26.22994978797627,
+      "mobileY": 96.21360981293732
     }
   ]
 }
