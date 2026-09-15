@@ -36,6 +36,8 @@ export function PhotoGallery({
       onSubtitleChange={(v) => patch({ subtitle: v })}
       onHeadingChange={(v) => patch({ heading: v })}
       onBackgroundColorChange={(v) => patch({ backgroundColor: v })}
+      textColors={data.textColors}
+      onTextColorsChange={(tc) => patch({ textColors: tc })}
     >
       <div className="grid grid-cols-2 gap-5 text-left sm:grid-cols-3">
         {data.photos.map((photo) => (

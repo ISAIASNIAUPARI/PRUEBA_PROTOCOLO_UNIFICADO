@@ -7,7 +7,8 @@ import { ButtonsArea } from '@/components/editable/ButtonsArea'
 import { EditableImage } from '@/components/editable/EditableImage'
 import { EditableText } from '@/components/editable/EditableText'
 import { resolveButtonHref, themeColorVar } from '@/lib/buttons'
-import type { CtaBannerData } from '@/lib/types'
+import { textColorProps } from '@/lib/text-colors'
+import type { CtaBannerData, TextColors } from '@/lib/types'
 
 function ctaButtonClass(i: number) {
   return i === 0
@@ -33,6 +34,8 @@ export function CtaBanner({
   function patch(next: Partial<CtaBannerData>) {
     onChange?.({ ...data, ...next })
   }
+
+  const color = textColorProps(data.textColors, (tc) => patch({ textColors: tc }))
 
   const bg = themeColorVar(data.backgroundColor)
   const hasImage = !!data.backgroundImage?.url
@@ -69,14 +72,14 @@ export function CtaBanner({
       <div className="relative z-10 mx-auto max-w-2xl text-center">
         {(data.subtitle || edit) && (
           <div className="mb-2 text-xs font-semibold uppercase tracking-[0.3em]" style={{ color: 'var(--color-primary)' }}>
-            <EditableText as="span" edit={edit} value={data.subtitle} onChange={(v) => patch({ subtitle: v })} />
+            <EditableText as="span" edit={edit} value={data.subtitle} onChange={(v) => patch({ subtitle: v })} {...color('subtitle')} />
           </div>
         )}
         <h2 className="mb-4 text-3xl font-semibold" style={{ color: hasImage ? '#fff' : 'var(--color-accent)' }}>
-          <EditableText as="span" edit={edit} value={data.heading} onChange={(v) => patch({ heading: v })} />
+          <EditableText as="span" edit={edit} value={data.heading} onChange={(v) => patch({ heading: v })} {...color('heading')} />
         </h2>
         <p className="mb-8 text-base" style={{ color: hasImage ? 'rgba(255,255,255,0.85)' : 'var(--color-accent)' }}>
-          <EditableText as="span" edit={edit} value={data.body} onChange={(v) => patch({ body: v })} />
+          <EditableText as="span" edit={edit} value={data.body} onChange={(v) => patch({ body: v })} {...color('body')} />
         </p>
 
         {(data.buttons.length > 0 || edit) && (

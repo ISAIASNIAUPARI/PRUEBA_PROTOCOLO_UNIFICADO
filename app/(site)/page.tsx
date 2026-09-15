@@ -29,15 +29,22 @@ import {
 function renderBaseSection(id: string) {
   switch (id) {
     case 'hero':
-      return <Hero key={id} title={hero.title} slides={hero.slides} buttons={hero.buttons} />
+      return <Hero key={id} title={hero.title} slides={hero.slides} buttons={hero.buttons} 
+  textColors={hero.textColors}
+  />
     case 'about':
-      return <About key={id} heading={about.heading} body={about.body} imageLeft={about.imageLeft} imageRight={about.imageRight} />
+      return <About key={id} heading={about.heading} body={about.body} imageLeft={about.imageLeft} imageRight={about.imageRight}
+            textColors={about.textColors} />
     case 'experience':
-      return <FrameScroll key={id} heading={experience.heading} subheading={experience.subheading} />
+      return <FrameScroll key={id} heading={experience.heading} subheading={experience.subheading} textColors={experience.textColors} />
     case 'objects3d':
-      return <Objects3D key={id} heading={objects3d.heading} subheading={objects3d.subheading} items={objects3d.items} />
+      return <Objects3D key={id} heading={objects3d.heading} subheading={objects3d.subheading} items={objects3d.items} 
+  textColors={objects3d.textColors}
+  />
     case 'specials':
-      return <Specials key={id} heading={specials.heading} subheading={specials.subheading} videoUrl={specials.videoUrl} dishes={specials.dishes} />
+      return <Specials key={id} heading={specials.heading} subheading={specials.subheading} videoUrl={specials.videoUrl} dishes={specials.dishes} 
+  textColors={specials.textColors}
+  />
     case 'menu':
       return (
         <MenuSection
@@ -48,7 +55,9 @@ function renderBaseSection(id: string) {
           videoUrl={menu.videoUrl}
           categories={menu.categories}
           buttons={menu.buttons}
-        />
+        
+        textColors={menu.textColors}
+      />
       )
     case 'reservations':
       return (
@@ -69,7 +78,9 @@ function renderBaseSection(id: string) {
           contactName={reservations.contactName}
           address={reservations.address}
           contactEmail={reservations.contactEmail}
-        />
+        
+        textColors={reservations.textColors}
+      />
       )
     case 'location':
       return (
@@ -85,7 +96,9 @@ function renderBaseSection(id: string) {
           mapEmbedUrl={location.mapEmbedUrl}
           formTitle={location.formTitle}
           formSubmitLabel={location.formSubmitLabel}
-        />
+        
+        textColors={location.textColors}
+      />
       )
     default:
       return null
@@ -128,13 +141,14 @@ export default function HomePage() {
         socialTitle={footer.socialTitle}
         socials={footer.socials}
         copyright={footer.copyright}
-      />
+      
+      textColors={footer.textColors}
+    />
 
       <FloatingButtons
         drinksEnabled={siteSettings.drinksButtonEnabled}
         drinksLabel={siteSettings.drinksButtonLabel}
-        chatEnabled={siteSettings.chatButtonEnabled}
-        chatWebhookUrl={siteSettings.chatWebhookUrl}
+        chatEnabled={siteSettings.chatButtonEnabled && Boolean(siteSettings.chatWebhookUrl?.trim())}
         chatTitle={siteSettings.chatTitle}
         chatSubtitle={siteSettings.chatSubtitle}
         chatWelcome={siteSettings.chatWelcome}

@@ -5,7 +5,8 @@ import React, { useEffect } from 'react'
 import { useIsMobileView } from '@/components/admin/useIsMobileView'
 import { EditableModel } from '@/components/editable/EditableModel'
 import { EditableText } from '@/components/editable/EditableText'
-import type { Object3DItem } from '@/lib/types'
+import { textColorProps } from '@/lib/text-colors'
+import type { Object3DItem, TextColors } from '@/lib/types'
 
 const SCRIPT_URL = 'https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js'
 
@@ -32,12 +33,15 @@ type Objects3DData = {
   heading?: string
   subheading?: string
   items: Object3DItem[]
+  /** Overrides de color por texto (ver lib/text-colors.ts). */
+  textColors?: TextColors
 }
 
 export function Objects3D({
   heading,
   subheading,
   items,
+  textColors,
   edit,
   onChange,
 }: Objects3DData & {
@@ -56,18 +60,20 @@ export function Objects3D({
   const isMobile = useIsMobileView()
 
   function patch(next: Partial<Objects3DData>) {
-    onChange?.({ heading, subheading, items, ...next })
+    onChange?.({ heading, subheading, items, textColors, ...next })
   }
+
+  const color = textColorProps(textColors, (tc) => patch({ textColors: tc }))
 
   return (
     <section className="objects3d" id="objetos3d">
       <div className="wrap">
         <div className="sec-head reveal">
           <h2 style={isMobile ? { fontSize: '26px' } : undefined}>
-            <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} />
+            <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} {...color('heading')} />
           </h2>
           <div className="sub" style={isMobile ? { fontSize: '12px' } : undefined}>
-            <EditableText as="span" edit={edit} value={subheading} onChange={(v) => patch({ subheading: v })} />
+            <EditableText as="span" edit={edit} value={subheading} onChange={(v) => patch({ subheading: v })} {...color('subheading')} />
           </div>
           <div className="rule" />
         </div>

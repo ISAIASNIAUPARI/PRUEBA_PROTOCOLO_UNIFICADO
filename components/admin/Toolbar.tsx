@@ -8,10 +8,11 @@ import { useEdit } from './EditProvider'
 
 const LayoutPanel = dynamic(() => import('./LayoutPanel'), { ssr: false })
 const ThemePanel = dynamic(() => import('./ThemePanel'), { ssr: false })
+const SettingsPanel = dynamic(() => import('./SettingsPanel'), { ssr: false })
 
 export function Toolbar() {
   const { save, saving, saved, error, dirty, viewMode, setViewMode } = useEdit()
-  const [panel, setPanel] = useState<'layout' | 'theme' | null>(null)
+  const [panel, setPanel] = useState<'layout' | 'theme' | 'settings' | null>(null)
 
   return (
     <div className="sticky top-0 z-[999] flex flex-wrap items-center justify-between gap-3 border-b border-admin-line bg-white px-4 py-3 shadow-sm">
@@ -52,6 +53,13 @@ export function Toolbar() {
         >
           🎨 Personalizar tema
         </button>
+        <button
+          type="button"
+          onClick={() => setPanel('settings')}
+          className="rounded-md border border-admin-line px-3 py-1.5 text-sm font-medium text-admin-ink hover:bg-admin-bg"
+        >
+          ⚙️ Configuración
+        </button>
         <Link
           href="/admin/bebidas"
           className="rounded-md border border-admin-line px-3 py-1.5 text-sm font-medium text-admin-ink hover:bg-admin-bg"
@@ -80,6 +88,7 @@ export function Toolbar() {
 
       {panel === 'layout' && <LayoutPanel onClose={() => setPanel(null)} />}
       {panel === 'theme' && <ThemePanel onClose={() => setPanel(null)} />}
+      {panel === 'settings' && <SettingsPanel onClose={() => setPanel(null)} />}
     </div>
   )
 }

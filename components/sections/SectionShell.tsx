@@ -3,7 +3,8 @@
 import { ColorSwatchPicker } from '@/components/admin/ColorSwatchPicker'
 import { EditableText } from '@/components/editable/EditableText'
 import { themeColorVar } from '@/lib/buttons'
-import type { ThemeColorChoice } from '@/lib/types'
+import { textColorProps } from '@/lib/text-colors'
+import type { TextColors, ThemeColorChoice } from '@/lib/types'
 
 /**
  * Wrapper compartido por las 5 plantillas de sección (Fase D, Parte 3):
@@ -15,23 +16,28 @@ export function SectionShell({
   subtitle,
   heading,
   backgroundColor,
+  textColors,
   edit,
   onSubtitleChange,
   onHeadingChange,
   onBackgroundColorChange,
+  onTextColorsChange,
   children,
 }: {
   id: string
   subtitle?: string
   heading?: string
   backgroundColor?: ThemeColorChoice
+  textColors?: TextColors
   edit?: boolean
+  onTextColorsChange?: (next: TextColors) => void
   onSubtitleChange?: (v: string) => void
   onHeadingChange?: (v: string) => void
   onBackgroundColorChange?: (v: ThemeColorChoice | undefined) => void
   children: React.ReactNode
 }) {
   const bg = themeColorVar(backgroundColor)
+  const color = textColorProps(textColors, (tc) => onTextColorsChange?.(tc))
 
   return (
     <section id={id} className="relative px-6 py-20" style={bg ? { backgroundColor: bg } : undefined}>
@@ -43,11 +49,11 @@ export function SectionShell({
       <div className="mx-auto max-w-5xl text-center">
         {(subtitle || edit) && (
           <div className="mb-2 text-xs font-semibold uppercase tracking-[0.3em]" style={{ color: 'var(--color-primary)' }}>
-            <EditableText as="span" edit={edit} value={subtitle} onChange={onSubtitleChange} />
+            <EditableText as="span" edit={edit} value={subtitle} onChange={onSubtitleChange} {...color('subtitle')} />
           </div>
         )}
         <h2 className="mb-10 text-3xl font-semibold" style={{ color: 'var(--color-accent)' }}>
-          <EditableText as="span" edit={edit} value={heading} onChange={onHeadingChange} />
+          <EditableText as="span" edit={edit} value={heading} onChange={onHeadingChange} {...color('heading')} />
         </h2>
         {children}
       </div>

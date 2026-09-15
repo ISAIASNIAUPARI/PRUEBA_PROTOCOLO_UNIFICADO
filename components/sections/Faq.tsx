@@ -35,6 +35,8 @@ export function Faq({
       onSubtitleChange={(v) => patch({ subtitle: v })}
       onHeadingChange={(v) => patch({ heading: v })}
       onBackgroundColorChange={(v) => patch({ backgroundColor: v })}
+      textColors={data.textColors}
+      onTextColorsChange={(tc) => patch({ textColors: tc })}
     >
       <div className="mx-auto flex max-w-2xl flex-col gap-4 text-left">
         {data.items.map((item) => (

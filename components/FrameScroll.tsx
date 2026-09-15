@@ -4,6 +4,8 @@ import { useEffect, useRef } from 'react'
 
 import { useIsMobileView } from '@/components/admin/useIsMobileView'
 import { EditableText } from '@/components/editable/EditableText'
+import { textColorProps } from '@/lib/text-colors'
+import type { TextColors } from '@/lib/types'
 
 import { SealStar } from './Seal'
 
@@ -16,11 +18,12 @@ function frameUrl(index: number, mobile: boolean) {
   return `${BASE}/f_auto,q_auto,w_${w}/${id}.jpg`
 }
 
-type FrameScrollData = { heading?: string; subheading?: string }
+type FrameScrollData = { heading?: string; subheading?: string; textColors?: TextColors }
 
 export function FrameScroll({
   heading,
   subheading,
+  textColors,
   edit,
   onChange,
 }: FrameScrollData & {
@@ -28,6 +31,7 @@ export function FrameScroll({
   onChange?: (next: FrameScrollData) => void
 }) {
   const isMobile = useIsMobileView()
+  const color = textColorProps(textColors, (tc) => onChange?.({ heading, subheading, textColors: tc }))
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
@@ -151,11 +155,11 @@ export function FrameScroll({
       <div className="sec-head reveal">
         <SealStar />
         <h2 style={isMobile ? { fontSize: '26px' } : undefined}>
-          <EditableText as="span" edit={edit} value={heading} onChange={(v) => onChange?.({ heading: v, subheading })} />
+          <EditableText as="span" edit={edit} value={heading} onChange={(v) => onChange?.({ heading: v, subheading, textColors })} {...color('heading')} />
         </h2>
         {(subheading || edit) && (
           <div className="sub" style={isMobile ? { fontSize: '12px' } : undefined}>
-            <EditableText as="span" edit={edit} value={subheading} onChange={(v) => onChange?.({ heading, subheading: v })} />
+            <EditableText as="span" edit={edit} value={subheading} onChange={(v) => onChange?.({ heading, subheading: v, textColors })} {...color('subheading')} />
           </div>
         )}
         <div className="rule" />

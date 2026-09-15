@@ -3,7 +3,8 @@
 import { useState } from 'react'
 
 import { EditableText } from '@/components/editable/EditableText'
-import type { LocationSection } from '@/lib/types'
+import { textColorProps } from '@/lib/text-colors'
+import type { LocationSection, TextColors } from '@/lib/types'
 
 /**
  * Sección de ubicación/contacto (Fase D, Parte 11 de 13 - Panel Admin):
@@ -82,6 +83,7 @@ export function Location({
   mapEmbedUrl,
   formTitle,
   formSubmitLabel,
+  textColors,
   edit,
   onChange,
 }: LocationSection & {
@@ -96,8 +98,10 @@ export function Location({
   const data: LocationSection = { subtitle, heading, address, whatsappNumber, email, hoursText, mapUrl, mapEmbedUrl, formTitle, formSubmitLabel }
 
   function patch(next: Partial<LocationSection>) {
-    onChange?.({ ...data, ...next })
+    onChange?.({ ...data, textColors, ...next })
   }
+
+  const color = textColorProps(textColors, (tc) => patch({ textColors: tc }))
 
   function submitForm(e: React.FormEvent) {
     e.preventDefault()
@@ -117,11 +121,11 @@ export function Location({
       <div className="mx-auto max-w-5xl text-center">
         {(subtitle || edit) && (
           <div className="mb-2 text-xs font-semibold uppercase tracking-[0.3em]" style={{ color: 'var(--color-primary)' }}>
-            <EditableText as="span" edit={edit} value={subtitle} onChange={(v) => patch({ subtitle: v })} />
+            <EditableText as="span" edit={edit} value={subtitle} onChange={(v) => patch({ subtitle: v })} {...color('subtitle')} />
           </div>
         )}
         <h2 className="mb-10 text-3xl font-semibold" style={{ color: 'var(--color-accent)' }}>
-          <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} />
+          <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} {...color('heading')} />
         </h2>
       </div>
 
@@ -160,7 +164,7 @@ export function Location({
 
         <div>
           <h3 className="mb-4 text-lg font-medium" style={{ color: 'var(--color-accent)' }}>
-            <EditableText as="span" edit={edit} value={formTitle} onChange={(v) => patch({ formTitle: v })} />
+            <EditableText as="span" edit={edit} value={formTitle} onChange={(v) => patch({ formTitle: v })} {...color('formTitle')} />
           </h3>
           <form onSubmit={submitForm} className="flex flex-col gap-3">
             <input
@@ -201,7 +205,7 @@ export function Location({
               className="rounded px-5 py-2.5 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
               style={{ background: 'var(--color-primary)' }}
             >
-              <EditableText as="span" edit={edit} value={formSubmitLabel} onChange={(v) => patch({ formSubmitLabel: v })} stopClickNavigation />
+              <EditableText as="span" edit={edit} value={formSubmitLabel} onChange={(v) => patch({ formSubmitLabel: v })} stopClickNavigation {...color('formSubmitLabel')} />
             </button>
           </form>
         </div>

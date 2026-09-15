@@ -52,7 +52,9 @@ export function AdminApp() {
   function renderBaseSection(id: string) {
     switch (id) {
       case 'hero':
-        return <Hero edit title={hero.title} slides={hero.slides} buttons={hero.buttons} onChange={(next) => update('hero', next)} />
+        return <Hero edit title={hero.title} slides={hero.slides} buttons={hero.buttons} onChange={(next) => update('hero', next)} 
+  textColors={hero.textColors}
+  />
       case 'about':
         return (
           <About
@@ -61,12 +63,13 @@ export function AdminApp() {
             body={about.body}
             imageLeft={about.imageLeft}
             imageRight={about.imageRight}
+            textColors={about.textColors}
             onChange={(next) => update('about', next)}
           />
         )
       case 'experience':
         return (
-          <FrameScroll edit heading={experience.heading} subheading={experience.subheading} onChange={(next) => update('experience', next)} />
+          <FrameScroll edit heading={experience.heading} subheading={experience.subheading} textColors={experience.textColors} onChange={(next) => update('experience', next)} />
         )
       case 'objects3d':
         return (
@@ -76,7 +79,9 @@ export function AdminApp() {
             subheading={objects3d.subheading}
             items={objects3d.items}
             onChange={(next) => update('objects3d', next)}
-          />
+          
+          textColors={objects3d.textColors}
+        />
         )
       case 'specials':
         return (
@@ -87,7 +92,9 @@ export function AdminApp() {
             videoUrl={specials.videoUrl}
             dishes={specials.dishes}
             onChange={(next) => update('specials', next)}
-          />
+          
+          textColors={specials.textColors}
+        />
         )
       case 'menu':
         return (
@@ -100,7 +107,9 @@ export function AdminApp() {
             categories={menu.categories}
             buttons={menu.buttons}
             onChange={(next) => update('menu', next)}
-          />
+          
+          textColors={menu.textColors}
+        />
         )
       case 'reservations':
         return (
@@ -122,7 +131,9 @@ export function AdminApp() {
             address={reservations.address}
             contactEmail={reservations.contactEmail}
             onChange={(next) => update('reservations', next)}
-          />
+          
+          textColors={reservations.textColors}
+        />
         )
       case 'location':
         return (
@@ -139,7 +150,9 @@ export function AdminApp() {
             formTitle={location.formTitle}
             formSubmitLabel={location.formSubmitLabel}
             onChange={(next) => update('location', next)}
-          />
+          
+          textColors={location.textColors}
+        />
         )
       default:
         return null
@@ -181,7 +194,9 @@ export function AdminApp() {
         socials={footer.socials}
         copyright={footer.copyright}
         onChange={(next) => update('footer', next)}
-      />
+      
+      textColors={footer.textColors}
+    />
     </>
   )
 

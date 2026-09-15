@@ -30,14 +30,12 @@ function getSessionId(): string {
 }
 
 export function ChatWidget({
-  webhookUrl,
   title,
   subtitle,
   welcome,
   placeholder,
   notifications,
 }: {
-  webhookUrl: string
   title?: string
   subtitle?: string
   welcome?: string
@@ -136,19 +134,16 @@ export function ChatWidget({
     setSending(true)
 
     try {
-      const res = await fetch(webhookUrl, {
+      // Se habla con NUESTRA ruta, no con n8n: así la URL del agente no
+      // aparece nunca en el HTML ni en el JS del sitio público.
+      const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId: sessionId.current, message: text }),
       })
-      if (!res.ok) throw new Error(`HTTP ${res.status}`)
-
-      const data = await res.json()
-      const reply =
-        typeof data?.reply === 'string' && data.reply.trim()
-          ? data.reply
-          : 'No he podido responder a eso. ¿Puedes intentarlo de otra forma?'
-      setMsgs((m) => [...m, { role: 'bot', text: reply }])
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok || !data?.ok || typeof data.reply !== 'string') throw new Error('sin respuesta')
+      setMsgs((m) => [...m, { role: 'bot', text: data.reply }])
     } catch {
       // Nunca fingimos una respuesta: si falla, se dice.
       setError(

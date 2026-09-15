@@ -3,13 +3,15 @@
 import { useIsMobileView } from '@/components/admin/useIsMobileView'
 import { EditableImage } from '@/components/editable/EditableImage'
 import { EditableText } from '@/components/editable/EditableText'
-import type { ImageRef } from '@/lib/types'
+import { textColorProps } from '@/lib/text-colors'
+import type { ImageRef, TextColors } from '@/lib/types'
 
 type AboutData = {
   heading?: string
   body?: string
   imageLeft?: ImageRef | null
   imageRight?: ImageRef | null
+  textColors?: TextColors
 }
 
 export function About({
@@ -17,6 +19,7 @@ export function About({
   body,
   imageLeft,
   imageRight,
+  textColors,
   edit,
   onChange,
 }: AboutData & {
@@ -26,8 +29,10 @@ export function About({
   const isMobile = useIsMobileView()
 
   function patch(next: Partial<AboutData>) {
-    onChange?.({ heading, body, imageLeft, imageRight, ...next })
+    onChange?.({ heading, body, imageLeft, imageRight, textColors, ...next })
   }
+
+  const color = textColorProps(textColors, (tc) => patch({ textColors: tc }))
 
   return (
     <section className="about" id="sobre">
@@ -68,11 +73,11 @@ export function About({
           </div>
           <div className="about-copy reveal">
             <h2 style={isMobile ? { fontSize: '24px' } : undefined}>
-              <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} />
+              <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} {...color('heading')} />
             </h2>
             {(body || edit) && (
               <p style={isMobile ? { fontSize: '15px' } : undefined}>
-                <EditableText as="span" edit={edit} value={body} onChange={(v) => patch({ body: v })} />
+                <EditableText as="span" edit={edit} value={body} onChange={(v) => patch({ body: v })} {...color('body')} />
               </p>
             )}
           </div>

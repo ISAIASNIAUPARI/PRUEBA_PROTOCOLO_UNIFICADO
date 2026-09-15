@@ -7,7 +7,8 @@ import { ButtonsArea } from '@/components/editable/ButtonsArea'
 import { CloudinaryVideo } from '@/components/editable/CloudinaryVideo'
 import { EditableText } from '@/components/editable/EditableText'
 import { resolveButtonHref } from '@/lib/buttons'
-import type { ButtonRef, MenuCategory } from '@/lib/types'
+import { textColorProps } from '@/lib/text-colors'
+import type { ButtonRef, MenuCategory, TextColors } from '@/lib/types'
 
 import { SealCloche } from './Seal'
 
@@ -18,6 +19,8 @@ type MenuData = {
   videoUrl: string
   categories: MenuCategory[]
   buttons?: ButtonRef[]
+  /** Overrides de color por texto (ver lib/text-colors.ts). */
+  textColors?: TextColors
 }
 
 function menuButtonClass() {
@@ -31,6 +34,7 @@ export function MenuSection({
   videoUrl,
   categories,
   buttons,
+  textColors,
   edit,
   onChange,
 }: MenuData & {
@@ -71,8 +75,10 @@ export function MenuSection({
   const isMobile = useIsMobileView()
 
   function patch(next: Partial<MenuData>) {
-    onChange?.({ heading, subheading, watermark, videoUrl, categories, buttons, ...next })
+    onChange?.({ heading, subheading, watermark, videoUrl, categories, buttons, textColors, ...next })
   }
+
+  const color = textColorProps(textColors, (tc) => patch({ textColors: tc }))
 
   return (
     <section className="menu" id="menu" ref={sectionRef}>
@@ -91,18 +97,18 @@ export function MenuSection({
       <div className="vid-scrim" />
       {(watermark || edit) && (
         <div className="watermark">
-          <EditableText as="span" edit={edit} value={watermark} onChange={(v) => patch({ watermark: v })} />
+          <EditableText as="span" edit={edit} value={watermark} onChange={(v) => patch({ watermark: v })} {...color('watermark')} />
         </div>
       )}
       <div className="wrap">
         <div className="sec-head reveal">
           <SealCloche />
           <h2 style={isMobile ? { fontSize: '26px' } : undefined}>
-            <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} />
+            <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} {...color('heading')} />
           </h2>
           {(subheading || edit) && (
             <div className="sub" style={isMobile ? { fontSize: '12px' } : undefined}>
-              <EditableText as="span" edit={edit} value={subheading} onChange={(v) => patch({ subheading: v })} />
+              <EditableText as="span" edit={edit} value={subheading} onChange={(v) => patch({ subheading: v })} {...color('subheading')} />
             </div>
           )}
           <div className="rule" />

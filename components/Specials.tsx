@@ -6,7 +6,8 @@ import { useIsMobileView } from '@/components/admin/useIsMobileView'
 import { CloudinaryVideo } from '@/components/editable/CloudinaryVideo'
 import { EditableImage } from '@/components/editable/EditableImage'
 import { EditableText } from '@/components/editable/EditableText'
-import type { Dish } from '@/lib/types'
+import { textColorProps } from '@/lib/text-colors'
+import type { Dish, TextColors } from '@/lib/types'
 
 import { SealChef } from './Seal'
 
@@ -15,6 +16,8 @@ type SpecialsData = {
   subheading?: string
   videoUrl: string
   dishes: Dish[]
+  /** Overrides de color por texto (ver lib/text-colors.ts). */
+  textColors?: TextColors
 }
 
 export function Specials({
@@ -22,6 +25,7 @@ export function Specials({
   subheading,
   videoUrl,
   dishes,
+  textColors,
   edit,
   onChange,
 }: SpecialsData & {
@@ -52,8 +56,10 @@ export function Specials({
   const isMobile = useIsMobileView()
 
   function patch(next: Partial<SpecialsData>) {
-    onChange?.({ heading, subheading, videoUrl, dishes, ...next })
+    onChange?.({ heading, subheading, videoUrl, dishes, textColors, ...next })
   }
+
+  const color = textColorProps(textColors, (tc) => patch({ textColors: tc }))
 
   return (
     <section className="especiales" id="especiales">
@@ -86,11 +92,11 @@ export function Specials({
           <div className="sec-head reveal">
             <SealChef />
             <h2 style={isMobile ? { fontSize: '26px' } : undefined}>
-              <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} />
+              <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} {...color('heading')} />
             </h2>
             {(subheading || edit) && (
               <div className="sub" style={isMobile ? { fontSize: '12px' } : undefined}>
-                <EditableText as="span" edit={edit} value={subheading} onChange={(v) => patch({ subheading: v })} />
+                <EditableText as="span" edit={edit} value={subheading} onChange={(v) => patch({ subheading: v })} {...color('subheading')} />
               </div>
             )}
             <div className="rule" />
