@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 
+import { useIsMobileView } from '@/components/admin/useIsMobileView'
 import { ButtonsArea } from '@/components/editable/ButtonsArea'
 import { CloudinaryVideo } from '@/components/editable/CloudinaryVideo'
 import { EditableText } from '@/components/editable/EditableText'
@@ -67,6 +68,8 @@ export function MenuSection({
     return () => obs.disconnect()
   }, [edit])
 
+  const isMobile = useIsMobileView()
+
   function patch(next: Partial<MenuData>) {
     onChange?.({ heading, subheading, watermark, videoUrl, categories, buttons, ...next })
   }
@@ -94,11 +97,11 @@ export function MenuSection({
       <div className="wrap">
         <div className="sec-head reveal">
           <SealCloche />
-          <h2>
+          <h2 style={isMobile ? { fontSize: '26px' } : undefined}>
             <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} />
           </h2>
           {(subheading || edit) && (
-            <div className="sub">
+            <div className="sub" style={isMobile ? { fontSize: '12px' } : undefined}>
               <EditableText as="span" edit={edit} value={subheading} onChange={(v) => patch({ subheading: v })} />
             </div>
           )}

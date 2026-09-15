@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 
+import { useIsMobileView } from '@/components/admin/useIsMobileView'
 import { EditableImage } from '@/components/editable/EditableImage'
 import { EditableText } from '@/components/editable/EditableText'
 
@@ -51,6 +52,8 @@ export function Reservations({
   edit,
   onChange,
 }: Props & { edit?: boolean; onChange?: (next: Props) => void }) {
+  const isMobile = useIsMobileView()
+
   function patch(next: Partial<Props>) {
     onChange?.({
       heading,
@@ -323,7 +326,7 @@ Quedo atento(a) a la confirmación. ¡Gracias!`
       )}
       <div className="scrim" />
       <div className="inner">
-        <h2 className="reveal">
+        <h2 className="reveal" style={isMobile ? { fontSize: '28px' } : undefined}>
           <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} />
         </h2>
         {(lead || edit) && (

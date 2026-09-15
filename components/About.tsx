@@ -1,5 +1,6 @@
 'use client'
 
+import { useIsMobileView } from '@/components/admin/useIsMobileView'
 import { EditableImage } from '@/components/editable/EditableImage'
 import { EditableText } from '@/components/editable/EditableText'
 import type { ImageRef } from '@/lib/types'
@@ -22,6 +23,8 @@ export function About({
   edit?: boolean
   onChange?: (next: AboutData) => void
 }) {
+  const isMobile = useIsMobileView()
+
   function patch(next: Partial<AboutData>) {
     onChange?.({ heading, body, imageLeft, imageRight, ...next })
   }
@@ -54,11 +57,11 @@ export function About({
             )}
           </div>
           <div className="about-copy reveal">
-            <h2>
+            <h2 style={isMobile ? { fontSize: '24px' } : undefined}>
               <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} />
             </h2>
             {(body || edit) && (
-              <p>
+              <p style={isMobile ? { fontSize: '15px' } : undefined}>
                 <EditableText as="span" edit={edit} value={body} onChange={(v) => patch({ body: v })} />
               </p>
             )}

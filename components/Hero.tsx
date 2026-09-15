@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
+import { useIsMobileView } from '@/components/admin/useIsMobileView'
 import { ButtonsArea } from '@/components/editable/ButtonsArea'
 import { EditableImage } from '@/components/editable/EditableImage'
 import { EditableText } from '@/components/editable/EditableText'
@@ -29,6 +30,11 @@ export function Hero({
   onChange?: (next: HeroData) => void
 }) {
   const [current, setCurrent] = useState(0)
+  // clamp(30px,4.6vw,62px) del CSS original se calcula contra el viewport
+  // real — dentro del frame simulado de 390px del admin eso da un tamaño
+  // enorme. Con tamaño fijo en vez de vw se evita (ver Parte 8, bug #1 de
+  // 13 - Panel Admin, Fase D, funciones avanzadas (parte 2)).
+  const isMobile = useIsMobileView()
 
   // Fundido entre fotos cada 5 segundos, como en el original.
   useEffect(() => {
@@ -91,7 +97,7 @@ export function Hero({
       </div>
       <div className="scrim" />
       <div className="inner">
-        <h1>
+        <h1 style={isMobile ? { fontSize: '30px' } : undefined}>
           {edit ? (
             <EditableText as="span" edit value={title} onChange={(v) => patch({ title: v })} />
           ) : (

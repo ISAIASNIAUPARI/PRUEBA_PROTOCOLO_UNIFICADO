@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react'
 
+import { useIsMobileView } from '@/components/admin/useIsMobileView'
 import { EditableText } from '@/components/editable/EditableText'
 import type { Object3DItem } from '@/lib/types'
 
@@ -51,6 +52,8 @@ export function Objects3D({
     document.head.appendChild(s)
   }, [])
 
+  const isMobile = useIsMobileView()
+
   function patch(next: Partial<Objects3DData>) {
     onChange?.({ heading, subheading, items, ...next })
   }
@@ -59,10 +62,10 @@ export function Objects3D({
     <section className="objects3d" id="objetos3d">
       <div className="wrap">
         <div className="sec-head reveal">
-          <h2>
+          <h2 style={isMobile ? { fontSize: '26px' } : undefined}>
             <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} />
           </h2>
-          <div className="sub">
+          <div className="sub" style={isMobile ? { fontSize: '12px' } : undefined}>
             <EditableText as="span" edit={edit} value={subheading} onChange={(v) => patch({ subheading: v })} />
           </div>
           <div className="rule" />
@@ -79,7 +82,7 @@ export function Objects3D({
               </div>
               <div className="obj3d-info">
                 <span className="obj3d-tag">{item.label}</span>
-                <h3 className="obj3d-name">
+                <h3 className="obj3d-name" style={isMobile ? { fontSize: '20px' } : undefined}>
                   <EditableText
                     as="span"
                     edit={edit}

@@ -34,6 +34,21 @@ export type SiteSettings = {
   chatNotifications: string[]
 }
 
+export type LocationSection = {
+  subtitle: string
+  heading: string
+  address: string
+  whatsappNumber: string
+  email: string
+  hoursText: string
+  /** Link tal cual lo comparte Google Maps (puede ser corto) — solo para el botón "Abrir en Maps". */
+  mapUrl: string
+  /** Link largo con coordenadas ("...@lat,lng,zoomz...") — solo para armar el iframe. Si está vacío, se arma el mapa buscando por `address`. */
+  mapEmbedUrl: string
+  formTitle: string
+  formSubmitLabel: string
+}
+
 export type Theme = {
   colorPrimary: string
   colorSecondary: string

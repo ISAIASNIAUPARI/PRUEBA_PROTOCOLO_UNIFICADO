@@ -4,7 +4,7 @@ import pageLayoutJson from '@/content/pageLayout.json'
 import { commitFiles } from '@/lib/github'
 import type { PageLayout } from '@/lib/types'
 
-const BASE_SECTION_IDS = new Set(['hero', 'about', 'experience', 'objects3d', 'specials', 'menu', 'reservations'])
+const BASE_SECTION_IDS = new Set(['hero', 'about', 'experience', 'objects3d', 'specials', 'menu', 'reservations', 'location'])
 
 export async function POST(req: Request) {
   try {

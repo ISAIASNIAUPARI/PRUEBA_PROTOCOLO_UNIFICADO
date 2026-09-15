@@ -6,6 +6,7 @@
     { "id": "objects3d", "label": "Objetos 3D", "visible": true },
     { "id": "specials", "label": "Especiales", "visible": true },
     { "id": "menu", "label": "Menú", "visible": true },
-    { "id": "reservations", "label": "Reservas", "visible": true }
+    { "id": "reservations", "label": "Reservas", "visible": true },
+    { "id": "location", "label": "Ubicación y contacto", "visible": true }
   ]
 }

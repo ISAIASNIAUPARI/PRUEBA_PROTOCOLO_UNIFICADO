@@ -16,7 +16,7 @@ import { DYNAMIC_SECTION_LABELS, type DynamicSectionType, type SectionLayoutEntr
 
 import { useEdit } from './EditProvider'
 
-const BASE_SECTION_IDS = new Set(['hero', 'about', 'experience', 'objects3d', 'specials', 'menu', 'reservations'])
+const BASE_SECTION_IDS = new Set(['hero', 'about', 'experience', 'objects3d', 'specials', 'menu', 'reservations', 'location'])
 
 function Row({
   entry,

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 
+import { useIsMobileView } from '@/components/admin/useIsMobileView'
 import { CloudinaryVideo } from '@/components/editable/CloudinaryVideo'
 import { EditableImage } from '@/components/editable/EditableImage'
 import { EditableText } from '@/components/editable/EditableText'
@@ -48,6 +49,8 @@ export function Specials({
     }
   }, [])
 
+  const isMobile = useIsMobileView()
+
   function patch(next: Partial<SpecialsData>) {
     onChange?.({ heading, subheading, videoUrl, dishes, ...next })
   }
@@ -82,11 +85,11 @@ export function Specials({
         <div className="wrap">
           <div className="sec-head reveal">
             <SealChef />
-            <h2>
+            <h2 style={isMobile ? { fontSize: '26px' } : undefined}>
               <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} />
             </h2>
             {(subheading || edit) && (
-              <div className="sub">
+              <div className="sub" style={isMobile ? { fontSize: '12px' } : undefined}>
                 <EditableText as="span" edit={edit} value={subheading} onChange={(v) => patch({ subheading: v })} />
               </div>
             )}

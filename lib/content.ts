@@ -6,6 +6,7 @@ import drinksPageJson from '@/content/drinksPage.json'
 import experienceJson from '@/content/experience.json'
 import footerJson from '@/content/footer.json'
 import heroJson from '@/content/hero.json'
+import locationJson from '@/content/location.json'
 import menuJson from '@/content/menu.json'
 import objects3dJson from '@/content/objects3d.json'
 import pageLayoutJson from '@/content/pageLayout.json'
@@ -20,6 +21,7 @@ import type {
   Experience,
   Footer,
   Hero,
+  LocationSection,
   MenuSectionData,
   Objects3D,
   PageLayout,
@@ -41,6 +43,7 @@ export const objects3d = objects3dJson as Objects3D
 export const specials = specialsJson as Specials
 export const menu = menuJson as MenuSectionData
 export const reservations = reservationsJson as Reservations
+export const location = locationJson as LocationSection
 export const footer = footerJson as Footer
 export const drinksPage = drinksPageJson as DrinksPage
 export const pageLayout = pageLayoutJson as PageLayout
@@ -56,6 +59,7 @@ export const CONTENT_FILES: Record<string, string> = {
   specials: 'content/specials.json',
   menu: 'content/menu.json',
   reservations: 'content/reservations.json',
+  location: 'content/location.json',
   footer: 'content/footer.json',
   drinksPage: 'content/drinksPage.json',
   pageLayout: 'content/pageLayout.json',

@@ -3,6 +3,7 @@
 import { About } from '@/components/About'
 import { Footer } from '@/components/Footer'
 import { Hero } from '@/components/Hero'
+import { Location } from '@/components/Location'
 import { MenuSection } from '@/components/MenuSection'
 import { Nav } from '@/components/Nav'
 import { Objects3D } from '@/components/Objects3D'
@@ -14,6 +15,7 @@ import type {
   Experience,
   Footer as FooterT,
   Hero as HeroT,
+  LocationSection,
   MenuSectionData,
   Objects3D as Objects3DT,
   Reservations as ReservationsT,
@@ -43,6 +45,7 @@ export function AdminApp() {
   const specials = data.specials as SpecialsT
   const menu = data.menu as MenuSectionData
   const reservations = data.reservations as ReservationsT
+  const location = data.location as LocationSection
   const footer = data.footer as FooterT
 
   function renderBaseSection(id: string) {
@@ -118,6 +121,23 @@ export function AdminApp() {
             address={reservations.address}
             contactEmail={reservations.contactEmail}
             onChange={(next) => update('reservations', next)}
+          />
+        )
+      case 'location':
+        return (
+          <Location
+            edit
+            subtitle={location.subtitle}
+            heading={location.heading}
+            address={location.address}
+            whatsappNumber={location.whatsappNumber}
+            email={location.email}
+            hoursText={location.hoursText}
+            mapUrl={location.mapUrl}
+            mapEmbedUrl={location.mapEmbedUrl}
+            formTitle={location.formTitle}
+            formSubmitLabel={location.formSubmitLabel}
+            onChange={(next) => update('location', next)}
           />
         )
       default:

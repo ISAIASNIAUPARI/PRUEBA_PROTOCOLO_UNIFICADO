@@ -226,6 +226,7 @@ function sectionAnchorId(layoutId: string): string {
     specials: 'especiales',
     menu: 'menu',
     reservations: 'reservas',
+    location: 'ubicacion',
   }
   return map[layoutId] ?? layoutId
 }

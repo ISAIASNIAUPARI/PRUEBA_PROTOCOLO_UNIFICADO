@@ -4,6 +4,7 @@ import { FloatingButtons } from '@/components/FloatingButtons'
 import { Footer } from '@/components/Footer'
 import { FrameScroll } from '@/components/FrameScroll'
 import { Hero } from '@/components/Hero'
+import { Location } from '@/components/Location'
 import { MenuSection } from '@/components/MenuSection'
 import { Nav } from '@/components/Nav'
 import { Objects3D } from '@/components/Objects3D'
@@ -16,6 +17,7 @@ import {
   footer,
   getDynamicSections,
   hero,
+  location,
   menu,
   objects3d,
   pageLayout,
@@ -67,6 +69,22 @@ function renderBaseSection(id: string) {
           contactName={reservations.contactName}
           address={reservations.address}
           contactEmail={reservations.contactEmail}
+        />
+      )
+    case 'location':
+      return (
+        <Location
+          key={id}
+          subtitle={location.subtitle}
+          heading={location.heading}
+          address={location.address}
+          whatsappNumber={location.whatsappNumber}
+          email={location.email}
+          hoursText={location.hoursText}
+          mapUrl={location.mapUrl}
+          mapEmbedUrl={location.mapEmbedUrl}
+          formTitle={location.formTitle}
+          formSubmitLabel={location.formSubmitLabel}
         />
       )
     default:
