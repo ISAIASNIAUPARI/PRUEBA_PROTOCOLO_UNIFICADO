@@ -35,5 +35,8 @@
       "mobileX": 23.64972262459005,
       "mobileY": 83.34360990556367
     }
-  ]
+  ],
+  "textColors": {
+    "title": "secondary"
+  }
 }
