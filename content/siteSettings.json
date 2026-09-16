@@ -55,15 +55,15 @@
       "enabled": true
     },
     {
-      "text": "¿Deseas reservar? 🍽️",
-      "enabled": true
-    },
-    {
       "text": "Te ayudamos ?🍗",
       "enabled": false
     },
     {
       "text": "Buscas ayuda 🍲?  ",
+      "enabled": true
+    },
+    {
+      "text": "¿Deseas reservar? 🍽️",
       "enabled": true
     }
   ],
