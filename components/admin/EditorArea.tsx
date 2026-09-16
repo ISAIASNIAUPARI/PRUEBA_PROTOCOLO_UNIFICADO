@@ -2,6 +2,7 @@
 
 import { PreviewReadOnly, useSelection } from './Selection'
 import { Sidebar } from './Sidebar'
+import { PreviewViewMode } from './useIsMobileView'
 
 /**
  * Cuerpo del editor (Fase E): sidebar del elemento seleccionado + preview en
@@ -18,6 +19,10 @@ export function EditorArea({ mobileFrame, children }: { mobileFrame?: boolean; c
   const { selected, clear } = useSelection()
 
   return (
+    // El marco 🖥️/📱 de acá es lo que leen los textos para decidir qué
+    // tamaño aplicar (ver useIsMobileView): así el sidebar y el preview
+    // hablan SIEMPRE de la misma vista, monte o no un EditProvider la ruta.
+    <PreviewViewMode mobile={mobileFrame}>
     <div className={`admin-shell-grid ${selected ? 'admin-shell-grid--with-sidebar' : ''}`}>
       <Sidebar mobileView={mobileFrame} />
       <div className="admin-preview" onClick={() => clear()}>
@@ -34,5 +39,6 @@ export function EditorArea({ mobileFrame, children }: { mobileFrame?: boolean; c
         </PreviewReadOnly>
       </div>
     </div>
+    </PreviewViewMode>
   )
 }
