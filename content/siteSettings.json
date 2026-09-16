@@ -65,7 +65,15 @@
     {
       "text": "¿Deseas reservar? 🍽️",
       "enabled": true
+    },
+    {
+      "text": "",
+      "enabled": false
+    },
+    {
+      "text": "",
+      "enabled": false
     }
   ],
-  "chatIntervalSec": 5
+  "chatIntervalSec": 4
 }
