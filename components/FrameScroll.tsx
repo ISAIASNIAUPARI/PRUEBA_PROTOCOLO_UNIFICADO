@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 
+import { usePreviewReadOnly } from '@/components/admin/Selection'
 import { useIsMobileView } from '@/components/admin/useIsMobileView'
 import { EditableText } from '@/components/editable/EditableText'
 import { textColorProps } from '@/lib/text-colors'
@@ -31,6 +32,7 @@ export function FrameScroll({
   onChange?: (next: FrameScrollData) => void
 }) {
   const isMobile = useIsMobileView()
+  const readOnly = usePreviewReadOnly()
   const color = textColorProps(textColors, (tc) => onChange?.({ heading, subheading, textColors: tc }))
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
@@ -149,6 +151,41 @@ export function FrameScroll({
       if (rafId) cancelAnimationFrame(rafId)
     }
   }, [])
+
+  // En el preview del admin esta sección se pinta COMPACTA.
+  //
+  // El original mide 240-300vh de alto con un <canvas> sticky de 100vh: es una
+  // pista de scroll para que los fotogramas avancen con la rueda. Dentro del
+  // marco de móvil simulado esas unidades siguen midiendo contra la VENTANA
+  // real, no contra el marco, así que quedaba un hueco blanco enorme entre el
+  // título y el primer fotograma — que es lo que se veía "vacío". Además la
+  // animación por scroll no tiene sentido en un preview: acá solo hace falta
+  // poder editar el título y el subtítulo y ver un fotograma de muestra.
+  if (readOnly) {
+    return (
+      <section className="frame-scroll" id="experiencia" style={{ height: 'auto' }}>
+        <div className="sec-head reveal">
+          <SealStar />
+          <h2 style={isMobile ? { fontSize: '26px' } : undefined}>
+            <EditableText as="span" edit={edit} value={heading} onChange={(v) => onChange?.({ heading: v, subheading, textColors })} {...color('heading')} />
+          </h2>
+          {(subheading || edit) && (
+            <div className="sub" style={isMobile ? { fontSize: '12px' } : undefined}>
+              <EditableText as="span" edit={edit} value={subheading} onChange={(v) => onChange?.({ heading, subheading: v, textColors })} {...color('subheading')} />
+            </div>
+          )}
+          <div className="rule" />
+        </div>
+        <div className="fs-frame" style={{ margin: '0 auto 48px' }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={frameUrl(0, isMobile)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+        </div>
+        <p className="relative z-10 mx-auto max-w-lg px-4 pb-8 text-center text-xs" style={{ color: 'var(--ink-soft)' }}>
+          La animación por scroll solo se ve en el sitio publicado. Los fotogramas no se cambian desde aquí — se generan aparte a partir de un video.
+        </p>
+      </section>
+    )
+  }
 
   return (
     <section className="frame-scroll" id="experiencia" ref={sectionRef}>

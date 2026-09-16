@@ -123,29 +123,47 @@ export function EditableImage({
       })
   }
 
-  // En el PREVIEW del admin la imagen es solo lectura: un clic la selecciona
-  // y sus controles (cambiar imagen, punto focal) se pintan en el sidebar.
+  // En el PREVIEW del admin la imagen es SOLO LECTURA y se renderiza
+  // exactamente igual que en el sitio público: el mismo <img>, sin ningún
+  // contenedor extra. Envolverla en un div (como se hizo al principio) rompe
+  // el layout cuando el CSS del sitio dimensiona el <img> directo o cuando el
+  // contenedor no es position:relative — el `absolute inset-0` se escapa a un
+  // ancestro lejano y la foto acaba de fondo de página. Lo único que se añade
+  // es la clase de selección y el click.
   if (edit && readOnly) {
+    const pick = (e: React.MouseEvent) => {
+      e.stopPropagation()
+      selection?.select(
+        { id, kind: 'media', label: 'Imagen' },
+        {
+          // En el sidebar se pinta acotada: `fill` la posicionaría absoluta y
+          // se saldría del panel, y `h-full` colapsaría sin altura de padre.
+          renderControls: () => (
+            <EditableImage {...allProps} fill={false} className="relative block w-full" imgClassName="block w-full h-auto" />
+          ),
+        }
+      )
+    }
+    const selCls = `admin-selectable ${selected ? 'admin-selected' : ''}`
+    if (!src) {
+      return (
+        <div
+          className={`${selCls} flex aspect-square w-full items-center justify-center bg-admin-line text-sm text-admin-ink/60`}
+          onClick={pick}
+        >
+          Sin imagen
+        </div>
+      )
+    }
     return (
-      <div
-        className={`admin-selectable ${selected ? 'admin-selected' : ''} ${fill ? 'absolute inset-0' : 'relative'} ${className ?? ''}`}
-        onClick={(e) => {
-          e.stopPropagation()
-          selection?.select(
-            { id, kind: 'media', label: 'Imagen' },
-            { renderControls: () => <EditableImage {...allProps} /> }
-          )
-        }}
-      >
-        {src ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={src} alt={alt || ''} className={imgClassName} style={objectPosition ? { objectPosition } : undefined} />
-        ) : (
-          <div className="flex aspect-square w-full items-center justify-center bg-admin-line text-sm text-admin-ink/60">
-            Sin imagen
-          </div>
-        )}
-      </div>
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={src}
+        alt={alt || ''}
+        className={[imgClassName, selCls].filter(Boolean).join(' ')}
+        style={objectPosition ? { objectPosition } : undefined}
+        onClick={pick}
+      />
     )
   }
 

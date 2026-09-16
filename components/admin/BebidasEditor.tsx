@@ -19,6 +19,9 @@ export function BebidasEditor({
   brandTagline: SiteSettings['brandTagline']
 }) {
   const [data, setData] = useState(initialDrinksPage)
+  // Vista del preview, igual que en /admin: esta pagina tambien hay que poder
+  // revisarla como se ve en un telefono.
+  const [viewMode, setViewMode] = useState<'desktop' | 'mobile'>('desktop')
   const [dirty, setDirty] = useState(false)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -54,6 +57,24 @@ export function BebidasEditor({
         <div className="z-[999] flex flex-wrap items-center justify-between gap-3 border-b border-admin-line bg-white px-4 py-3 shadow-sm">
         <span className="font-medium text-admin-ink">Panel de edición — Bebidas</span>
         <div className="flex items-center gap-3">
+          <div className="flex overflow-hidden rounded-md border border-admin-line">
+            <button
+              type="button"
+              onClick={() => setViewMode('desktop')}
+              title="Vista escritorio"
+              className={`px-2.5 py-1.5 text-sm ${viewMode === 'desktop' ? 'bg-admin-primary text-white' : 'text-admin-ink hover:bg-admin-bg'}`}
+            >
+              🖥️
+            </button>
+            <button
+              type="button"
+              onClick={() => setViewMode('mobile')}
+              title="Vista móvil"
+              className={`px-2.5 py-1.5 text-sm ${viewMode === 'mobile' ? 'bg-admin-primary text-white' : 'text-admin-ink hover:bg-admin-bg'}`}
+            >
+              📱
+            </button>
+          </div>
           <Link href="/admin" className="rounded-md border border-admin-line px-3 py-1.5 text-sm font-medium text-admin-ink hover:bg-admin-bg">
             ← Volver
           </Link>
@@ -70,7 +91,7 @@ export function BebidasEditor({
           </button>
         </div>
       </div>
-        <EditorArea>
+        <EditorArea mobileFrame={viewMode === 'mobile'}>
           <DrinksPage
             edit
             data={data}
