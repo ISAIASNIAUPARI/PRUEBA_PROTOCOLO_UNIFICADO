@@ -123,47 +123,46 @@ export function EditableImage({
       })
   }
 
-  // En el PREVIEW del admin la imagen es SOLO LECTURA y se renderiza
-  // exactamente igual que en el sitio público: el mismo <img>, sin ningún
-  // contenedor extra. Envolverla en un div (como se hizo al principio) rompe
-  // el layout cuando el CSS del sitio dimensiona el <img> directo o cuando el
-  // contenedor no es position:relative — el `absolute inset-0` se escapa a un
-  // ancestro lejano y la foto acaba de fondo de página. Lo único que se añade
-  // es la clase de selección y el click.
+  // En el PREVIEW del admin la imagen es SOLO LECTURA, pero conserva la MISMA
+  // estructura de DOM que en modo edición: wrapper + <img>.
+  //
+  // Es deliberado y costó un bug entenderlo: las secciones reparten las clases
+  // entre los dos nodos. Reservas, por ejemplo, manda `className="bg"` al
+  // wrapper (que es quien lleva `position:absolute;inset:0` y hace de fondo) y
+  // `imgClassName` a la imagen. Al intentar "simplificar" devolviendo solo el
+  // <img>, esa clase se perdía y el fondo de Reservas desaparecía, quedando la
+  // foto suelta a tamaño natural. La única diferencia con el modo edición es
+  // que aquí no hay overlay ni botón de subida: eso vive en el sidebar.
   if (edit && readOnly) {
     const pick = (e: React.MouseEvent) => {
       e.stopPropagation()
       selection?.select(
         { id, kind: 'media', label: 'Imagen' },
         {
-          // En el sidebar se pinta acotada: `fill` la posicionaría absoluta y
-          // se saldría del panel, y `h-full` colapsaría sin altura de padre.
+          // Acotada a propósito: con `fill` se pintaría absolute y, como el
+          // panel no es un contenedor posicionado, se escapaba y la foto
+          // terminaba de fondo de la página entera. `h-full` tampoco sirve
+          // ahí, porque no hay padre con altura.
           renderControls: () => (
             <EditableImage {...allProps} fill={false} className="relative block w-full" imgClassName="block w-full h-auto" />
           ),
         }
       )
     }
-    const selCls = `admin-selectable ${selected ? 'admin-selected' : ''}`
-    if (!src) {
-      return (
-        <div
-          className={`${selCls} flex aspect-square w-full items-center justify-center bg-admin-line text-sm text-admin-ink/60`}
-          onClick={pick}
-        >
-          Sin imagen
-        </div>
-      )
-    }
     return (
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
-        src={src}
-        alt={alt || ''}
-        className={[imgClassName, selCls].filter(Boolean).join(' ')}
-        style={objectPosition ? { objectPosition } : undefined}
+      <div
+        className={`admin-selectable ${selected ? 'admin-selected' : ''} ${fill ? 'absolute inset-0' : 'relative'} ${className ?? ''}`}
         onClick={pick}
-      />
+      >
+        {src ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={src} alt={alt || ''} className={imgClassName} style={objectPosition ? { objectPosition } : undefined} />
+        ) : (
+          <div className="flex aspect-square w-full items-center justify-center bg-admin-line text-sm text-admin-ink/60">
+            Sin imagen
+          </div>
+        )}
+      </div>
     )
   }
 

@@ -52,26 +52,23 @@ export function CloudinaryVideo({ src, edit, onChange, className, autoPlay, loop
     }
   }
 
-  // Mismo criterio que EditableImage: en el preview se renderiza el <video>
-  // tal cual lo hace el sitio público, sin contenedor extra que pueda alterar
-  // el layout. Solo se añaden la clase de selección y el click.
+  // Mismo criterio que EditableImage: se conserva el wrapper del modo edición
+  // (las secciones cuentan con él para dimensionar el video), solo que sin
+  // overlay ni botón: "Cambiar video" vive en el sidebar.
   if (edit && readOnly) {
     return (
-      <video
-        src={src}
-        className={[className, 'admin-selectable', selected ? 'admin-selected' : ''].filter(Boolean).join(' ')}
-        autoPlay={autoPlay}
-        loop={loop}
-        muted={muted}
-        playsInline={playsInline}
+      <div
+        className={`admin-selectable ${selected ? 'admin-selected' : ''} h-full w-full`}
         onClick={(e) => {
           e.stopPropagation()
           selection?.select(
             { id, kind: 'media', label: 'Video de fondo' },
-            { renderControls: () => <CloudinaryVideo {...allProps} className="block w-full h-auto" /> }
+            { renderControls: () => <CloudinaryVideo {...allProps} className="block h-auto w-full" /> }
           )
         }}
-      />
+      >
+        <video src={src} className={className} autoPlay={autoPlay} loop={loop} muted={muted} playsInline={playsInline} />
+      </div>
     )
   }
 
