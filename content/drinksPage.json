@@ -60,8 +60,10 @@
         "Large"
       ],
       "image": {
-        "url": "/images/bebida-lychee.webp",
-        "alt": "Uva y Lichi"
+        "url": "https://res.cloudinary.com/foewxv45/image/upload/f_auto,q_auto/v1789519159/la-gloria-familia-unida/oqitawyvcqkhntwexarh",
+        "alt": "Uva y Lichi",
+        "focalX": 51,
+        "focalY": 83
       }
     },
     {
