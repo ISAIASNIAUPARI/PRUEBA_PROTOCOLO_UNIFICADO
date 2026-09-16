@@ -6,6 +6,9 @@ import { useState } from 'react'
 import { DrinksPage } from '@/components/DrinksPage'
 import type { DrinksPage as DrinksPageT, SiteSettings } from '@/lib/types'
 
+import { EditorArea } from './EditorArea'
+import { SelectionProvider } from './Selection'
+
 export function BebidasEditor({
   initialDrinksPage,
   brandName,
@@ -43,8 +46,12 @@ export function BebidasEditor({
   }
 
   return (
-    <div className="min-h-screen bg-admin-bg text-admin-ink" style={{ fontFamily: 'var(--font-poppins), sans-serif' }}>
-      <div className="sticky top-0 z-[999] flex flex-wrap items-center justify-between gap-3 border-b border-admin-line bg-white px-4 py-3 shadow-sm">
+    // Misma arquitectura que /admin: barra arriba, sidebar de edición y
+    // preview en solo lectura. Sin el SelectionProvider, en Fase E acá no se
+    // podía editar ningún texto (el texto dejó de ser contentEditable).
+    <SelectionProvider>
+      <div className="admin-editor-root bg-admin-bg text-admin-ink" style={{ fontFamily: 'var(--font-poppins), sans-serif' }}>
+        <div className="z-[999] flex flex-wrap items-center justify-between gap-3 border-b border-admin-line bg-white px-4 py-3 shadow-sm">
         <span className="font-medium text-admin-ink">Panel de edición — Bebidas</span>
         <div className="flex items-center gap-3">
           <Link href="/admin" className="rounded-md border border-admin-line px-3 py-1.5 text-sm font-medium text-admin-ink hover:bg-admin-bg">
@@ -63,17 +70,20 @@ export function BebidasEditor({
           </button>
         </div>
       </div>
-      <DrinksPage
-        edit
-        data={data}
-        brandName={brandName}
-        brandTagline={brandTagline}
-        onChange={(next) => {
-          setData(next)
-          setDirty(true)
-          setSaved(false)
-        }}
-      />
-    </div>
+        <EditorArea>
+          <DrinksPage
+            edit
+            data={data}
+            brandName={brandName}
+            brandTagline={brandTagline}
+            onChange={(next) => {
+              setData(next)
+              setDirty(true)
+              setSaved(false)
+            }}
+          />
+        </EditorArea>
+      </div>
+    </SelectionProvider>
   )
 }

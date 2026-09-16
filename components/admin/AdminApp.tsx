@@ -25,7 +25,8 @@ import type {
 } from '@/lib/types'
 
 import { useEdit } from './EditProvider'
-import { PreviewReadOnly, SelectionProvider, useSelection } from './Selection'
+import { EditorArea } from './EditorArea'
+import { SelectionProvider } from './Selection'
 import { Sidebar } from './Sidebar'
 import { Toolbar } from './Toolbar'
 
@@ -206,50 +207,8 @@ export function AdminApp() {
     <SelectionProvider>
       <div className="admin-editor-root">
         <Toolbar />
-        <EditorArea>{page}</EditorArea>
+        <EditorArea mobileFrame={viewMode === 'mobile'}>{page}</EditorArea>
       </div>
     </SelectionProvider>
-  )
-}
-
-/**
- * Debajo de la barra superior: el sidebar de edición (solo si hay algo
- * seleccionado) y el preview. Sin selección, el preview ocupa todo el ancho.
- */
-function EditorArea({ children }: { children: React.ReactNode }) {
-  const { selected } = useSelection()
-  return (
-    <div className={`admin-shell-grid ${selected ? 'admin-shell-grid--with-sidebar' : ''}`}>
-      <Sidebar />
-      <PreviewPane>{children}</PreviewPane>
-    </div>
-  )
-}
-
-/**
- * Columna derecha: la web tal cual, en SOLO LECTURA.
- *
- * Lo único que responde acá es seleccionar un texto; subir medios, arrastrar
- * botones u organizar secciones vive en el sidebar. Un clic en el fondo
- * deselecciona, igual que en un editor de escritorio.
- */
-function PreviewPane({ children }: { children: React.ReactNode }) {
-  const { viewMode } = useEdit()
-  const { clear } = useSelection()
-
-  return (
-    <div className="admin-preview" onClick={() => clear()}>
-      <PreviewReadOnly>
-        {viewMode === 'mobile' ? (
-          <div className="flex justify-center bg-admin-line py-6">
-            <div className="w-[390px] max-w-full overflow-hidden rounded-[2rem] border-8 border-admin-ink bg-white shadow-xl">
-              {children}
-            </div>
-          </div>
-        ) : (
-          children
-        )}
-      </PreviewReadOnly>
-    </div>
   )
 }
