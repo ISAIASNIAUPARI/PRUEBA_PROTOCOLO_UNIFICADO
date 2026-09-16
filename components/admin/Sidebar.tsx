@@ -71,6 +71,8 @@ export function Sidebar({ mobileView }: { mobileView?: boolean }) {
         )}
 
         {selected.kind === 'media' && <div className="admin-sidebar-media">{handlers.current.renderControls?.()}</div>}
+
+        {selected.kind === 'buttons' && handlers.current.renderControls?.()}
       </div>
     </aside>
   )

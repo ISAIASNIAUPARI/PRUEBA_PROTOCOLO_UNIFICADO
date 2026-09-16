@@ -1,10 +1,10 @@
 'use client'
 
 import dynamic from 'next/dynamic'
-import { useEffect, useState } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { createPortal } from 'react-dom'
 
-import { usePreviewReadOnly } from '@/components/admin/Selection'
+import { usePreviewReadOnly, useSelectionOptional } from '@/components/admin/Selection'
 
 import { useIsMobileView } from '@/components/admin/useIsMobileView'
 import type { ButtonRef } from '@/lib/types'
@@ -47,11 +47,39 @@ export function ButtonsArea({
   const isMobile = useIsMobileView()
   const xKey = isMobile ? 'mobileX' : 'desktopX'
   const yKey = isMobile ? 'mobileY' : 'desktopY'
-  // En el preview del admin los botones NO se arrastran: se ven tal cual
-  // quedaron. Reordenarlos y moverlos se hace desde "Editar botones", que
-  // abre su panel desde el sidebar.
+  // En el preview, la zona de botones se comporta como cualquier otro
+  // elemento: un clic la SELECCIONA (no dispara nada), y ya seleccionada
+  // vuelve a arrastrarse y saca sus controles en el sidebar.
+  //
+  // La Fase E la dejó en solo lectura sin darle esa entrada, así que los
+  // botones se quedaron fijos y sin forma de abrir "Editar botones": ni
+  // arrastre, ni panel, ni selección.
   const readOnly = usePreviewReadOnly()
-  const canDrag = !!edit && !readOnly
+  const selection = useSelectionOptional()
+  const id = useId()
+  const selected = selection?.selected?.id === id
+  const canDrag = !!edit && (!readOnly || selected)
+
+  function selectArea() {
+    selection?.select(
+      { id, kind: 'buttons', label: `Botones — ${sectionLabel}` },
+      {
+        renderControls: () => (
+          <div className="flex flex-col gap-2">
+            <p className="admin-sidebar-sublabel">Arrastra los botones en la vista previa para moverlos.</p>
+            <button
+              type="button"
+              onClick={() => setEditorOpen(true)}
+              className="admin-sidebar-step"
+              style={{ flex: '0 0 auto', padding: '7px 10px' }}
+            >
+              ✏️ Editar botones
+            </button>
+          </div>
+        ),
+      }
+    )
+  }
   const canvasActive = !!edit || buttons.some((b) => b[xKey] != null && b[yKey] != null)
 
   useEffect(() => {
@@ -71,12 +99,14 @@ export function ButtonsArea({
               yKey={yKey}
               onChange={(next) => onChange?.(next)}
               buttonClassName={buttonClassName}
+              onSelect={edit && readOnly && !selected ? selectArea : undefined}
+              selected={selected}
             />,
             mountNode
           )
         : !canvasActive && staticRender()}
 
-      {canDrag && (
+      {canDrag && !readOnly && (
         <button
           type="button"
           onClick={() => setEditorOpen(true)}

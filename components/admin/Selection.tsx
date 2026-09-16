@@ -5,7 +5,7 @@ import { createContext, useCallback, useContext, useMemo, useRef, useState } fro
 import type { TextSize, ThemeColorChoice } from '@/lib/types'
 
 /** Qué tipo de elemento está seleccionado: decide qué controles pinta el sidebar. */
-export type SelectionKind = 'text' | 'media'
+export type SelectionKind = 'text' | 'media' | 'buttons'
 
 export type SelectionData = {
   id: string

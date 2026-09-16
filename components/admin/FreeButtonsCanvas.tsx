@@ -320,6 +320,8 @@ function DraggableButton({
   xKey,
   yKey,
   buttonClassName,
+  onSelect,
+  selected,
 }: {
   button: ButtonRef
   index: number
@@ -327,6 +329,9 @@ function DraggableButton({
   xKey: XKey
   yKey: YKey
   buttonClassName: (index: number) => string
+  /** En el preview del admin: un clic selecciona la zona de botones. */
+  onSelect?: () => void
+  selected?: boolean
 }) {
   const pos = defaultPos(index)
   const x = button[xKey] ?? pos.x
@@ -370,6 +375,25 @@ function DraggableButton({
     )
   }
 
+  // En el preview del admin el botón no navega: se selecciona, y con la zona
+  // seleccionada vuelve a poder arrastrarse. Sin esto la zona de botones se
+  // quedó sin ninguna entrada al volver el preview de solo lectura.
+  if (onSelect) {
+    return (
+      <div
+        style={style}
+        onClick={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          onSelect()
+        }}
+        className={`admin-selectable whitespace-nowrap ${selected ? 'admin-selected' : ''} ${buttonClassName(index)}`}
+      >
+        <span style={colorStyle(button, index)}>{button.text}</span>
+      </div>
+    )
+  }
+
   const href = resolveButtonHref(button)
   return (
     <a
@@ -398,11 +422,15 @@ export default function FreeButtonsCanvas({
   yKey,
   onChange,
   buttonClassName,
+  onSelect,
+  selected,
 }: {
   buttons: ButtonRef[]
   edit: boolean
   xKey: XKey
   yKey: YKey
+  onSelect?: () => void
+  selected?: boolean
   onChange: (next: ButtonRef[]) => void
   buttonClassName: (index: number) => string
 }) {
@@ -510,7 +538,17 @@ export default function FreeButtonsCanvas({
     >
       <div ref={containerRef} className="pointer-events-none absolute inset-0" style={{ zIndex: 5 }}>
         {buttons.map((b, i) => (
-          <DraggableButton key={b.id} button={b} index={i} edit={edit} xKey={xKey} yKey={yKey} buttonClassName={buttonClassName} />
+          <DraggableButton
+            key={b.id}
+            button={b}
+            index={i}
+            edit={edit}
+            xKey={xKey}
+            yKey={yKey}
+            buttonClassName={buttonClassName}
+            onSelect={onSelect}
+            selected={selected}
+          />
         ))}
 
         {/* Overlay: se renderiza una sola vez, oculto. Durante el arrastre solo
