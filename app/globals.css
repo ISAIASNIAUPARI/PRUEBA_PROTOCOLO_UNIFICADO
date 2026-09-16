@@ -341,7 +341,13 @@ footer{background:var(--cream);padding:70px 0 0}
 /* burbuja de aviso que sale del botón */
 .chat-notif{position:fixed;bottom:46px;left:104px;z-index:99998;
   background:#1a1610;color:#C9A962;border:1px solid rgba(201,169,98,.55);border-radius:12px;
-  padding:10px 16px;font-family:var(--sans);font-size:13.5px;font-weight:500;white-space:nowrap;
+  padding:10px 16px;font-family:var(--sans);font-size:13.5px;font-weight:500;
+  /* pre-wrap y no nowrap: el cliente escribe estos avisos desde el panel y
+     los espacios seguidos que ponga son suyos — `normal` y `nowrap` los
+     colapsan en uno solo. pre-wrap los conserva y aun asi deja cortar la
+     linea. Con el tope de ancho, un aviso largo baja de renglon dentro de
+     la burbuja en vez de estirarla a lo ancho de la pantalla. */
+  white-space:pre-wrap;max-width:220px;overflow-wrap:break-word;
   box-shadow:0 8px 24px rgba(0,0,0,.45);pointer-events:none;
   animation:chat-notif-in .35s ease both}
 .chat-notif::before{content:"";position:absolute;left:-6px;bottom:14px;width:11px;height:11px;
@@ -414,7 +420,7 @@ footer{background:var(--cream);padding:70px 0 0}
   #chat-fab{bottom:24px;left:20px;width:54px;height:54px}
   #chat-fab svg{width:23px;height:23px}
   .chat-notif{bottom:36px;left:84px;font-size:12.5px;padding:9px 13px;
-    max-width:calc(100vw - 104px);white-space:normal}
+    max-width:min(220px,calc(100vw - 104px))}
   .chat-panel{left:12px;right:12px;width:auto;bottom:90px;height:min(70vh,460px)}
 }
 
