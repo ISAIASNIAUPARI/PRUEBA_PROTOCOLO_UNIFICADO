@@ -38,5 +38,9 @@
   ],
   "textColors": {
     "title": "secondary"
+  },
+  "textSizes": {},
+  "textWeights": {
+    "title": 600
   }
 }
