@@ -51,7 +51,9 @@
   "chatPlaceholder": "Escribe tu mensaje…",
   "chatNotifications": [
     "¿Deseas reservar? 🍽️",
-    "Contáctanos 💬"
+    "Contáctanos 💬",
+    "Te ayudamos ?",
+    "Buscas ayuda                                 .                            .                 ."
   ],
-  "chatIntervalSec": 4
+  "chatIntervalSec": 5
 }
