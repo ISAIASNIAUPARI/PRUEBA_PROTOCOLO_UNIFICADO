@@ -164,13 +164,29 @@ export default function SettingsPanel({ onClose }: { onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-[900] flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
-      <div className="w-full max-w-lg rounded-lg bg-white p-4" onClick={(e) => e.stopPropagation()}>
-        <div className="mb-3 flex items-center justify-between">
+      {/*
+        Tres franjas: cabecera y pie quietos, y SOLO el cuerpo con scroll.
+        Con 10 avisos el contenido pasa de largo de la pantalla; si scrollara
+        el modal entero, el botón "Listo" se iría fuera de la vista y el
+        cliente no encontraría cómo cerrarlo.
+
+        El alto del cuerpo no se fija a mano: la caja se topa en 85vh y el
+        cuerpo se queda con lo que sobre (`flex-1` + `min-h-0`). Una altura
+        calculada a ojo se rompe en cuanto la cabecera envuelve en dos líneas
+        o cambia el aviso amarillo.
+      */}
+      <div
+        className="flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden rounded-lg bg-white"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex flex-none items-center justify-between border-b border-admin-line px-4 py-3">
           <h3 className="text-sm font-semibold text-admin-ink">⚙️ Configuración</h3>
           <button type="button" onClick={onClose} className="rounded px-2 text-admin-ink/60 hover:bg-admin-bg">
             ×
           </button>
         </div>
+
+        <div className="min-h-0 flex-1 overflow-y-auto px-4 py-2.5">
 
         <label className="mb-1 block text-sm font-medium text-admin-ink" htmlFor="n8n-webhook">
           URL del agente de chat (N8N)
@@ -200,7 +216,7 @@ export default function SettingsPanel({ onClose }: { onClose: () => void }) {
           Mostrar el chat en la web
         </label>
 
-        <h4 className="mt-5 text-sm font-semibold text-admin-ink">Mensajes del chat</h4>
+        <h4 className="mt-4 text-sm font-semibold text-admin-ink">Mensajes del chat</h4>
         <p className="mb-2 text-xs leading-snug text-admin-ink/60">
           Aparecen en la burbuja flotante, uno por uno en rotación. Arrastra ⠿ para cambiar el orden; 👁 desactiva un mensaje sin borrarlo.
         </p>
@@ -291,18 +307,22 @@ export default function SettingsPanel({ onClose }: { onClose: () => void }) {
           Cuánto se ve cada mensaje antes de pasar al siguiente. Con un solo mensaje no hay rotación: se queda fijo.
         </p>
 
-        <div className="mt-4 flex justify-end">
+        </div>
+
+        {/* Aviso y botón en la MISMA fila: apilados, el pie se comía 79px de
+            alto fijo que le hacían falta al listado. */}
+        <div className="flex flex-none items-center justify-between gap-3 border-t border-admin-line px-4 py-2.5">
+          <p className="text-xs leading-snug text-admin-ink/50">
+            Los cambios se publican con «Guardar».
+          </p>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-md border border-admin-line px-3 py-1.5 text-sm hover:bg-admin-bg"
+            className="flex-none rounded-md border border-admin-line px-3 py-1.5 text-sm hover:bg-admin-bg"
           >
             Listo
           </button>
         </div>
-        <p className="mt-2 text-right text-xs text-admin-ink/50">
-          Los cambios se publican con «Guardar», como el resto del contenido.
-        </p>
       </div>
     </div>
   )
