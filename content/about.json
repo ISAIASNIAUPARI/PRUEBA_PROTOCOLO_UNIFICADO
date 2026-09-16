@@ -8,5 +8,10 @@
   "imageRight": {
     "url": "/images/about-platos.jpg",
     "alt": "Platos especiales La Gloria Familia Unida"
+  },
+  "textColors": {},
+  "textSizes": {},
+  "textWeights": {
+    "heading": 600
   }
 }
