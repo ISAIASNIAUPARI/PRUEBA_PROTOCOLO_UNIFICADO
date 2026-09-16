@@ -7,7 +7,7 @@
   "footerText": "LIMA · QUITO · CARTAGENA  |  LA GLORIA FAMILIA UNIDA",
   "drinks": [
     {
-      "name": "Limonada de Arándano",
+      "name": "Limonada de sabor ",
       "tag": "Blueberry",
       "price": "desde $5",
       "description": "Arándanos frescos, limón exprimido, hielo & menta. Refrescante y antioxidante.",
@@ -31,7 +31,9 @@
       ],
       "image": {
         "url": "/images/bebida-strawberry.webp",
-        "alt": "Limonada de Fresa"
+        "alt": "Limonada de Fresa",
+        "focalX": 63,
+        "focalY": 100
       }
     },
     {
