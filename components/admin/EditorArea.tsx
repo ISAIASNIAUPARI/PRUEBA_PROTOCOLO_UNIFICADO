@@ -19,7 +19,7 @@ export function EditorArea({ mobileFrame, children }: { mobileFrame?: boolean; c
 
   return (
     <div className={`admin-shell-grid ${selected ? 'admin-shell-grid--with-sidebar' : ''}`}>
-      <Sidebar />
+      <Sidebar mobileView={mobileFrame} />
       <div className="admin-preview" onClick={() => clear()}>
         <PreviewReadOnly>
           {mobileFrame ? (

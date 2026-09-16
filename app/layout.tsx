@@ -21,14 +21,17 @@ import { theme } from '@/lib/content'
 
 const poppins = Poppins({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
+  // El 700 es necesario para el control "Ancho" del admin: sin ese peso
+  // cargado, `font-weight:700` cae al 600 y "Negrita" se ve igual que
+  // "Semibold" — parecia que el boton no hacia nada.
+  weight: ['300', '400', '500', '600', '700'],
   variable: '--font-poppins',
   display: 'swap',
 })
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
-  weight: ['400', '600'],
+  weight: ['400', '600', '700'],
   style: ['normal', 'italic'],
   variable: '--font-playfair',
   display: 'swap',

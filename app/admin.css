@@ -226,3 +226,5 @@
   padding: 0 2px;
 }
 .admin-sidebar-clear:hover { color: #fff; }
+/* El reset de cada fila se distingue de los pasos: no es un valor mas. */
+.admin-sidebar-reset { flex: 0 0 auto; padding-left: 9px; padding-right: 9px; border-style: dashed; }
