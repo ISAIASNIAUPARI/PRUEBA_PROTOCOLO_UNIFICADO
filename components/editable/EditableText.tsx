@@ -3,7 +3,8 @@
 import React, { useEffect, useId } from 'react'
 
 import { useSelectionOptional } from '@/components/admin/Selection'
-import type { ThemeColorChoice } from '@/lib/types'
+import { useIsMobileView } from '@/components/admin/useIsMobileView'
+import type { TextSize, ThemeColorChoice } from '@/lib/types'
 
 type Tag = 'h1' | 'h2' | 'h3' | 'h4' | 'p' | 'div' | 'span' | 'strong'
 
@@ -25,6 +26,12 @@ type Props = {
    */
   textColor?: ThemeColorChoice
   onTextColorChange?: (next: ThemeColorChoice | undefined) => void
+  /** Tamaño en px por vista (`d` escritorio, `m` móvil). */
+  fontSize?: TextSize
+  onFontSizeChange?: (next: TextSize | undefined) => void
+  /** Grosor único para ambas vistas. */
+  fontWeight?: number
+  onFontWeightChange?: (next: number | undefined) => void
   /** Nombre legible que muestra el sidebar al seleccionarlo. */
   label?: string
 }
@@ -48,9 +55,14 @@ export function EditableText({
   stopClickNavigation,
   textColor,
   onTextColorChange,
+  fontSize,
+  onFontSizeChange,
+  fontWeight,
+  onFontWeightChange,
   label,
 }: Props) {
   const selection = useSelectionOptional()
+  const isMobile = useIsMobileView()
   const autoId = useId()
   const id = autoId
 
@@ -61,6 +73,8 @@ export function EditableText({
     label: label || 'Texto',
     value: value ?? '',
     textColor,
+    fontSize,
+    fontWeight,
   }
 
   // Mientras está seleccionado, se reenvían datos y callbacks frescos al
@@ -68,7 +82,7 @@ export function EditableText({
   // por eso viven en un ref y no en el estado (ver Selection.tsx).
   useEffect(() => {
     if (!selected || !selection) return
-    selection.refresh(payload, { onChange, onTextColorChange })
+    selection.refresh(payload, { onChange, onTextColorChange, onFontSizeChange, onFontWeightChange })
   })
 
   const isInline = INLINE_TAGS.includes(as)
@@ -82,8 +96,19 @@ export function EditableText({
         .join(' ')
     : ''
 
-  // El override se aplica igual en el admin y en el sitio público.
-  const style = textColor ? { color: `var(--color-${textColor})` } : undefined
+  // Los overrides se aplican igual en el admin y en el sitio público, y van
+  // SIEMPRE como estilo inline: así ganan por especificidad contra cualquier
+  // regla del CSS portado del diseño original (que suele fijar el tamaño de
+  // los títulos con `clamp()` y pesos propios).
+  const appliedSize = isMobile ? fontSize?.m : fontSize?.d
+  const style: React.CSSProperties | undefined =
+    textColor || appliedSize || fontWeight
+      ? {
+          ...(textColor ? { color: `var(--color-${textColor})` } : null),
+          ...(appliedSize ? { fontSize: appliedSize } : null),
+          ...(fontWeight ? { fontWeight } : null),
+        }
+      : undefined
 
   return React.createElement(
     as,
@@ -95,7 +120,7 @@ export function EditableText({
           ? (e: React.MouseEvent) => {
               if (stopClickNavigation) e.preventDefault()
               e.stopPropagation()
-              selection.select(payload, { onChange, onTextColorChange })
+              selection.select(payload, { onChange, onTextColorChange, onFontSizeChange, onFontWeightChange })
             }
           : undefined,
     },

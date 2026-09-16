@@ -86,3 +86,73 @@ export function textColorProps(textColors: TextColors | undefined, patch: Patch)
     },
   })
 }
+
+// ---------------------------------------------------------------------------
+// Tamaño de letra y grosor por texto (Fase E). Mismo criterio que los colores:
+// un solo mapa por sección, clave estable por texto.
+// ---------------------------------------------------------------------------
+
+/** Tamaño en px por vista: `d` escritorio, `m` móvil. */
+export type TextSize = { d?: number; m?: number }
+export type TextSizes = Record<string, TextSize>
+export type TextWeights = Record<string, number>
+
+/** Escalas ofrecidas en el sidebar. El móvil usa valores más chicos: el mismo
+ *  px se ve mucho más grande en una pantalla de 390px. */
+export const SIZE_STEPS = ['XS', 'S', 'M', 'L', 'XL'] as const
+export type SizeStep = (typeof SIZE_STEPS)[number]
+
+export const SIZE_PX: Record<'d' | 'm', Record<SizeStep, number>> = {
+  d: { XS: 14, S: 18, M: 22, L: 28, XL: 40 },
+  m: { XS: 12, S: 14, M: 16, L: 20, XL: 28 },
+}
+
+export const WEIGHT_STEPS: { label: string; value: number }[] = [
+  { label: 'Ligero', value: 300 },
+  { label: 'Normal', value: 400 },
+  { label: 'Semibold', value: 600 },
+  { label: 'Negrita', value: 700 },
+]
+
+type SizePatch = (next: { textSizes?: TextSizes; textWeights?: TextWeights }) => void
+
+/**
+ * Helper gemelo de `textColorProps` para tamaño y grosor:
+ *
+ *   const sizeWeight = textSizeProps(data.textSizes, data.textWeights, patch)
+ *   <EditableText … {...color('heading')} {...sizeWeight('heading')} />
+ */
+export function textSizeProps(
+  textSizes: TextSizes | undefined,
+  textWeights: TextWeights | undefined,
+  patch: SizePatch
+) {
+  return (key: string) => ({
+    fontSize: textSizes?.[key],
+    fontWeight: textWeights?.[key],
+
+    onFontSizeChange: (next: TextSize | undefined) => {
+      const current = textSizes ?? {}
+      // Sin tamaño para ninguna vista se borra la clave entera, en vez de
+      // dejar `{}` acumulando basura en el JSON.
+      if (!next || (next.d == null && next.m == null)) {
+        const { [key]: _drop, ...rest } = current
+        void _drop
+        patch({ textSizes: rest })
+        return
+      }
+      patch({ textSizes: { ...current, [key]: next } })
+    },
+
+    onFontWeightChange: (next: number | undefined) => {
+      const current = textWeights ?? {}
+      if (next == null) {
+        const { [key]: _drop, ...rest } = current
+        void _drop
+        patch({ textWeights: rest })
+        return
+      }
+      patch({ textWeights: { ...current, [key]: next } })
+    },
+  })
+}

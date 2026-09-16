@@ -7,8 +7,8 @@ import { ButtonsArea } from '@/components/editable/ButtonsArea'
 import { CloudinaryVideo } from '@/components/editable/CloudinaryVideo'
 import { EditableText } from '@/components/editable/EditableText'
 import { resolveButtonHref } from '@/lib/buttons'
-import { textColorProps } from '@/lib/text-colors'
-import type { ButtonRef, MenuCategory, TextColors } from '@/lib/types'
+import { textColorProps, textSizeProps } from '@/lib/text-colors'
+import type { ButtonRef, MenuCategory, TextColors, TextSizes, TextWeights } from '@/lib/types'
 
 import { SealCloche } from './Seal'
 
@@ -21,6 +21,8 @@ type MenuData = {
   buttons?: ButtonRef[]
   /** Overrides de color por texto (ver lib/text-colors.ts). */
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 function menuButtonClass() {
@@ -35,6 +37,8 @@ export function MenuSection({
   categories,
   buttons,
   textColors,
+  textSizes,
+  textWeights,
   edit,
   onChange,
 }: MenuData & {
@@ -75,10 +79,12 @@ export function MenuSection({
   const isMobile = useIsMobileView()
 
   function patch(next: Partial<MenuData>) {
-    onChange?.({ heading, subheading, watermark, videoUrl, categories, buttons, textColors, ...next })
+    onChange?.({ heading, subheading, watermark, videoUrl, categories, buttons, textColors, textSizes, textWeights, ...next })
   }
 
   const color = textColorProps(textColors, (tc) => patch({ textColors: tc }))
+
+  const sizeWeight = textSizeProps(textSizes, textWeights, (next) => patch(next))
 
   return (
     <section className="menu" id="menu" ref={sectionRef}>
@@ -97,18 +103,18 @@ export function MenuSection({
       <div className="vid-scrim" />
       {(watermark || edit) && (
         <div className="watermark">
-          <EditableText as="span" edit={edit} value={watermark} onChange={(v) => patch({ watermark: v })} {...color('watermark')} />
+          <EditableText as="span" edit={edit} value={watermark} onChange={(v) => patch({ watermark: v })} {...color('watermark')} {...sizeWeight('watermark')} />
         </div>
       )}
       <div className="wrap">
         <div className="sec-head reveal">
           <SealCloche />
           <h2 style={isMobile ? { fontSize: '26px' } : undefined}>
-            <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} {...color('heading')} />
+            <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} {...color('heading')} {...sizeWeight('heading')} />
           </h2>
           {(subheading || edit) && (
             <div className="sub" style={isMobile ? { fontSize: '12px' } : undefined}>
-              <EditableText as="span" edit={edit} value={subheading} onChange={(v) => patch({ subheading: v })} {...color('subheading')} />
+              <EditableText as="span" edit={edit} value={subheading} onChange={(v) => patch({ subheading: v })} {...color('subheading')} {...sizeWeight('subheading')} />
             </div>
           )}
           <div className="rule" />
@@ -127,7 +133,7 @@ export function MenuSection({
                     next[ci] = { ...cat, title: v }
                     patch({ categories: next })
                   }}
-                  {...color(`categories.${ci}.title`)}
+                  {...color(`categories.${ci}.title`)} {...sizeWeight(`categories.${ci}.title`)}
                 />
               </h3>
               {(cat.items ?? []).map((it, ii) => (
@@ -145,7 +151,7 @@ export function MenuSection({
                           nextCats[ci] = { ...nextCats[ci], items: nextItems }
                           patch({ categories: nextCats })
                         }}
-                        {...color(`categories.${ci}.items.${ii}.name`)}
+                        {...color(`categories.${ci}.items.${ii}.name`)} {...sizeWeight(`categories.${ci}.items.${ii}.name`)}
                       />
                     </span>
                     <span className="m-price">
@@ -160,7 +166,7 @@ export function MenuSection({
                           nextCats[ci] = { ...nextCats[ci], items: nextItems }
                           patch({ categories: nextCats })
                         }}
-                        {...color(`categories.${ci}.items.${ii}.price`)}
+                        {...color(`categories.${ci}.items.${ii}.price`)} {...sizeWeight(`categories.${ci}.items.${ii}.price`)}
                       />
                     </span>
                   </div>
@@ -176,7 +182,7 @@ export function MenuSection({
                         nextCats[ci] = { ...nextCats[ci], items: nextItems }
                         patch({ categories: nextCats })
                       }}
-                      {...color(`categories.${ci}.items.${ii}.description`)}
+                      {...color(`categories.${ci}.items.${ii}.description`)} {...sizeWeight(`categories.${ci}.items.${ii}.description`)}
                     />
                   </div>
                 </div>

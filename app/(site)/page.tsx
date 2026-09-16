@@ -31,19 +31,29 @@ function renderBaseSection(id: string) {
     case 'hero':
       return <Hero key={id} title={hero.title} slides={hero.slides} buttons={hero.buttons} 
   textColors={hero.textColors}
+textSizes={hero.textSizes}
+textWeights={hero.textWeights}
   />
     case 'about':
       return <About key={id} heading={about.heading} body={about.body} imageLeft={about.imageLeft} imageRight={about.imageRight}
-            textColors={about.textColors} />
+            textColors={about.textColors}
+textSizes={about.textSizes}
+textWeights={about.textWeights} />
     case 'experience':
-      return <FrameScroll key={id} heading={experience.heading} subheading={experience.subheading} textColors={experience.textColors} />
+      return <FrameScroll key={id} heading={experience.heading} subheading={experience.subheading} textColors={experience.textColors}
+textSizes={experience.textSizes}
+textWeights={experience.textWeights} />
     case 'objects3d':
       return <Objects3D key={id} heading={objects3d.heading} subheading={objects3d.subheading} items={objects3d.items} 
   textColors={objects3d.textColors}
+textSizes={objects3d.textSizes}
+textWeights={objects3d.textWeights}
   />
     case 'specials':
       return <Specials key={id} heading={specials.heading} subheading={specials.subheading} videoUrl={specials.videoUrl} dishes={specials.dishes} 
   textColors={specials.textColors}
+textSizes={specials.textSizes}
+textWeights={specials.textWeights}
   />
     case 'menu':
       return (
@@ -57,6 +67,8 @@ function renderBaseSection(id: string) {
           buttons={menu.buttons}
         
         textColors={menu.textColors}
+textSizes={menu.textSizes}
+textWeights={menu.textWeights}
       />
       )
     case 'reservations':
@@ -80,6 +92,8 @@ function renderBaseSection(id: string) {
           contactEmail={reservations.contactEmail}
         
         textColors={reservations.textColors}
+textSizes={reservations.textSizes}
+textWeights={reservations.textWeights}
       />
       )
     case 'location':
@@ -98,6 +112,8 @@ function renderBaseSection(id: string) {
           formSubmitLabel={location.formSubmitLabel}
         
         textColors={location.textColors}
+textSizes={location.textSizes}
+textWeights={location.textWeights}
       />
       )
     default:
@@ -143,6 +159,8 @@ export default function HomePage() {
         copyright={footer.copyright}
       
       textColors={footer.textColors}
+textSizes={footer.textSizes}
+textWeights={footer.textWeights}
     />
 
       <FloatingButtons

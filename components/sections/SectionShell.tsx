@@ -3,8 +3,8 @@
 import { ColorSwatchPicker } from '@/components/admin/ColorSwatchPicker'
 import { EditableText } from '@/components/editable/EditableText'
 import { themeColorVar } from '@/lib/buttons'
-import { textColorProps } from '@/lib/text-colors'
-import type { TextColors, ThemeColorChoice } from '@/lib/types'
+import { textColorProps, textSizeProps } from '@/lib/text-colors'
+import type { TextColors, TextSizes, TextWeights, ThemeColorChoice } from '@/lib/types'
 
 /**
  * Wrapper compartido por las 5 plantillas de sección (Fase D, Parte 3):
@@ -17,11 +17,14 @@ export function SectionShell({
   heading,
   backgroundColor,
   textColors,
+  textSizes,
+  textWeights,
   edit,
   onSubtitleChange,
   onHeadingChange,
   onBackgroundColorChange,
   onTextColorsChange,
+  onTextStylesChange,
   children,
 }: {
   id: string
@@ -29,8 +32,11 @@ export function SectionShell({
   heading?: string
   backgroundColor?: ThemeColorChoice
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
   edit?: boolean
   onTextColorsChange?: (next: TextColors) => void
+  onTextStylesChange?: (next: { textSizes?: TextSizes; textWeights?: TextWeights }) => void
   onSubtitleChange?: (v: string) => void
   onHeadingChange?: (v: string) => void
   onBackgroundColorChange?: (v: ThemeColorChoice | undefined) => void
@@ -38,6 +44,7 @@ export function SectionShell({
 }) {
   const bg = themeColorVar(backgroundColor)
   const color = textColorProps(textColors, (tc) => onTextColorsChange?.(tc))
+  const sizeWeight = textSizeProps(textSizes, textWeights, (next) => onTextStylesChange?.(next))
 
   return (
     <section id={id} className="relative px-6 py-20" style={bg ? { backgroundColor: bg } : undefined}>
@@ -49,11 +56,11 @@ export function SectionShell({
       <div className="mx-auto max-w-5xl text-center">
         {(subtitle || edit) && (
           <div className="mb-2 text-xs font-semibold uppercase tracking-[0.3em]" style={{ color: 'var(--color-primary)' }}>
-            <EditableText as="span" edit={edit} value={subtitle} onChange={onSubtitleChange} {...color('subtitle')} />
+            <EditableText as="span" edit={edit} value={subtitle} onChange={onSubtitleChange} {...color('subtitle')} {...sizeWeight('subtitle')} />
           </div>
         )}
         <h2 className="mb-10 text-3xl font-semibold" style={{ color: 'var(--color-accent)' }}>
-          <EditableText as="span" edit={edit} value={heading} onChange={onHeadingChange} {...color('heading')} />
+          <EditableText as="span" edit={edit} value={heading} onChange={onHeadingChange} {...color('heading')} {...sizeWeight('heading')} />
         </h2>
         {children}
       </div>

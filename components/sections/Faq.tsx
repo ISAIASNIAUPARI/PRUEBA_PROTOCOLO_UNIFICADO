@@ -2,7 +2,7 @@
 
 import { EditableText } from '@/components/editable/EditableText'
 import { newButtonId } from '@/lib/buttons'
-import { textColorProps } from '@/lib/text-colors'
+import { textColorProps, textSizeProps } from '@/lib/text-colors'
 import type { FaqData, FaqItem } from '@/lib/types'
 
 import { SectionShell } from './SectionShell'
@@ -24,6 +24,8 @@ export function Faq({
 
   const color = textColorProps(data.textColors, (tc) => patch({ textColors: tc }))
 
+  const sizeWeight = textSizeProps(data.textSizes, data.textWeights, (next) => patch(next))
+
   function updateItem(itemId: string, next: Partial<FaqItem>) {
     patch({ items: data.items.map((it) => (it.id === itemId ? { ...it, ...next } : it)) })
   }
@@ -40,13 +42,16 @@ export function Faq({
       onBackgroundColorChange={(v) => patch({ backgroundColor: v })}
       textColors={data.textColors}
       onTextColorsChange={(tc) => patch({ textColors: tc })}
+      textSizes={data.textSizes}
+      textWeights={data.textWeights}
+      onTextStylesChange={(next) => patch(next)}
     >
       <div className="mx-auto flex max-w-2xl flex-col gap-4 text-left">
         {data.items.map((item) => (
           <div key={item.id} className="rounded-lg border p-4" style={{ borderColor: 'var(--color-primary)' }}>
             <div className="mb-1.5 flex items-start justify-between gap-2">
               <span className="font-medium" style={{ color: 'var(--color-accent)' }}>
-                <EditableText as="span" edit={edit} value={item.question} onChange={(v) => updateItem(item.id, { question: v })} {...color(`items.${item.id}.question`)} />
+                <EditableText as="span" edit={edit} value={item.question} onChange={(v) => updateItem(item.id, { question: v })} {...color(`items.${item.id}.question`)} {...sizeWeight(`items.${item.id}.question`)} />
               </span>
               {edit && (
                 <button type="button" onClick={() => patch({ items: data.items.filter((it) => it.id !== item.id) })} className="text-xs text-red-600 hover:underline">
@@ -55,7 +60,7 @@ export function Faq({
               )}
             </div>
             <p className="text-sm opacity-80" style={{ color: 'var(--color-accent)' }}>
-              <EditableText as="span" edit={edit} value={item.answer} onChange={(v) => updateItem(item.id, { answer: v })} {...color(`items.${item.id}.answer`)} />
+              <EditableText as="span" edit={edit} value={item.answer} onChange={(v) => updateItem(item.id, { answer: v })} {...color(`items.${item.id}.answer`)} {...sizeWeight(`items.${item.id}.answer`)} />
             </p>
           </div>
         ))}

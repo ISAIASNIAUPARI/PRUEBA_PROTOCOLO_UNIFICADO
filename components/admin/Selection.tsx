@@ -2,7 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react'
 
-import type { ThemeColorChoice } from '@/lib/types'
+import type { TextSize, ThemeColorChoice } from '@/lib/types'
 
 /** Qué tipo de elemento está seleccionado: decide qué controles pinta el sidebar. */
 export type SelectionKind = 'text' | 'media'
@@ -15,6 +15,8 @@ export type SelectionData = {
   /** Solo para kind='text'. */
   value?: string
   textColor?: ThemeColorChoice
+  fontSize?: TextSize
+  fontWeight?: number
 }
 
 /**
@@ -26,6 +28,8 @@ export type SelectionData = {
 type Handlers = {
   onChange?: (value: string) => void
   onTextColorChange?: (next: ThemeColorChoice | undefined) => void
+  onFontSizeChange?: (next: TextSize | undefined) => void
+  onFontWeightChange?: (next: number | undefined) => void
   /** Controles propios del elemento (imagen/video/modelo) pintados en el sidebar. */
   renderControls?: () => React.ReactNode
 }
@@ -58,7 +62,16 @@ export function SelectionProvider({ children }: { children: React.ReactNode }) {
     handlers.current = h
     setSelected((prev) => {
       if (!prev || prev.id !== data.id) return prev
-      if (prev.value === data.value && prev.textColor === data.textColor && prev.label === data.label) return prev
+      if (
+        prev.value === data.value &&
+        prev.textColor === data.textColor &&
+        prev.label === data.label &&
+        prev.fontWeight === data.fontWeight &&
+        prev.fontSize?.d === data.fontSize?.d &&
+        prev.fontSize?.m === data.fontSize?.m
+      ) {
+        return prev
+      }
       return data
     })
   }, [])

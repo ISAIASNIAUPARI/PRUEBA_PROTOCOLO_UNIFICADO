@@ -3,7 +3,7 @@
 import { EditableImage } from '@/components/editable/EditableImage'
 import { EditableText } from '@/components/editable/EditableText'
 import { newButtonId } from '@/lib/buttons'
-import { textColorProps } from '@/lib/text-colors'
+import { textColorProps, textSizeProps } from '@/lib/text-colors'
 import type { PhotoGalleryData, PhotoGalleryItem } from '@/lib/types'
 
 import { SectionShell } from './SectionShell'
@@ -25,6 +25,8 @@ export function PhotoGallery({
 
   const color = textColorProps(data.textColors, (tc) => patch({ textColors: tc }))
 
+  const sizeWeight = textSizeProps(data.textSizes, data.textWeights, (next) => patch(next))
+
   function updatePhoto(photoId: string, next: Partial<PhotoGalleryItem>) {
     patch({ photos: data.photos.map((p) => (p.id === photoId ? { ...p, ...next } : p)) })
   }
@@ -41,6 +43,9 @@ export function PhotoGallery({
       onBackgroundColorChange={(v) => patch({ backgroundColor: v })}
       textColors={data.textColors}
       onTextColorsChange={(tc) => patch({ textColors: tc })}
+      textSizes={data.textSizes}
+      textWeights={data.textWeights}
+      onTextStylesChange={(next) => patch(next)}
     >
       <div className="grid grid-cols-2 gap-5 text-left sm:grid-cols-3">
         {data.photos.map((photo) => (
@@ -60,7 +65,7 @@ export function PhotoGallery({
               />
             </div>
             <p className="mt-1.5 text-xs opacity-70" style={{ color: 'var(--color-accent)' }}>
-              <EditableText as="span" edit={edit} value={photo.caption} onChange={(v) => updatePhoto(photo.id, { caption: v })} {...color(`photos.${photo.id}.caption`)} />
+              <EditableText as="span" edit={edit} value={photo.caption} onChange={(v) => updatePhoto(photo.id, { caption: v })} {...color(`photos.${photo.id}.caption`)} {...sizeWeight(`photos.${photo.id}.caption`)} />
             </p>
             {edit && (
               <button

@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 import { EditableImage } from '@/components/editable/EditableImage'
 import { EditableText } from '@/components/editable/EditableText'
-import { textColorProps } from '@/lib/text-colors'
+import { textColorProps, textSizeProps } from '@/lib/text-colors'
 import type { Drink, DrinksPage as DrinksPageT, SiteSettings } from '@/lib/types'
 
 export function DrinksPage({
@@ -28,6 +28,8 @@ export function DrinksPage({
 
   const color = textColorProps(data.textColors, (tc) => patch({ textColors: tc }))
 
+  const sizeWeight = textSizeProps(data.textSizes, data.textWeights, (next) => patch(next))
+
   function updateDrink(index: number, next: Partial<Drink>) {
     const list = drinks.slice()
     list[index] = { ...list[index], ...next }
@@ -42,23 +44,23 @@ export function DrinksPage({
           <span>{brandTagline}</span>
         </Link>
         <Link href="/" className="back" onClick={(e) => edit && e.preventDefault()}>
-          <EditableText as="span" edit={edit} value={data.backLabel} onChange={(v) => patch({ backLabel: v })} {...color('backLabel')} />
+          <EditableText as="span" edit={edit} value={data.backLabel} onChange={(v) => patch({ backLabel: v })} {...color('backLabel')} {...sizeWeight('backLabel')} />
         </Link>
       </nav>
 
       <section className="hero">
         {(data.heroLabel || edit) && (
           <p className="hero-label">
-            <EditableText as="span" edit={edit} value={data.heroLabel} onChange={(v) => patch({ heroLabel: v })} {...color('heroLabel')} />
+            <EditableText as="span" edit={edit} value={data.heroLabel} onChange={(v) => patch({ heroLabel: v })} {...color('heroLabel')} {...sizeWeight('heroLabel')} />
           </p>
         )}
         <h1>
-          <EditableText as="span" edit={edit} value={data.title} onChange={(v) => patch({ title: v })} {...color('title')} />
+          <EditableText as="span" edit={edit} value={data.title} onChange={(v) => patch({ title: v })} {...color('title')} {...sizeWeight('title')} />
         </h1>
         <div className="divider" />
         {(data.intro || edit) && (
           <p>
-            <EditableText as="span" edit={edit} value={data.intro} onChange={(v) => patch({ intro: v })} {...color('intro')} />
+            <EditableText as="span" edit={edit} value={data.intro} onChange={(v) => patch({ intro: v })} {...color('intro')} {...sizeWeight('intro')} />
           </p>
         )}
       </section>
@@ -66,7 +68,7 @@ export function DrinksPage({
       <main className="menu-section">
         {(data.sectionTitle || edit) && (
           <p className="section-title">
-            <EditableText as="span" edit={edit} value={data.sectionTitle} onChange={(v) => patch({ sectionTitle: v })} {...color('sectionTitle')} />
+            <EditableText as="span" edit={edit} value={data.sectionTitle} onChange={(v) => patch({ sectionTitle: v })} {...color('sectionTitle')} {...sizeWeight('sectionTitle')} />
           </p>
         )}
         <div className="drinks-grid">
@@ -103,21 +105,21 @@ export function DrinksPage({
                 {(d.tag || edit) && (
                   <div className="overlay">
                     <span className="flavor-tag">
-                      <EditableText as="span" edit={edit} value={d.tag} onChange={(v) => updateDrink(i, { tag: v })} {...color(`drinks.${i}.tag`)} />
+                      <EditableText as="span" edit={edit} value={d.tag} onChange={(v) => updateDrink(i, { tag: v })} {...color(`drinks.${i}.tag`)} {...sizeWeight(`drinks.${i}.tag`)} />
                     </span>
                   </div>
                 )}
               </div>
               <div className="card-body">
                 <div className="card-name">
-                  <EditableText as="span" edit={edit} value={d.name} onChange={(v) => updateDrink(i, { name: v })} {...color(`drinks.${i}.name`)} />
+                  <EditableText as="span" edit={edit} value={d.name} onChange={(v) => updateDrink(i, { name: v })} {...color(`drinks.${i}.name`)} {...sizeWeight(`drinks.${i}.name`)} />
                 </div>
                 <div className="card-desc">
-                  <EditableText as="span" edit={edit} value={d.description} onChange={(v) => updateDrink(i, { description: v })} {...color(`drinks.${i}.description`)} />
+                  <EditableText as="span" edit={edit} value={d.description} onChange={(v) => updateDrink(i, { description: v })} {...color(`drinks.${i}.description`)} {...sizeWeight(`drinks.${i}.description`)} />
                 </div>
                 <div className="card-footer">
                   <span className="price">
-                    <EditableText as="span" edit={edit} value={d.price} onChange={(v) => updateDrink(i, { price: v })} {...color(`drinks.${i}.price`)} />
+                    <EditableText as="span" edit={edit} value={d.price} onChange={(v) => updateDrink(i, { price: v })} {...color(`drinks.${i}.price`)} {...sizeWeight(`drinks.${i}.price`)} />
                   </span>
                   <div className="size-tags">
                     {(d.sizes ?? []).map((s, si) => (
@@ -132,7 +134,7 @@ export function DrinksPage({
                               sizes[si] = v
                               updateDrink(i, { sizes })
                             }}
-                            {...color(`drinks.${i}.sizes.${si}`)}
+                            {...color(`drinks.${i}.sizes.${si}`)} {...sizeWeight(`drinks.${i}.sizes.${si}`)}
                           />
                         ) : (
                           s
@@ -181,7 +183,7 @@ export function DrinksPage({
       </main>
 
       <footer>
-        <EditableText as="span" edit={edit} value={data.footerText} onChange={(v) => patch({ footerText: v })} {...color('footerText')} />
+        <EditableText as="span" edit={edit} value={data.footerText} onChange={(v) => patch({ footerText: v })} {...color('footerText')} {...sizeWeight('footerText')} />
       </footer>
     </div>
   )

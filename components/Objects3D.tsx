@@ -5,8 +5,8 @@ import React, { useEffect } from 'react'
 import { useIsMobileView } from '@/components/admin/useIsMobileView'
 import { EditableModel } from '@/components/editable/EditableModel'
 import { EditableText } from '@/components/editable/EditableText'
-import { textColorProps } from '@/lib/text-colors'
-import type { Object3DItem, TextColors } from '@/lib/types'
+import { textColorProps, textSizeProps } from '@/lib/text-colors'
+import type { Object3DItem, TextColors, TextSizes, TextWeights } from '@/lib/types'
 
 const SCRIPT_URL = 'https://cdn.jsdelivr.net/npm/@google/model-viewer@3.5.0/dist/model-viewer.min.js'
 
@@ -35,6 +35,8 @@ type Objects3DData = {
   items: Object3DItem[]
   /** Overrides de color por texto (ver lib/text-colors.ts). */
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 export function Objects3D({
@@ -42,6 +44,8 @@ export function Objects3D({
   subheading,
   items,
   textColors,
+  textSizes,
+  textWeights,
   edit,
   onChange,
 }: Objects3DData & {
@@ -60,20 +64,22 @@ export function Objects3D({
   const isMobile = useIsMobileView()
 
   function patch(next: Partial<Objects3DData>) {
-    onChange?.({ heading, subheading, items, textColors, ...next })
+    onChange?.({ heading, subheading, items, textColors, textSizes, textWeights, ...next })
   }
 
   const color = textColorProps(textColors, (tc) => patch({ textColors: tc }))
+
+  const sizeWeight = textSizeProps(textSizes, textWeights, (next) => patch(next))
 
   return (
     <section className="objects3d" id="objetos3d">
       <div className="wrap">
         <div className="sec-head reveal">
           <h2 style={isMobile ? { fontSize: '26px' } : undefined}>
-            <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} {...color('heading')} />
+            <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} {...color('heading')} {...sizeWeight('heading')} />
           </h2>
           <div className="sub" style={isMobile ? { fontSize: '12px' } : undefined}>
-            <EditableText as="span" edit={edit} value={subheading} onChange={(v) => patch({ subheading: v })} {...color('subheading')} />
+            <EditableText as="span" edit={edit} value={subheading} onChange={(v) => patch({ subheading: v })} {...color('subheading')} {...sizeWeight('subheading')} />
           </div>
           <div className="rule" />
         </div>
@@ -118,7 +124,7 @@ export function Objects3D({
                       next[i] = { ...item, name: v }
                       patch({ items: next })
                     }}
-                    {...color(`items.${item.id}.name`)}
+                    {...color(`items.${item.id}.name`)} {...sizeWeight(`items.${item.id}.name`)}
                   />
                 </h3>
                 <p className="obj3d-desc">
@@ -131,7 +137,7 @@ export function Objects3D({
                       next[i] = { ...item, description: v }
                       patch({ items: next })
                     }}
-                    {...color(`items.${item.id}.description`)}
+                    {...color(`items.${item.id}.description`)} {...sizeWeight(`items.${item.id}.description`)}
                   />
                 </p>
                 {(item.price || edit) && (
@@ -145,7 +151,7 @@ export function Objects3D({
                         next[i] = { ...item, price: v }
                         patch({ items: next })
                       }}
-                      {...color(`items.${item.id}.price`)}
+                      {...color(`items.${item.id}.price`)} {...sizeWeight(`items.${item.id}.price`)}
                     />
                   </div>
                 )}

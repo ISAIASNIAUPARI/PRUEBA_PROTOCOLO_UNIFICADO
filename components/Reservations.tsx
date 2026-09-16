@@ -5,8 +5,8 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { useIsMobileView } from '@/components/admin/useIsMobileView'
 import { EditableImage } from '@/components/editable/EditableImage'
 import { EditableText } from '@/components/editable/EditableText'
-import { textColorProps } from '@/lib/text-colors'
-import type { TextColors } from '@/lib/types'
+import { textColorProps, textSizeProps } from '@/lib/text-colors'
+import type { TextColors, TextSizes, TextWeights } from '@/lib/types'
 
 const MES_FULL = [
   'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -39,6 +39,8 @@ type Props = {
   contactEmail?: string
   /** Overrides de color por texto (ver lib/text-colors.ts). */
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 export function Reservations({
@@ -58,6 +60,8 @@ export function Reservations({
   address,
   contactEmail,
   textColors,
+  textSizes,
+  textWeights,
   edit,
   onChange,
 }: Props & { edit?: boolean; onChange?: (next: Props) => void }) {
@@ -85,6 +89,8 @@ export function Reservations({
   }
 
   const color = textColorProps(textColors, (tc) => patch({ textColors: tc }))
+
+  const sizeWeight = textSizeProps(textSizes, textWeights, (next) => patch(next))
   const [openField, setOpenField] = useState<'date' | 'time' | null>(null)
   const [people, setPeople] = useState(partySizeOptions[0] ?? '')
   const [phone, setPhone] = useState('')
@@ -349,11 +355,11 @@ Quedo atento(a) a la confirmación. ¡Gracias!`
       <div className="scrim" />
       <div className="inner">
         <h2 className="reveal" style={isMobile ? { fontSize: '28px' } : undefined}>
-          <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} {...color('heading')} />
+          <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} {...color('heading')} {...sizeWeight('heading')} />
         </h2>
         {(lead || edit) && (
           <p className="lead reveal">
-            <EditableText as="span" edit={edit} value={lead} onChange={(v) => patch({ lead: v })} {...color('lead')} />
+            <EditableText as="span" edit={edit} value={lead} onChange={(v) => patch({ lead: v })} {...color('lead')} {...sizeWeight('lead')} />
           </p>
         )}
 
@@ -527,7 +533,7 @@ Quedo atento(a) a la confirmación. ¡Gracias!`
 
         {(orText || edit) && (
           <div className="or">
-            <EditableText as="span" edit={edit} value={orText} onChange={(v) => patch({ orText: v })} {...color('orText')} />
+            <EditableText as="span" edit={edit} value={orText} onChange={(v) => patch({ orText: v })} {...color('orText')} {...sizeWeight('orText')} />
           </div>
         )}
         {(phoneDisplay || edit) && (
@@ -535,14 +541,14 @@ Quedo atento(a) a la confirmación. ¡Gracias!`
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M6 3l3 5-2 2c1 3 4 6 7 7l2-2 5 3-2 4c-9 0-18-9-18-18z" strokeLinejoin="round" />
             </svg>
-            <EditableText as="span" edit={edit} value={phoneDisplay} stopClickNavigation onChange={(v) => patch({ phoneDisplay: v })} {...color('phoneDisplay')} />
+            <EditableText as="span" edit={edit} value={phoneDisplay} stopClickNavigation onChange={(v) => patch({ phoneDisplay: v })} {...color('phoneDisplay')} {...sizeWeight('phoneDisplay')} />
           </a>
         )}
 
         <div className="res-contact reveal">
           {(contactName || edit) && (
             <div className="nm">
-              <EditableText as="span" edit={edit} value={contactName} onChange={(v) => patch({ contactName: v })} {...color('contactName')} />
+              <EditableText as="span" edit={edit} value={contactName} onChange={(v) => patch({ contactName: v })} {...color('contactName')} {...sizeWeight('contactName')} />
             </div>
           )}
           {(address || edit) && (
@@ -551,7 +557,7 @@ Quedo atento(a) a la confirmación. ¡Gracias!`
                 <path d="M12 21s7-6 7-12a7 7 0 0 0-14 0c0 6 7 12 7 12z" strokeLinejoin="round" />
                 <circle cx="12" cy="9" r="2.5" />
               </svg>
-              <EditableText as="span" edit={edit} value={address} onChange={(v) => patch({ address: v })} {...color('address')} />
+              <EditableText as="span" edit={edit} value={address} onChange={(v) => patch({ address: v })} {...color('address')} {...sizeWeight('address')} />
             </div>
           )}
           {(contactEmail || edit) && (
@@ -560,7 +566,7 @@ Quedo atento(a) a la confirmación. ¡Gracias!`
                 <rect x="3" y="5" width="18" height="14" rx="2" />
                 <path d="M4 7l8 6 8-6" strokeLinecap="round" />
               </svg>
-              <EditableText as="span" edit={edit} value={contactEmail} onChange={(v) => patch({ contactEmail: v })} {...color('contactEmail')} />
+              <EditableText as="span" edit={edit} value={contactEmail} onChange={(v) => patch({ contactEmail: v })} {...color('contactEmail')} {...sizeWeight('contactEmail')} />
             </div>
           )}
         </div>

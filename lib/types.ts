@@ -1,8 +1,8 @@
 export type ImageRef = { url: string; alt?: string; focalX?: number; focalY?: number }
 
-import type { TextColors } from './text-colors'
+import type { TextColors, TextSize, TextSizes, TextWeights } from './text-colors'
 
-export type { TextColors }
+export type { TextColors, TextSize, TextSizes, TextWeights }
 
 export type ThemeColorChoice = 'primary' | 'secondary' | 'accent'
 export type ButtonHrefType = 'anchor' | 'url' | 'whatsapp' | 'phone'
@@ -51,8 +51,10 @@ export type LocationSection = {
   mapEmbedUrl: string
   formTitle: string
   formSubmitLabel: string
-  /** Overrides de color por texto de esta sección (ver lib/text-colors.ts). */
+  /** Overrides por texto de esta sección (ver lib/text-colors.ts). */
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 export type Theme = {
@@ -75,8 +77,10 @@ export type Hero = {
   title: string
   slides: ImageRef[]
   buttons: ButtonRef[]
-  /** Overrides de color por texto de esta sección (ver lib/text-colors.ts). */
+  /** Overrides por texto de esta sección (ver lib/text-colors.ts). */
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 export type About = {
@@ -84,15 +88,19 @@ export type About = {
   body: string
   imageLeft: ImageRef | null
   imageRight: ImageRef | null
-  /** Overrides de color por texto de esta sección (ver lib/text-colors.ts). */
+  /** Overrides por texto de esta sección (ver lib/text-colors.ts). */
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 export type Experience = {
   heading: string
   subheading: string
-  /** Overrides de color por texto de esta sección (ver lib/text-colors.ts). */
+  /** Overrides por texto de esta sección (ver lib/text-colors.ts). */
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 export type Object3DItem = {
@@ -108,8 +116,10 @@ export type Objects3D = {
   heading: string
   subheading: string
   items: Object3DItem[]
-  /** Overrides de color por texto de esta sección (ver lib/text-colors.ts). */
+  /** Overrides por texto de esta sección (ver lib/text-colors.ts). */
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 export type Dish = { name: string; url: string; focalX?: number; focalY?: number }
@@ -119,8 +129,10 @@ export type Specials = {
   subheading: string
   videoUrl: string
   dishes: Dish[]
-  /** Overrides de color por texto de esta sección (ver lib/text-colors.ts). */
+  /** Overrides por texto de esta sección (ver lib/text-colors.ts). */
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 export type MenuItem = { name: string; description: string; price: string }
@@ -133,8 +145,10 @@ export type MenuSectionData = {
   videoUrl: string
   buttons: ButtonRef[]
   categories: MenuCategory[]
-  /** Overrides de color por texto de esta sección (ver lib/text-colors.ts). */
+  /** Overrides por texto de esta sección (ver lib/text-colors.ts). */
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 export type Reservations = {
@@ -153,8 +167,10 @@ export type Reservations = {
   contactName?: string
   address?: string
   contactEmail?: string
-  /** Overrides de color por texto de esta sección (ver lib/text-colors.ts). */
+  /** Overrides por texto de esta sección (ver lib/text-colors.ts). */
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 export type ScheduleRow = { days: string; hours: string }
@@ -168,8 +184,10 @@ export type Footer = {
   socialTitle: string
   socials: Social[]
   copyright: string
-  /** Overrides de color por texto de esta sección (ver lib/text-colors.ts). */
+  /** Overrides por texto de esta sección (ver lib/text-colors.ts). */
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 export type Drink = {
@@ -189,8 +207,10 @@ export type DrinksPage = {
   sectionTitle: string
   footerText: string
   drinks: Drink[]
-  /** Overrides de color por texto de esta sección (ver lib/text-colors.ts). */
+  /** Overrides por texto de esta sección (ver lib/text-colors.ts). */
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 // ---- Secciones dinámicas desde plantilla (Fase D, Parte 3) ----
@@ -212,8 +232,10 @@ export type CtaBannerData = {
   backgroundImage: ImageRef | null
   backgroundColor?: ThemeColorChoice
   buttons: ButtonRef[]
-  /** Overrides de color por texto de esta sección (ver lib/text-colors.ts). */
+  /** Overrides por texto de esta sección (ver lib/text-colors.ts). */
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 export type MenuGridItem = { id: string; image: ImageRef | null; name: string; price: string; description: string }
@@ -222,8 +244,10 @@ export type MenuGridData = {
   heading: string
   backgroundColor?: ThemeColorChoice
   items: MenuGridItem[]
-  /** Overrides de color por texto de esta sección (ver lib/text-colors.ts). */
+  /** Overrides por texto de esta sección (ver lib/text-colors.ts). */
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 export type TextBlockData = {
@@ -232,8 +256,10 @@ export type TextBlockData = {
   paragraphs: string[]
   image: ImageRef | null
   backgroundColor?: ThemeColorChoice
-  /** Overrides de color por texto de esta sección (ver lib/text-colors.ts). */
+  /** Overrides por texto de esta sección (ver lib/text-colors.ts). */
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 export type PhotoGalleryItem = { id: string; image: ImageRef; caption: string }
@@ -242,8 +268,10 @@ export type PhotoGalleryData = {
   heading: string
   backgroundColor?: ThemeColorChoice
   photos: PhotoGalleryItem[]
-  /** Overrides de color por texto de esta sección (ver lib/text-colors.ts). */
+  /** Overrides por texto de esta sección (ver lib/text-colors.ts). */
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 export type FaqItem = { id: string; question: string; answer: string }
@@ -252,8 +280,10 @@ export type FaqData = {
   heading: string
   backgroundColor?: ThemeColorChoice
   items: FaqItem[]
-  /** Overrides de color por texto de esta sección (ver lib/text-colors.ts). */
+  /** Overrides por texto de esta sección (ver lib/text-colors.ts). */
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 export function emptySectionData(type: DynamicSectionType): unknown {

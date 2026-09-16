@@ -2,8 +2,8 @@
 
 import { EditableText } from '@/components/editable/EditableText'
 import { isSafeHref, resolveButtonHref } from '@/lib/buttons'
-import { textColorProps } from '@/lib/text-colors'
-import type { ButtonRef, ScheduleRow, Social, TextColors } from '@/lib/types'
+import { textColorProps, textSizeProps } from '@/lib/text-colors'
+import type { ButtonRef, ScheduleRow, Social, TextColors, TextSizes, TextWeights } from '@/lib/types'
 
 const SOCIAL_ICONS: Record<string, React.ReactNode> = {
   facebook: (
@@ -52,6 +52,8 @@ type FooterData = {
   copyright?: string
   /** Overrides de color por texto (ver lib/text-colors.ts). */
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 export function Footer({
@@ -65,6 +67,8 @@ export function Footer({
   socials,
   copyright,
   textColors,
+  textSizes,
+  textWeights,
   edit,
   onChange,
 }: FooterData & {
@@ -80,10 +84,12 @@ export function Footer({
   const buttons = reserveButtons ?? []
 
   function patch(next: Partial<FooterData>) {
-    onChange?.({ scheduleTitle, schedule, reserveTitle, reserveButtons, socialTitle, socials, copyright, textColors, ...next })
+    onChange?.({ scheduleTitle, schedule, reserveTitle, reserveButtons, socialTitle, socials, copyright, textColors, textSizes, textWeights, ...next })
   }
 
   const color = textColorProps(textColors, (tc) => patch({ textColors: tc }))
+
+  const sizeWeight = textSizeProps(textSizes, textWeights, (next) => patch(next))
 
   return (
     <footer id="footer">
@@ -194,7 +200,7 @@ export function Footer({
           </div>
         </div>
         <div className="copy">
-          <EditableText as="span" edit={edit} value={copyright} onChange={(v) => patch({ copyright: v })} {...color('copyright')} />
+          <EditableText as="span" edit={edit} value={copyright} onChange={(v) => patch({ copyright: v })} {...color('copyright')} {...sizeWeight('copyright')} />
         </div>
       </div>
     </footer>

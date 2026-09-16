@@ -3,8 +3,8 @@
 import { useIsMobileView } from '@/components/admin/useIsMobileView'
 import { EditableImage } from '@/components/editable/EditableImage'
 import { EditableText } from '@/components/editable/EditableText'
-import { textColorProps } from '@/lib/text-colors'
-import type { ImageRef, TextColors } from '@/lib/types'
+import { textColorProps, textSizeProps } from '@/lib/text-colors'
+import type { ImageRef, TextColors, TextSizes, TextWeights } from '@/lib/types'
 
 type AboutData = {
   heading?: string
@@ -12,6 +12,8 @@ type AboutData = {
   imageLeft?: ImageRef | null
   imageRight?: ImageRef | null
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 export function About({
@@ -20,6 +22,8 @@ export function About({
   imageLeft,
   imageRight,
   textColors,
+  textSizes,
+  textWeights,
   edit,
   onChange,
 }: AboutData & {
@@ -29,10 +33,12 @@ export function About({
   const isMobile = useIsMobileView()
 
   function patch(next: Partial<AboutData>) {
-    onChange?.({ heading, body, imageLeft, imageRight, textColors, ...next })
+    onChange?.({ heading, body, imageLeft, imageRight, textColors, textSizes, textWeights, ...next })
   }
 
   const color = textColorProps(textColors, (tc) => patch({ textColors: tc }))
+
+  const sizeWeight = textSizeProps(textSizes, textWeights, (next) => patch(next))
 
   return (
     <section className="about" id="sobre">
@@ -73,11 +79,11 @@ export function About({
           </div>
           <div className="about-copy reveal">
             <h2 style={isMobile ? { fontSize: '24px' } : undefined}>
-              <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} {...color('heading')} />
+              <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} {...color('heading')} {...sizeWeight('heading')} />
             </h2>
             {(body || edit) && (
               <p style={isMobile ? { fontSize: '15px' } : undefined}>
-                <EditableText as="span" edit={edit} value={body} onChange={(v) => patch({ body: v })} {...color('body')} />
+                <EditableText as="span" edit={edit} value={body} onChange={(v) => patch({ body: v })} {...color('body')} {...sizeWeight('body')} />
               </p>
             )}
           </div>

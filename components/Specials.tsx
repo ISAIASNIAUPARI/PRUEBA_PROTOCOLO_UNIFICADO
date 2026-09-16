@@ -6,8 +6,8 @@ import { useIsMobileView } from '@/components/admin/useIsMobileView'
 import { CloudinaryVideo } from '@/components/editable/CloudinaryVideo'
 import { EditableImage } from '@/components/editable/EditableImage'
 import { EditableText } from '@/components/editable/EditableText'
-import { textColorProps } from '@/lib/text-colors'
-import type { Dish, TextColors } from '@/lib/types'
+import { textColorProps, textSizeProps } from '@/lib/text-colors'
+import type { Dish, TextColors, TextSizes, TextWeights } from '@/lib/types'
 
 import { SealChef } from './Seal'
 
@@ -18,6 +18,8 @@ type SpecialsData = {
   dishes: Dish[]
   /** Overrides de color por texto (ver lib/text-colors.ts). */
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 export function Specials({
@@ -26,6 +28,8 @@ export function Specials({
   videoUrl,
   dishes,
   textColors,
+  textSizes,
+  textWeights,
   edit,
   onChange,
 }: SpecialsData & {
@@ -56,10 +60,12 @@ export function Specials({
   const isMobile = useIsMobileView()
 
   function patch(next: Partial<SpecialsData>) {
-    onChange?.({ heading, subheading, videoUrl, dishes, textColors, ...next })
+    onChange?.({ heading, subheading, videoUrl, dishes, textColors, textSizes, textWeights, ...next })
   }
 
   const color = textColorProps(textColors, (tc) => patch({ textColors: tc }))
+
+  const sizeWeight = textSizeProps(textSizes, textWeights, (next) => patch(next))
 
   return (
     <section className="especiales" id="especiales">
@@ -92,11 +98,11 @@ export function Specials({
           <div className="sec-head reveal">
             <SealChef />
             <h2 style={isMobile ? { fontSize: '26px' } : undefined}>
-              <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} {...color('heading')} />
+              <EditableText as="span" edit={edit} value={heading} onChange={(v) => patch({ heading: v })} {...color('heading')} {...sizeWeight('heading')} />
             </h2>
             {(subheading || edit) && (
               <div className="sub" style={isMobile ? { fontSize: '12px' } : undefined}>
-                <EditableText as="span" edit={edit} value={subheading} onChange={(v) => patch({ subheading: v })} {...color('subheading')} />
+                <EditableText as="span" edit={edit} value={subheading} onChange={(v) => patch({ subheading: v })} {...color('subheading')} {...sizeWeight('subheading')} />
               </div>
             )}
             <div className="rule" />
@@ -152,7 +158,7 @@ export function Specials({
                     next[i] = { ...d, name: v }
                     patch({ dishes: next })
                   }}
-                  {...color(`dishes.${i}.name`)}
+                  {...color(`dishes.${i}.name`)} {...sizeWeight(`dishes.${i}.name`)}
                 />
               </div>
             </div>

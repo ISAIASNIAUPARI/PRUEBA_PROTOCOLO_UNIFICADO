@@ -193,3 +193,36 @@
 .admin-selectable { cursor: pointer; outline: 2px solid transparent; outline-offset: 2px; transition: outline-color 0.12s ease; }
 .admin-selectable:hover { outline-color: color-mix(in srgb, var(--color-primary) 60%, transparent); }
 .admin-selected, .admin-selected:hover { outline-color: var(--color-primary); }
+
+/* ---- controles de tamaño y grosor del sidebar ---- */
+.admin-sidebar-rowlabel { display: block; font-size: 11px; color: rgba(255, 255, 255, 0.55); margin-bottom: 4px; }
+.admin-sidebar-steps { display: flex; gap: 4px; flex-wrap: wrap; }
+.admin-sidebar-step {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 5px 6px;
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 11px;
+  line-height: 1.2;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.admin-sidebar-step:hover { background: rgba(255, 255, 255, 0.14); }
+.admin-sidebar-step.is-active {
+  background: var(--color-admin-primary);
+  border-color: var(--color-admin-primary);
+  color: #fff;
+}
+.admin-sidebar-clear {
+  border: 0;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+}
+.admin-sidebar-clear:hover { color: #fff; }

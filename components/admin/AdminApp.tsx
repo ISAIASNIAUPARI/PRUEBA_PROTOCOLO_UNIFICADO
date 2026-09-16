@@ -57,6 +57,8 @@ export function AdminApp() {
       case 'hero':
         return <Hero edit title={hero.title} slides={hero.slides} buttons={hero.buttons} onChange={(next) => update('hero', next)} 
   textColors={hero.textColors}
+textSizes={hero.textSizes}
+textWeights={hero.textWeights}
   />
       case 'about':
         return (
@@ -67,12 +69,16 @@ export function AdminApp() {
             imageLeft={about.imageLeft}
             imageRight={about.imageRight}
             textColors={about.textColors}
+textSizes={about.textSizes}
+textWeights={about.textWeights}
             onChange={(next) => update('about', next)}
           />
         )
       case 'experience':
         return (
-          <FrameScroll edit heading={experience.heading} subheading={experience.subheading} textColors={experience.textColors} onChange={(next) => update('experience', next)} />
+          <FrameScroll edit heading={experience.heading} subheading={experience.subheading} textColors={experience.textColors}
+textSizes={experience.textSizes}
+textWeights={experience.textWeights} onChange={(next) => update('experience', next)} />
         )
       case 'objects3d':
         return (
@@ -84,6 +90,8 @@ export function AdminApp() {
             onChange={(next) => update('objects3d', next)}
           
           textColors={objects3d.textColors}
+textSizes={objects3d.textSizes}
+textWeights={objects3d.textWeights}
         />
         )
       case 'specials':
@@ -97,6 +105,8 @@ export function AdminApp() {
             onChange={(next) => update('specials', next)}
           
           textColors={specials.textColors}
+textSizes={specials.textSizes}
+textWeights={specials.textWeights}
         />
         )
       case 'menu':
@@ -112,6 +122,8 @@ export function AdminApp() {
             onChange={(next) => update('menu', next)}
           
           textColors={menu.textColors}
+textSizes={menu.textSizes}
+textWeights={menu.textWeights}
         />
         )
       case 'reservations':
@@ -136,6 +148,8 @@ export function AdminApp() {
             onChange={(next) => update('reservations', next)}
           
           textColors={reservations.textColors}
+textSizes={reservations.textSizes}
+textWeights={reservations.textWeights}
         />
         )
       case 'location':
@@ -155,6 +169,8 @@ export function AdminApp() {
             onChange={(next) => update('location', next)}
           
           textColors={location.textColors}
+textSizes={location.textSizes}
+textWeights={location.textWeights}
         />
         )
       default:
@@ -199,6 +215,8 @@ export function AdminApp() {
         onChange={(next) => update('footer', next)}
       
       textColors={footer.textColors}
+textSizes={footer.textSizes}
+textWeights={footer.textWeights}
     />
     </>
   )

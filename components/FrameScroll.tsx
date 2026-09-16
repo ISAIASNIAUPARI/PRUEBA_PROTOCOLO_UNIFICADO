@@ -5,8 +5,8 @@ import { useEffect, useRef } from 'react'
 import { usePreviewReadOnly } from '@/components/admin/Selection'
 import { useIsMobileView } from '@/components/admin/useIsMobileView'
 import { EditableText } from '@/components/editable/EditableText'
-import { textColorProps } from '@/lib/text-colors'
-import type { TextColors } from '@/lib/types'
+import { textColorProps, textSizeProps } from '@/lib/text-colors'
+import type { TextColors, TextSizes, TextWeights } from '@/lib/types'
 
 import { SealStar } from './Seal'
 
@@ -19,12 +19,14 @@ function frameUrl(index: number, mobile: boolean) {
   return `${BASE}/f_auto,q_auto,w_${w}/${id}.jpg`
 }
 
-type FrameScrollData = { heading?: string; subheading?: string; textColors?: TextColors }
+type FrameScrollData = { heading?: string; subheading?: string; textColors?: TextColors; textSizes?: TextSizes; textWeights?: TextWeights }
 
 export function FrameScroll({
   heading,
   subheading,
   textColors,
+  textSizes,
+  textWeights,
   edit,
   onChange,
 }: FrameScrollData & {
@@ -34,6 +36,7 @@ export function FrameScroll({
   const isMobile = useIsMobileView()
   const readOnly = usePreviewReadOnly()
   const color = textColorProps(textColors, (tc) => onChange?.({ heading, subheading, textColors: tc }))
+  const sizeWeight = textSizeProps(textSizes, textWeights, (next) => onChange?.({ heading, subheading, textColors, textSizes, textWeights, ...next }))
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const sectionRef = useRef<HTMLElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
@@ -167,11 +170,11 @@ export function FrameScroll({
         <div className="sec-head reveal">
           <SealStar />
           <h2 style={isMobile ? { fontSize: '26px' } : undefined}>
-            <EditableText as="span" edit={edit} value={heading} onChange={(v) => onChange?.({ heading: v, subheading, textColors })} {...color('heading')} />
+            <EditableText as="span" edit={edit} value={heading} onChange={(v) => onChange?.({ heading: v, subheading, textColors })} {...color('heading')} {...sizeWeight('heading')} />
           </h2>
           {(subheading || edit) && (
             <div className="sub" style={isMobile ? { fontSize: '12px' } : undefined}>
-              <EditableText as="span" edit={edit} value={subheading} onChange={(v) => onChange?.({ heading, subheading: v, textColors })} {...color('subheading')} />
+              <EditableText as="span" edit={edit} value={subheading} onChange={(v) => onChange?.({ heading, subheading: v, textColors })} {...color('subheading')} {...sizeWeight('subheading')} />
             </div>
           )}
           <div className="rule" />
@@ -192,11 +195,11 @@ export function FrameScroll({
       <div className="sec-head reveal">
         <SealStar />
         <h2 style={isMobile ? { fontSize: '26px' } : undefined}>
-          <EditableText as="span" edit={edit} value={heading} onChange={(v) => onChange?.({ heading: v, subheading, textColors })} {...color('heading')} />
+          <EditableText as="span" edit={edit} value={heading} onChange={(v) => onChange?.({ heading: v, subheading, textColors })} {...color('heading')} {...sizeWeight('heading')} />
         </h2>
         {(subheading || edit) && (
           <div className="sub" style={isMobile ? { fontSize: '12px' } : undefined}>
-            <EditableText as="span" edit={edit} value={subheading} onChange={(v) => onChange?.({ heading, subheading: v, textColors })} {...color('subheading')} />
+            <EditableText as="span" edit={edit} value={subheading} onChange={(v) => onChange?.({ heading, subheading: v, textColors })} {...color('subheading')} {...sizeWeight('subheading')} />
           </div>
         )}
         <div className="rule" />

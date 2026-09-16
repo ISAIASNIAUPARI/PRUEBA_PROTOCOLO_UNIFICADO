@@ -2,7 +2,7 @@
 
 import { EditableImage } from '@/components/editable/EditableImage'
 import { EditableText } from '@/components/editable/EditableText'
-import { textColorProps } from '@/lib/text-colors'
+import { textColorProps, textSizeProps } from '@/lib/text-colors'
 import type { TextBlockData } from '@/lib/types'
 
 import { SectionShell } from './SectionShell'
@@ -24,6 +24,8 @@ export function TextBlock({
 
   const color = textColorProps(data.textColors, (tc) => patch({ textColors: tc }))
 
+  const sizeWeight = textSizeProps(data.textSizes, data.textWeights, (next) => patch(next))
+
   return (
     <SectionShell
       id={id}
@@ -36,6 +38,9 @@ export function TextBlock({
       onBackgroundColorChange={(v) => patch({ backgroundColor: v })}
       textColors={data.textColors}
       onTextColorsChange={(tc) => patch({ textColors: tc })}
+      textSizes={data.textSizes}
+      textWeights={data.textWeights}
+      onTextStylesChange={(next) => patch(next)}
     >
       <div className="grid grid-cols-1 items-center gap-8 text-left md:grid-cols-2">
         {(data.image?.url || edit) && (
@@ -66,7 +71,7 @@ export function TextBlock({
                   next[i] = v
                   patch({ paragraphs: next })
                 }}
-                {...color(`paragraphs.${i}.paragraph`)}
+                {...color(`paragraphs.${i}.paragraph`)} {...sizeWeight(`paragraphs.${i}.paragraph`)}
               />
               {edit && data.paragraphs.length > 1 && (
                 <button

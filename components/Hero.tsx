@@ -7,8 +7,8 @@ import { ButtonsArea } from '@/components/editable/ButtonsArea'
 import { EditableImage } from '@/components/editable/EditableImage'
 import { EditableText } from '@/components/editable/EditableText'
 import { resolveButtonHref } from '@/lib/buttons'
-import { textColorProps } from '@/lib/text-colors'
-import type { ButtonRef, ImageRef, TextColors } from '@/lib/types'
+import { textColorProps, textSizeProps } from '@/lib/text-colors'
+import type { ButtonRef, ImageRef, TextColors, TextSizes, TextWeights } from '@/lib/types'
 
 type HeroData = {
   title?: string
@@ -16,6 +16,8 @@ type HeroData = {
   buttons?: ButtonRef[]
   /** Overrides de color por texto (ver lib/text-colors.ts). */
   textColors?: TextColors
+  textSizes?: TextSizes
+  textWeights?: TextWeights
 }
 
 function heroButtonClass() {
@@ -27,6 +29,8 @@ export function Hero({
   slides,
   buttons,
   textColors,
+  textSizes,
+  textWeights,
   edit,
   onChange,
 }: HeroData & {
@@ -56,10 +60,12 @@ export function Hero({
   const list = buttons ?? []
 
   function patch(next: Partial<HeroData>) {
-    onChange?.({ title, slides, buttons, textColors, ...next })
+    onChange?.({ title, slides, buttons, textColors, textSizes, textWeights, ...next })
   }
 
   const color = textColorProps(textColors, (tc) => patch({ textColors: tc }))
+
+  const sizeWeight = textSizeProps(textSizes, textWeights, (next) => patch(next))
 
   return (
     <section className="hero" id="inicio" ref={sectionRef}>
@@ -106,7 +112,7 @@ export function Hero({
       <div className="inner">
         <h1 style={isMobile ? { fontSize: '30px' } : undefined}>
           {edit ? (
-            <EditableText as="span" edit value={title} onChange={(v) => patch({ title: v })} {...color('title')} />
+            <EditableText as="span" edit value={title} onChange={(v) => patch({ title: v })} {...color('title')} {...sizeWeight('title')} />
           ) : (
             lines.map((line, i) => (
               <span key={i}>

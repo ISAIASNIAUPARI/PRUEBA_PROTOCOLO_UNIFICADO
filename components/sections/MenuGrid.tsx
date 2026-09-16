@@ -3,7 +3,7 @@
 import { EditableImage } from '@/components/editable/EditableImage'
 import { EditableText } from '@/components/editable/EditableText'
 import { newButtonId } from '@/lib/buttons'
-import { textColorProps } from '@/lib/text-colors'
+import { textColorProps, textSizeProps } from '@/lib/text-colors'
 import type { MenuGridData, MenuGridItem } from '@/lib/types'
 
 import { SectionShell } from './SectionShell'
@@ -25,6 +25,8 @@ export function MenuGrid({
 
   const color = textColorProps(data.textColors, (tc) => patch({ textColors: tc }))
 
+  const sizeWeight = textSizeProps(data.textSizes, data.textWeights, (next) => patch(next))
+
   function updateItem(itemId: string, next: Partial<MenuGridItem>) {
     patch({ items: data.items.map((it) => (it.id === itemId ? { ...it, ...next } : it)) })
   }
@@ -41,6 +43,9 @@ export function MenuGrid({
       onBackgroundColorChange={(v) => patch({ backgroundColor: v })}
       textColors={data.textColors}
       onTextColorsChange={(tc) => patch({ textColors: tc })}
+      textSizes={data.textSizes}
+      textWeights={data.textWeights}
+      onTextStylesChange={(next) => patch(next)}
     >
       <div className="grid grid-cols-1 gap-6 text-left sm:grid-cols-2 lg:grid-cols-3">
         {data.items.map((item) => (
@@ -62,14 +67,14 @@ export function MenuGrid({
             <div className="p-4">
               <div className="mb-1 flex items-start justify-between gap-2">
                 <span className="font-medium" style={{ color: 'var(--color-accent)' }}>
-                  <EditableText as="span" edit={edit} value={item.name} onChange={(v) => updateItem(item.id, { name: v })} {...color(`items.${item.id}.name`)} />
+                  <EditableText as="span" edit={edit} value={item.name} onChange={(v) => updateItem(item.id, { name: v })} {...color(`items.${item.id}.name`)} {...sizeWeight(`items.${item.id}.name`)} />
                 </span>
                 <span className="whitespace-nowrap font-medium" style={{ color: 'var(--color-primary)' }}>
-                  <EditableText as="span" edit={edit} value={item.price} onChange={(v) => updateItem(item.id, { price: v })} {...color(`items.${item.id}.price`)} />
+                  <EditableText as="span" edit={edit} value={item.price} onChange={(v) => updateItem(item.id, { price: v })} {...color(`items.${item.id}.price`)} {...sizeWeight(`items.${item.id}.price`)} />
                 </span>
               </div>
               <p className="text-sm opacity-70" style={{ color: 'var(--color-accent)' }}>
-                <EditableText as="span" edit={edit} value={item.description} onChange={(v) => updateItem(item.id, { description: v })} {...color(`items.${item.id}.description`)} />
+                <EditableText as="span" edit={edit} value={item.description} onChange={(v) => updateItem(item.id, { description: v })} {...color(`items.${item.id}.description`)} {...sizeWeight(`items.${item.id}.description`)} />
               </p>
               {edit && (
                 <button
