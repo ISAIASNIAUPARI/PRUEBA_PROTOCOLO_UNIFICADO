@@ -58,7 +58,14 @@ export function ButtonsArea({
   const selection = useSelectionOptional()
   const id = useId()
   const selected = selection?.selected?.id === id
-  const canDrag = !!edit && (!readOnly || selected)
+  // Los botones se arrastran SIEMPRE que haya edición, sin pedir que se
+  // seleccionen antes. Exigir un clic previo creaba un círculo vicioso: el
+  // clic abre el sidebar, el sidebar encoge el preview, los botones se
+  // desplazan y la siguiente pulsación caía al lado —sobre el fondo—, lo que
+  // deseleccionaba y volvía a mover todo. Arrastrar es un gesto deliberado,
+  // no una acción que se dispare por accidente, así que no rompe la regla de
+  // que el preview no ejecute nada solo.
+  const canDrag = !!edit
 
   function selectArea() {
     selection?.select(
@@ -99,7 +106,7 @@ export function ButtonsArea({
               yKey={yKey}
               onChange={(next) => onChange?.(next)}
               buttonClassName={buttonClassName}
-              onSelect={edit && readOnly && !selected ? selectArea : undefined}
+              onSelect={edit && readOnly ? selectArea : undefined}
               selected={selected}
             />,
             mountNode

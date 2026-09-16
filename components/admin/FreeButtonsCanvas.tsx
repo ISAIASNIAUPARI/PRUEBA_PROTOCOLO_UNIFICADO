@@ -322,6 +322,7 @@ function DraggableButton({
   buttonClassName,
   onSelect,
   selected,
+  draggedRef,
 }: {
   button: ButtonRef
   index: number
@@ -332,6 +333,9 @@ function DraggableButton({
   /** En el preview del admin: un clic selecciona la zona de botones. */
   onSelect?: () => void
   selected?: boolean
+  /** Distingue "soltar tras arrastrar" de "hacer clic": tras un arrastre el
+   *  navegador dispara igualmente un click, y ese no debe seleccionar. */
+  draggedRef?: React.MutableRefObject<boolean>
 }) {
   const pos = defaultPos(index)
   const x = button[xKey] ?? pos.x
@@ -368,7 +372,15 @@ function DraggableButton({
         role="button"
         tabIndex={0}
         data-btn-id={button.id}
-        className={`cursor-grab touch-none whitespace-nowrap active:cursor-grabbing ${buttonClassName(index)}`}
+        onClick={(e) => {
+          e.preventDefault()
+          e.stopPropagation()
+          if (draggedRef?.current) return
+          onSelect?.()
+        }}
+        className={`admin-selectable cursor-grab touch-none whitespace-nowrap ${
+          selected ? 'admin-selected' : ''
+        } active:cursor-grabbing ${buttonClassName(index)}`}
       >
         <span style={colorStyle(button, index)}>{button.text || 'Botón'}</span>
       </div>
@@ -448,6 +460,11 @@ export default function FreeButtonsCanvas({
   const sizeElRef = useRef<HTMLDivElement>(null)
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }))
 
+  // Tras soltar un arrastre el navegador dispara un click igualmente; sin
+  // esta marca, mover un botón abriría además su panel en el sidebar y, al
+  // hacerlo, encogería el preview y movería los botones de sitio.
+  const draggedRef = useRef(false)
+
   // El overlay se pinta mutando el DOM, NO con estado de React: el modifier
   // corre en cada frame y un setState ahí re-renderizaba el canvas y todos los
   // botones ~60 veces por segundo (arrastre pesado y parpadeo). La comparación
@@ -475,6 +492,7 @@ export default function FreeButtonsCanvas({
       // mover un botón dentro de su propia sección no aporta nada.
       autoScroll={false}
       onDragStart={(e) => {
+        draggedRef.current = true
         const container = containerRef.current
         if (!container) return
         lastDeltaRef.current = { x: 0, y: 0 }
@@ -504,6 +522,10 @@ export default function FreeButtonsCanvas({
           .map((n) => toRect(n.getBoundingClientRect(), containerRect))
       }}
       onDragEnd={(e) => {
+        // El click posterior llega en el mismo turno; se limpia después.
+        setTimeout(() => {
+          draggedRef.current = false
+        }, 150)
         commitOverlay(EMPTY_OVERLAY)
         const anchor = activeAnchorRef.current
         const containerRect = containerRectRef.current
@@ -548,6 +570,7 @@ export default function FreeButtonsCanvas({
             buttonClassName={buttonClassName}
             onSelect={onSelect}
             selected={selected}
+            draggedRef={draggedRef}
           />
         ))}
 
