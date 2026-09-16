@@ -1,6 +1,8 @@
 'use client'
 
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+
+import { normalizeChatNotifications, type ChatNotification } from '@/lib/types'
 
 type Msg = { role: 'user' | 'bot'; text: string }
 
@@ -9,7 +11,7 @@ const NOTIF_VISIBLE_SEC_DEFAULT = 4
 /** Descanso entre un aviso y el siguiente. Fijo: marca el cambio de mensaje. */
 const NOTIF_HIDDEN_MS = 2000
 const NOTIF_SEC_MIN = 2
-const NOTIF_SEC_MAX = 30
+const NOTIF_SEC_MAX = 35
 
 /**
  * Identificador de conversación. Se guarda en el navegador para que el
@@ -44,7 +46,7 @@ export function ChatWidget({
   subtitle?: string
   welcome?: string
   placeholder?: string
-  notifications?: string[]
+  notifications?: (string | ChatNotification)[]
   intervalSec?: number
 }) {
   const [open, setOpen] = useState(false)
@@ -52,6 +54,14 @@ export function ChatWidget({
   const [input, setInput] = useState('')
   const [sending, setSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Solo rotan los avisos activos. Se calcula una vez y se reutiliza en el
+  // efecto y en el render: si cada uno hiciera su propio filtrado, el efecto
+  // se reiniciaría en cada render por recibir un array nuevo.
+  const list = useMemo(
+    () => normalizeChatNotifications(notifications).filter((n) => n.enabled && n.text.trim()).map((n) => n.text),
+    [notifications]
+  )
 
   const [notifIdx, setNotifIdx] = useState(0)
   const [notifOn, setNotifOn] = useState(false)
@@ -67,7 +77,6 @@ export function ChatWidget({
 
   /* ---- avisos en bucle junto al botón ---- */
   useEffect(() => {
-    const list = notifications ?? []
     if (!list.length || open || everOpened) {
       setNotifOn(false)
       return
@@ -113,7 +122,7 @@ export function ChatWidget({
       cancelled = true
       clearTimeout(timer)
     }
-  }, [notifications, intervalSec, open, everOpened])
+  }, [list, intervalSec, open, everOpened])
 
   /* ---- desplazar al último mensaje ---- */
   useEffect(() => {
@@ -177,7 +186,6 @@ export function ChatWidget({
     }
   }
 
-  const list = notifications ?? []
   const showNotif = notifOn && !open && !everOpened && list.length > 0
 
   return (
@@ -185,7 +193,7 @@ export function ChatWidget({
       {/* burbuja de aviso */}
       {showNotif && (
         <div className="chat-notif" role="status" aria-live="polite">
-          {list[notifIdx]}
+          {list[notifIdx % list.length]}
         </div>
       )}
 

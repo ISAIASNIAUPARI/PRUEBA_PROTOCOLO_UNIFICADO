@@ -50,10 +50,22 @@
   "chatWelcome": "¡Hola! Soy el asistente de La Gloria Familia Unida. ¿En qué puedo ayudarte? Puedo informarte sobre la carta, los horarios o tu reserva.",
   "chatPlaceholder": "Escribe tu mensaje…",
   "chatNotifications": [
-    "¿Deseas reservar? 🍽️",
-    "Contáctanos 💬",
-    "Te ayudamos ?🍗",
-    "Buscas ayuda  🍲     ?                          .                            .                 ."
+    {
+      "text": "¿Deseas reservar? 🍽️",
+      "enabled": true
+    },
+    {
+      "text": "Contáctanos 💬",
+      "enabled": true
+    },
+    {
+      "text": "Te ayudamos ?🍗",
+      "enabled": true
+    },
+    {
+      "text": "Buscas ayuda  🍲     ?                          .                            .                 .",
+      "enabled": true
+    }
   ],
   "chatIntervalSec": 5
 }

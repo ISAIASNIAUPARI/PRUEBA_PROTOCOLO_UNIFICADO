@@ -20,6 +20,25 @@ export type ButtonRef = {
   color?: ThemeColorChoice
 }
 
+/**
+ * Un aviso de la burbuja. `enabled: false` lo deja en el listado del panel
+ * pero fuera de la rotación del sitio público: apagar un mensaje no obliga a
+ * borrarlo y volver a escribirlo.
+ */
+export type ChatNotification = { text: string; enabled: boolean }
+
+/** Acepta el formato viejo (`string[]`) y el nuevo. Un string suelto se da
+ *  por activo: así estaba antes, y apagarlo en la migración sería cambiarle
+ *  el sitio al cliente sin que lo pidiera. */
+export function normalizeChatNotifications(raw: unknown): ChatNotification[] {
+  if (!Array.isArray(raw)) return []
+  return raw.map((n) =>
+    typeof n === 'string'
+      ? { text: n, enabled: true }
+      : { text: String((n as ChatNotification)?.text ?? ''), enabled: (n as ChatNotification)?.enabled !== false }
+  )
+}
+
 export type SiteSettings = {
   brandName: string
   brandTagline: string
@@ -35,9 +54,13 @@ export type SiteSettings = {
   chatSubtitle: string
   chatWelcome: string
   chatPlaceholder: string
-  /** Avisos rotativos de la burbuja flotante. Entre 1 y 4; editables desde Configuración. */
-  chatNotifications: string[]
-  /** Segundos que cada aviso permanece visible. Entre 2 y 30. */
+  /**
+   * Avisos rotativos de la burbuja flotante. Hasta 10, editables y
+   * reordenables desde Configuración. El contenido antiguo los guardaba como
+   * `string[]` pelado: `normalizeChatNotifications()` acepta las dos formas.
+   */
+  chatNotifications: (string | ChatNotification)[]
+  /** Segundos que cada aviso permanece visible. Entre 2 y 35. */
   chatIntervalSec?: number
 }
 

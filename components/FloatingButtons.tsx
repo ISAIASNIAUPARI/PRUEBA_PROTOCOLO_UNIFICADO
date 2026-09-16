@@ -2,6 +2,8 @@
 
 import Link from 'next/link'
 
+import type { ChatNotification } from '@/lib/types'
+
 import { ChatWidget } from './ChatWidget'
 
 /**
@@ -31,7 +33,7 @@ export function FloatingButtons({
   chatSubtitle?: string
   chatWelcome?: string
   chatPlaceholder?: string
-  chatNotifications?: string[]
+  chatNotifications?: (string | ChatNotification)[]
   chatIntervalSec?: number
 }) {
   return (
