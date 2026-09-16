@@ -108,7 +108,11 @@
       }
     }
   ],
-  "textSizes": {},
+  "textSizes": {
+    "title": {
+      "m": 12
+    }
+  },
   "textWeights": {
     "title": 600
   },
