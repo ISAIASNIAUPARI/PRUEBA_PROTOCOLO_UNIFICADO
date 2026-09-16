@@ -3,6 +3,7 @@
 import {
   closestCenter,
   DndContext,
+  DragOverlay,
   PointerSensor,
   useSensor,
   useSensors,
@@ -12,6 +13,8 @@ import { arrayMove, SortableContext, useSortable, verticalListSortingStrategy } 
 import { CSS } from '@dnd-kit/utilities'
 
 import { normalizeChatNotifications, type ChatNotification, type SiteSettings } from '@/lib/types'
+
+import { useState } from 'react'
 
 import { useEdit } from './EditProvider'
 
@@ -27,48 +30,33 @@ const MIN_SEC = 2
 const MAX_SEC = 35
 const DEFAULT_SEC = 4
 
-/**
- * Una fila del listado de avisos. Mismo patrón de arrastre que
- * LayoutPanel: asa a la izquierda, eje vertical y sin salir del contenedor.
- *
- * El id de arrastre es la POSICIÓN (`msg-0`, `msg-1`…) y no un id propio del
- * mensaje: estos avisos no llevan estilos ni nada indexado por su identidad,
- * así que la posición basta y el JSON se queda con la forma que el cliente
- * ve. Va prefijado porque dnd-kit trata un id `0` como ausente.
- */
-function MessageRow({
-  dragId,
-  index,
-  message,
-  total,
-  onTextChange,
-  onToggle,
-  onDelete,
-}: {
-  dragId: string
+type RowProps = {
   index: number
   message: ChatNotification
   total: number
   onTextChange: (value: string) => void
   onToggle: () => void
   onDelete: () => void
-}) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: dragId })
+}
 
+/**
+ * El contenido de una fila, sin nada de arrastre. Se pinta en dos sitios: en
+ * el listado y, mientras se arrastra, dentro del <DragOverlay>.
+ */
+function MessageRowBody({
+  message,
+  index,
+  total,
+  onTextChange,
+  onToggle,
+  onDelete,
+  dragHandle,
+  flashing,
+}: RowProps & { dragHandle?: React.ReactNode; flashing?: boolean }) {
   return (
-    <div
-      ref={setNodeRef}
-      style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={`mb-2 flex items-center gap-2 ${isDragging ? 'opacity-50' : ''}`}
-    >
-      <span
-        {...attributes}
-        {...listeners}
-        title="Arrastrar para reordenar"
-        className="cursor-grab select-none px-1 text-admin-ink/40 active:cursor-grabbing"
-      >
-        ⠿
-      </span>
+    <>
+      {flashing && <div className="pointer-events-none absolute inset-0 animate-section-flash" />}
+      {dragHandle ?? <span className="select-none px-1 text-admin-ink/40">⠿</span>}
       <input
         type="text"
         value={message.text}
@@ -96,6 +84,48 @@ function MessageRow({
           ×
         </button>
       )}
+    </>
+  )
+}
+
+/**
+ * Una fila del listado de avisos. Mismo patrón de arrastre que
+ * LayoutPanel: asa a la izquierda, eje vertical y sin salir del contenedor.
+ *
+ * El id de arrastre es la POSICIÓN (`msg-0`, `msg-1`…) y no un id propio del
+ * mensaje: estos avisos no llevan estilos ni nada indexado por su identidad,
+ * así que la posición basta y el JSON se queda con la forma que el cliente
+ * ve. Va prefijado porque dnd-kit trata un id `0` como ausente.
+ *
+ * Mientras se arrastra, la fila se queda quieta y atenuada marcando el hueco
+ * — quien sigue al cursor es la copia del <DragOverlay>. Sin overlay la fila
+ * original SÍ se movía, pero la pintaban encima las filas siguientes (es un
+ * hermano anterior y no tiene fondo propio), así que desaparecía a mitad del
+ * arrastre y el cursor no arrastraba nada visible.
+ */
+function SortableMessageRow({ dragId, flashing, ...props }: RowProps & { dragId: string; flashing?: boolean }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: dragId })
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.4 : undefined }}
+      className="relative mb-2 flex items-center gap-2 overflow-hidden rounded-md"
+    >
+      <MessageRowBody
+        {...props}
+        flashing={flashing}
+        dragHandle={
+          <span
+            {...attributes}
+            {...listeners}
+            title="Arrastrar para reordenar"
+            className="cursor-grab select-none px-1 text-admin-ink/40 active:cursor-grabbing"
+          >
+            ⠿
+          </span>
+        }
+      />
     </div>
   )
 }
@@ -109,6 +139,17 @@ export default function SettingsPanel({ onClose }: { onClose: () => void }) {
   }
 
   const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }))
+
+  // Cuál se está arrastrando (para pintar la copia del overlay) y cuál acaba
+  // de aterrizar (para el destello verde de confirmación, como al reordenar
+  // secciones en "Organizar página").
+  const [dragging, setDragging] = useState<string | null>(null)
+  const [landed, setLanded] = useState<string | null>(null)
+
+  function flashLanded(dragId: string) {
+    setLanded(dragId)
+    setTimeout(() => setLanded((cur) => (cur === dragId ? null : cur)), 2000)
+  }
 
   // Siempre al menos una casilla: un chat sin ningún aviso deja la burbuja
   // muda y nadie entiende por qué el panel no muestra nada que editar.
@@ -168,19 +209,26 @@ export default function SettingsPanel({ onClose }: { onClose: () => void }) {
           sensors={sensors}
           collisionDetection={closestCenter}
           modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+          onDragStart={({ active }) => setDragging(String(active.id))}
+          onDragCancel={() => setDragging(null)}
           onDragEnd={({ active, over }) => {
+            setDragging(null)
             if (!over || active.id === over.id) return
             const from = messages.findIndex((_, i) => `msg-${i}` === active.id)
             const to = messages.findIndex((_, i) => `msg-${i}` === over.id)
             if (from === -1 || to === -1) return
             setMessages(arrayMove(messages, from, to))
+            // Las filas se identifican por posición, así que el destello va en
+            // la posición de DESTINO: es donde el cliente acaba de soltarla.
+            flashLanded(`msg-${to}`)
           }}
         >
           <SortableContext items={messages.map((_, i) => `msg-${i}`)} strategy={verticalListSortingStrategy}>
             {messages.map((m, i) => (
-              <MessageRow
+              <SortableMessageRow
                 key={`msg-${i}`}
                 dragId={`msg-${i}`}
+                flashing={landed === `msg-${i}`}
                 index={i}
                 message={m}
                 total={messages.length}
@@ -190,6 +238,23 @@ export default function SettingsPanel({ onClose }: { onClose: () => void }) {
               />
             ))}
           </SortableContext>
+
+          {/* La copia que sigue al cursor: siempre por encima de todo, con el
+              verde de confirmación del admin para que se vea qué se mueve. */}
+          <DragOverlay>
+            {dragging ? (
+              <div className="flex items-center gap-2 rounded-md border border-admin-accent bg-admin-accent/35 shadow-lg" data-drag-overlay>
+                <MessageRowBody
+                  index={messages.findIndex((_, i) => `msg-${i}` === dragging)}
+                  message={messages[messages.findIndex((_, i) => `msg-${i}` === dragging)] ?? { text: '', enabled: true }}
+                  total={messages.length}
+                  onTextChange={() => {}}
+                  onToggle={() => {}}
+                  onDelete={() => {}}
+                />
+              </div>
+            ) : null}
+          </DragOverlay>
         </DndContext>
 
         {messages.length < MAX_MESSAGES && (
