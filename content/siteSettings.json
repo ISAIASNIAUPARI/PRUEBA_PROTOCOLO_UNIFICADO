@@ -51,19 +51,19 @@
   "chatPlaceholder": "Escribe tu mensaje…",
   "chatNotifications": [
     {
-      "text": "¿Deseas reservar? 🍽️",
-      "enabled": true
-    },
-    {
       "text": "Contáctanos 💬",
       "enabled": true
     },
     {
-      "text": "Te ayudamos ?🍗",
+      "text": "¿Deseas reservar? 🍽️",
       "enabled": true
     },
     {
-      "text": "Buscas ayuda  🍲     ?                          .                            .                 .",
+      "text": "Te ayudamos ?🍗",
+      "enabled": false
+    },
+    {
+      "text": "Buscas ayuda 🍲?  ",
       "enabled": true
     }
   ],
