@@ -3,7 +3,7 @@
 import { EditableImage } from '@/components/editable/EditableImage'
 import { EditableText } from '@/components/editable/EditableText'
 import { textColorProps, textSizeProps } from '@/lib/text-colors'
-import type { TextBlockData } from '@/lib/types'
+import { newParagraphId, normalizeParagraphs, type TextBlockData } from '@/lib/types'
 
 import { SectionShell } from './SectionShell'
 
@@ -25,6 +25,10 @@ export function TextBlock({
   const color = textColorProps(data.textColors, (tc) => patch({ textColors: tc }))
 
   const sizeWeight = textSizeProps(data.textSizes, data.textWeights, (next) => patch(next))
+
+  // El contenido viejo trae `string[]`; se normaliza al leer y se vuelve a
+  // guardar ya con ids, así el JSON migra solo en el primer cambio.
+  const paragraphs = normalizeParagraphs(data.paragraphs)
 
   return (
     <SectionShell
@@ -60,23 +64,21 @@ export function TextBlock({
           </div>
         )}
         <div className={data.image?.url || edit ? '' : 'md:col-span-2'}>
-          {data.paragraphs.map((p, i) => (
-            <p key={i} className="mb-4 text-base leading-relaxed" style={{ color: 'var(--color-accent)' }}>
+          {paragraphs.map((p) => (
+            <p key={p.id} className="mb-4 text-base leading-relaxed" style={{ color: 'var(--color-accent)' }}>
               <EditableText
                 as="span"
                 edit={edit}
-                value={p}
+                value={p.text}
                 onChange={(v) => {
-                  const next = data.paragraphs.slice()
-                  next[i] = v
-                  patch({ paragraphs: next })
+                  patch({ paragraphs: paragraphs.map((q) => (q.id === p.id ? { ...q, text: v } : q)) })
                 }}
-                {...color(`paragraphs.${i}.paragraph`)} {...sizeWeight(`paragraphs.${i}.paragraph`)}
+                {...color(`paragraphs.${p.id}.paragraph`)} {...sizeWeight(`paragraphs.${p.id}.paragraph`)}
               />
-              {edit && data.paragraphs.length > 1 && (
+              {edit && paragraphs.length > 1 && (
                 <button
                   type="button"
-                  onClick={() => patch({ paragraphs: data.paragraphs.filter((_, j) => j !== i) })}
+                  onClick={() => patch({ paragraphs: paragraphs.filter((q) => q.id !== p.id) })}
                   className="ml-2 text-xs text-red-600 hover:underline"
                 >
                   eliminar
@@ -87,7 +89,7 @@ export function TextBlock({
           {edit && (
             <button
               type="button"
-              onClick={() => patch({ paragraphs: [...data.paragraphs, ''] })}
+              onClick={() => patch({ paragraphs: [...paragraphs, { id: newParagraphId(), text: '' }] })}
               className="rounded-md border border-dashed px-3 py-1.5 text-sm"
               style={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }}
             >

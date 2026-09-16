@@ -250,10 +250,38 @@ export type MenuGridData = {
   textWeights?: TextWeights
 }
 
+/**
+ * Un párrafo nace SIEMPRE con id estable: los overrides de color y tamaño se
+ * guardan por esa clave, así que sin id se guardarían por posición y se
+ * desplazarían al reordenar o borrar (ver Parte 6 de la nota 20 del cerebro).
+ *
+ * El contenido antiguo guardaba `string[]` pelado. `normalizeParagraphs()` lo
+ * convierte al vuelo usando el ÍNDICE como id ("0", "1", …), que es justo la
+ * clave con la que se guardaron sus overrides: así el estilo ya aplicado no se
+ * pierde en la migración. Los párrafos nuevos usan un uuid.
+ */
+export type TextBlockParagraph = { id: string; text: string }
+
+/** Id de párrafo nuevo. No se reutiliza `newButtonId()` de lib/buttons.ts
+ *  porque ese módulo ya importa de acá y se armaría un ciclo. */
+export function newParagraphId(): string {
+  return typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : `p-${Date.now()}-${Math.random().toString(36).slice(2)}`
+}
+
+export function normalizeParagraphs(raw: unknown): TextBlockParagraph[] {
+  if (!Array.isArray(raw)) return []
+  return raw.map((p, i) =>
+    typeof p === 'string'
+      ? { id: String(i), text: p }
+      : { id: String((p as TextBlockParagraph)?.id ?? i), text: String((p as TextBlockParagraph)?.text ?? '') }
+  )
+}
+
 export type TextBlockData = {
   subtitle: string
   heading: string
-  paragraphs: string[]
+  /** Puede venir como `string[]` del contenido antiguo: normalizar al leer. */
+  paragraphs: TextBlockParagraph[] | string[]
   image: ImageRef | null
   backgroundColor?: ThemeColorChoice
   /** Overrides por texto de esta sección (ver lib/text-colors.ts). */
@@ -293,7 +321,7 @@ export function emptySectionData(type: DynamicSectionType): unknown {
     case 'menu-grid':
       return { subtitle: '', heading: '', items: [] } satisfies MenuGridData
     case 'text-block':
-      return { subtitle: '', heading: '', paragraphs: [''], image: null } satisfies TextBlockData
+      return { subtitle: '', heading: '', paragraphs: [{ id: newParagraphId(), text: '' }], image: null } satisfies TextBlockData
     case 'photo-gallery':
       return { subtitle: '', heading: '', photos: [] } satisfies PhotoGalleryData
     case 'faq':
