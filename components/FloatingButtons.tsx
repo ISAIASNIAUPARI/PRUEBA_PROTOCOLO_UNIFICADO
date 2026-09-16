@@ -22,6 +22,7 @@ export function FloatingButtons({
   chatWelcome,
   chatPlaceholder,
   chatNotifications,
+  chatIntervalSec,
 }: {
   drinksEnabled?: boolean
   drinksLabel?: string
@@ -31,6 +32,7 @@ export function FloatingButtons({
   chatWelcome?: string
   chatPlaceholder?: string
   chatNotifications?: string[]
+  chatIntervalSec?: number
 }) {
   return (
     <>
@@ -47,6 +49,7 @@ export function FloatingButtons({
           welcome={chatWelcome}
           placeholder={chatPlaceholder}
           notifications={chatNotifications}
+          intervalSec={chatIntervalSec}
         />
       )}
     </>

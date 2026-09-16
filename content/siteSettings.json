@@ -52,5 +52,6 @@
   "chatNotifications": [
     "¿Deseas reservar? 🍽️",
     "Contáctanos 💬"
-  ]
+  ],
+  "chatIntervalSec": 4
 }

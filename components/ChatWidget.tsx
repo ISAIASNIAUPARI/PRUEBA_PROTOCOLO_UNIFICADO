@@ -4,9 +4,12 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 type Msg = { role: 'user' | 'bot'; text: string }
 
-/** Cada aviso se ve 4 s y descansa 2 s: un mensaje nuevo cada 6 s. */
-const NOTIF_VISIBLE_MS = 4000
+/** Segundos visibles por aviso si el sitio no configura `chatIntervalSec`. */
+const NOTIF_VISIBLE_SEC_DEFAULT = 4
+/** Descanso entre un aviso y el siguiente. Fijo: marca el cambio de mensaje. */
 const NOTIF_HIDDEN_MS = 2000
+const NOTIF_SEC_MIN = 2
+const NOTIF_SEC_MAX = 30
 
 /**
  * Identificador de conversación. Se guarda en el navegador para que el
@@ -35,12 +38,14 @@ export function ChatWidget({
   welcome,
   placeholder,
   notifications,
+  intervalSec,
 }: {
   title?: string
   subtitle?: string
   welcome?: string
   placeholder?: string
   notifications?: string[]
+  intervalSec?: number
 }) {
   const [open, setOpen] = useState(false)
   const [msgs, setMsgs] = useState<Msg[]>([])
@@ -70,6 +75,24 @@ export function ChatWidget({
     let cancelled = false
     let timer: ReturnType<typeof setTimeout>
 
+    // El intervalo lo decide el cliente desde Configuración. Se acota al
+    // rango que ofrece ese panel: un JSON editado a mano no puede dejar el
+    // aviso parpadeando 10 veces por segundo ni congelado media hora.
+    const visibleMs =
+      Math.min(Math.max(Math.round(intervalSec || NOTIF_VISIBLE_SEC_DEFAULT), NOTIF_SEC_MIN), NOTIF_SEC_MAX) * 1000
+
+    // Con un solo aviso no hay rotación: se muestra y se queda. Ocultarlo
+    // para volver a mostrar el MISMO texto solo se vería como un parpadeo.
+    if (list.length === 1) {
+      timer = setTimeout(() => {
+        if (!cancelled) setNotifOn(true)
+      }, 2500)
+      return () => {
+        cancelled = true
+        clearTimeout(timer)
+      }
+    }
+
     const show = () => {
       if (cancelled) return
       setNotifOn(true)
@@ -81,7 +104,7 @@ export function ChatWidget({
           setNotifIdx((i) => (i + 1) % list.length)
           show()
         }, NOTIF_HIDDEN_MS)
-      }, NOTIF_VISIBLE_MS)
+      }, visibleMs)
     }
 
     // Un respiro antes del primer aviso: que no salte nada más entrar.
@@ -90,7 +113,7 @@ export function ChatWidget({
       cancelled = true
       clearTimeout(timer)
     }
-  }, [notifications, open, everOpened])
+  }, [notifications, intervalSec, open, everOpened])
 
   /* ---- desplazar al último mensaje ---- */
   useEffect(() => {

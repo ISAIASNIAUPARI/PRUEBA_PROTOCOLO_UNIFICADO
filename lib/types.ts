@@ -35,7 +35,10 @@ export type SiteSettings = {
   chatSubtitle: string
   chatWelcome: string
   chatPlaceholder: string
+  /** Avisos rotativos de la burbuja flotante. Entre 1 y 4; editables desde Configuración. */
   chatNotifications: string[]
+  /** Segundos que cada aviso permanece visible. Entre 2 y 30. */
+  chatIntervalSec?: number
 }
 
 export type LocationSection = {

@@ -172,6 +172,7 @@ textWeights={footer.textWeights}
         chatWelcome={siteSettings.chatWelcome}
         chatPlaceholder={siteSettings.chatPlaceholder}
         chatNotifications={siteSettings.chatNotifications}
+        chatIntervalSec={siteSettings.chatIntervalSec}
       />
     </>
   )
