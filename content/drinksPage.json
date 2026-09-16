@@ -107,5 +107,12 @@
         "url": "https://res.cloudinary.com/foewxv45/image/upload/f_auto,q_auto/v1789484836/la-gloria-familia-unida/qsfelgdwdx4jcyiplpgs"
       }
     }
-  ]
+  ],
+  "textSizes": {},
+  "textWeights": {
+    "title": 600
+  },
+  "textColors": {
+    "title": "secondary"
+  }
 }
